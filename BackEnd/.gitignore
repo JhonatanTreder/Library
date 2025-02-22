@@ -22,3 +22,6 @@ project.assets.json
 # Arquivos de log e temporários
 *.log
 *.tmp
+
+# Arquivo de teste de API
+*.http
