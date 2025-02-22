@@ -1,1 +1,24 @@
+# Pasta de cache e configurações locais do Visual Studio
 .vs/
+
+# Configurações do usuário
+*.csproj.user
+*.suo
+
+# Arquivos temporários do Visual Studio
+*.userosscache
+*.sln.docstates
+
+# Binários e builds
+bin/
+obj/
+
+# Pacotes do NuGet
+packages/
+*.nupkg
+project.lock.json
+project.assets.json
+
+# Arquivos de log e temporários
+*.log
+*.tmp
