@@ -18,7 +18,7 @@ namespace API.Models
         public string PhoneNumber { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "O tipo de usuário é obrigatório")]
-        public UserType Type { get; set; }
+        public UserType UserType { get; set; }
         public ICollection<Loan>? Loans { get; set; }
     }
 }
