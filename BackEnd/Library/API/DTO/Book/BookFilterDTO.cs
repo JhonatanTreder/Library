@@ -1,6 +1,6 @@
 ﻿namespace API.DTO.Book
 {
-    public class FilterBookDTO
+    public class BookFilterDTO
     {
         public string? Title { get; set; }
         public string? Author { get; set; }

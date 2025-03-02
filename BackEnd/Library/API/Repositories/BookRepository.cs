@@ -8,7 +8,7 @@ namespace API.Repositories
 {
     public class BookRepository : IBookRepository
     {
-        public readonly AppDbContext _context;
+        private readonly AppDbContext _context;
 
         public BookRepository(AppDbContext context)
         {
@@ -17,8 +17,9 @@ namespace API.Repositories
 
         public async Task<Book> AddBook(Book book)
         {
-            _context.Add(book);
+            await _context.AddAsync(book);
             await _context.SaveChangesAsync();
+
             return book;
         }
 
@@ -42,7 +43,7 @@ namespace API.Repositories
             return await _context.Books.FindAsync(id);
         }
 
-        public async Task<IEnumerable<Book>> GetBooksAsync(FilterBookDTO filterBookDTO)
+        public async Task<IEnumerable<Book>> GetBooksAsync(BookFilterDTO filterBookDTO)
         {
             var query = _context.Books.AsQueryable();
 
@@ -78,13 +79,12 @@ namespace API.Repositories
 
             if (updateBookDTO.Quantity.HasValue)
             {
-                // Verifica se a quantidade é válida (se for maior que 0)
                 if (updateBookDTO.Quantity.Value < 1)
                 {
-                    return false; // Se o valor for inválido (menor que 1), você pode retornar falso ou lançar uma exceção
+                    return false;
                 }
 
-                book.Quantity = updateBookDTO.Quantity.Value; // Atribui o valor de Quantity
+                book.Quantity = updateBookDTO.Quantity.Value;
             }
 
             _context.Update(book);
