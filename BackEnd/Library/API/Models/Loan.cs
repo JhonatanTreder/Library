@@ -17,9 +17,6 @@ namespace API.Models
         [Required(ErrorMessage = "O ID do bibliotecário é obrigatório")]
         public int LibrarianId { get; set; }
 
-        [Range(1, int.MaxValue, ErrorMessage = "A quantidade mínima de empréstimo é 1")]
-        public int? LoanQuantity { get; set; }
-
         [Required(ErrorMessage = "A data de empréstimo é obrigatória")]
         [DataType(DataType.Date, ErrorMessage = "A data de empréstimo deve estar no formato válido de data")]
         public DateTime LoanDate { get; set; }

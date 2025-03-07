@@ -6,10 +6,10 @@ namespace API.Repositories.Interfaces
 {
     public interface IBookRepository
     {
-        Task<Book> AddBook(Book book);
+        Task<Book> AddBookAsync(Book book);
         Task<IEnumerable<Book>> GetBooksAsync(BookFilterDTO filterBookDTO);
-        Task<Book?> GetBookById(int id);
-        Task<bool> UpdateBook(int id, UpdateBookDTO updateBookDTO);
-        Task<bool> DeleteBook(int id);
+        Task<Book?> GetBookByIdAsync(int id);
+        Task<bool> UpdateBookAsync(int id, BookUpdateDTO updateBookDTO);
+        Task<bool> DeleteBookAsync(int id);
     }
 }

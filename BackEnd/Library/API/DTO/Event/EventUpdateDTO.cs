@@ -1,6 +1,6 @@
 ﻿namespace API.DTO.Event
 {
-    public class UpdateEventDTO
+    public class EventUpdateDTO
     {
         public string? Title { get; set; }
         public string? Description { get; set; }

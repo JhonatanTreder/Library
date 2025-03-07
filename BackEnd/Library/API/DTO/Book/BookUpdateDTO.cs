@@ -1,6 +1,6 @@
 ﻿namespace API.DTO.Book
 {
-    public class UpdateBookDTO
+    public class BookUpdateDTO
     {
         public string? Description { get; set; }
         public int? Quantity { get; set; }

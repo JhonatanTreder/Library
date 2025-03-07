@@ -16,7 +16,7 @@ namespace API.Repositories
             _context = context;
         }
 
-        public async Task<Event> AddEvent(Event _event)
+        public async Task<Event> AddEventAsync(Event _event)
         {
             await _context.AddAsync(_event);
             await _context.SaveChangesAsync();
@@ -24,7 +24,7 @@ namespace API.Repositories
             return _event;
         }
 
-        public async Task<bool> DeleteEvent(int id)
+        public async Task<bool> DeleteEventAsync(int id)
         {
             var _event = await _context.Events.FindAsync(id);
 
@@ -39,7 +39,7 @@ namespace API.Repositories
             return true;
         }
 
-        public async Task<Event?> GetEventById(int id)
+        public async Task<Event?> GetEventByIdAsync(int id)
         {
             return await _context.Events.FindAsync(id);
         }
@@ -67,7 +67,7 @@ namespace API.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<bool> UpdateEvent(int id, UpdateEventDTO updateEventDTO)
+        public async Task<bool> UpdateEventAsync(int id, EventUpdateDTO updateEventDTO)
         {
             var _event = await _context.Events.FindAsync(id);
 

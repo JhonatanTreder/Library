@@ -15,7 +15,7 @@ namespace API.Repositories
             _context = context;
         }
 
-        public async Task<Book> AddBook(Book book)
+        public async Task<Book> AddBookAsync(Book book)
         {
             await _context.AddAsync(book);
             await _context.SaveChangesAsync();
@@ -23,7 +23,7 @@ namespace API.Repositories
             return book;
         }
 
-        public async Task<bool> DeleteBook(int id)
+        public async Task<bool> DeleteBookAsync(int id)
         {
             var book = await _context.Books.FindAsync(id);
 
@@ -38,7 +38,7 @@ namespace API.Repositories
             return true;
         }
 
-        public async Task<Book?> GetBookById(int id)
+        public async Task<Book?> GetBookByIdAsync(int id)
         {
             return await _context.Books.FindAsync(id);
         }
@@ -65,7 +65,7 @@ namespace API.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<bool> UpdateBook(int id, UpdateBookDTO updateBookDTO)
+        public async Task<bool> UpdateBookAsync(int id, BookUpdateDTO updateBookDTO)
         {
             var book = await _context.Books.FindAsync(id);
 

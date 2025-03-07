@@ -31,5 +31,7 @@ namespace API.Models
 
         [Range(1440, 2999, ErrorMessage = "O ano de publicação deve estar entre 1440 a 2999")]
         public int PublicationYear { get; set; }
+
+        public ICollection<Loan>? Loans { get; set; }
     }
 }
