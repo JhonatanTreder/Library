@@ -37,6 +37,11 @@ namespace API.Repositories
             return true;
         }
 
+        public async Task<Loan?> GetLoanByIdAsync(int id)
+        {
+            return await _context.Loans.FindAsync();
+        }
+
         public async Task<IEnumerable<Loan>> GetLoansAsync(LoanFilterDTO loanFilterDTO)
         {
             var query = _context.Loans.AsQueryable();

@@ -7,6 +7,7 @@ namespace API.Repositories.Interfaces
     {
         Task<Loan> AddLoanAsync(Loan loan);
         Task<IEnumerable<Loan>> GetLoansAsync(LoanFilterDTO loanFilterDTO);
+        Task<Loan?> GetLoanByIdAsync(int id);
         Task<bool> UpdateLoanAsync(int id, LoanUpdateDTO loanUpdateDTOO);
         Task<bool> DeleteLoanAsync(int id);
     }
