@@ -1,4 +1,6 @@
 ﻿using API.Context;
+using API.DTO.Authentication;
+using API.DTO.Login;
 using API.DTO.User;
 using API.Models;
 using API.Repositories.Interfaces;
@@ -14,7 +16,12 @@ namespace API.Repositories
             _context = context;
         }
 
-        public Task<User> AddUserAsync(User user)
+        public Task<User> AddUserAsync(RegisterDTO user)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<User> AddUserAsync(AdminRegisterDTO user)
         {
             throw new NotImplementedException();
         }

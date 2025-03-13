@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 using Microsoft.AspNetCore.DataProtection;
+using API.Services.Interfaces;
+using API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +24,8 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 //------------------------------------------------------
 
 //Implementando o serviço de Token JWT na aplicação.
+builder.Services.AddScoped<ITokenService, TokenService>();
+
 var secrectKey = builder.Configuration["JWT:SecretKey"] 
     ?? throw new ArgumentException("Invalid secret key!");
 
