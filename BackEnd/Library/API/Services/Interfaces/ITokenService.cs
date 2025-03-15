@@ -5,8 +5,8 @@ namespace API.Services.Interfaces
 {
     public interface ITokenService
     {
-        JwtSecurityToken GenerateAcessToken(IEnumerable<Claim> claims, IConfiguration _config);
+        JwtSecurityToken GenerateAccessToken(IEnumerable<Claim> claims);
         string GenerateRefreshToken();
-        ClaimsPrincipal GetClaimsFromExpiredToken(string token, IConfiguration _config);
+        ClaimsPrincipal GetClaimsFromExpiredToken(string token);
     }
 }

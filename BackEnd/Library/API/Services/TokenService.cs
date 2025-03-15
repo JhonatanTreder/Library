@@ -9,9 +9,16 @@ namespace API.Services
 {
     public class TokenService : ITokenService
     {
-        public ClaimsPrincipal GetClaimsFromExpiredToken(string token, IConfiguration _config)
+        private readonly IConfiguration _config;
+
+        public TokenService(IConfiguration config)
         {
-            var secretKey = _config["JWT:SecretKey"] ?? throw new InvalidOperationException("Invalid key");
+            _config = config;
+        }
+
+        public ClaimsPrincipal GetClaimsFromExpiredToken(string token)
+        {
+            var secretKey = GetPrivateKey();
             var tokenValidationParameters = new TokenValidationParameters()
             {
                 ValidateAudience = false,
@@ -36,30 +43,28 @@ namespace API.Services
             return principal;
         }
 
-        public JwtSecurityToken GenerateAcessToken(IEnumerable<Claim> claims, IConfiguration _config)
+        public JwtSecurityToken GenerateAccessToken(IEnumerable<Claim> claims)
         {
-            var key = _config.GetSection("JWT").GetValue<string>("SecretKey") ??
-                throw new InvalidOperationException("Invalid secret Key");
+            var key = Encoding.UTF8.GetBytes(GetPrivateKey());
 
-            var privateKey = Encoding.UTF8.GetBytes(key);
-
-            var signingCredentials = new SigningCredentials(new SymmetricSecurityKey(privateKey),
+            var signingCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
                 SecurityAlgorithms.HmacSha256Signature);
 
             var tokenDescriptor = new SecurityTokenDescriptor()
             {
                 Subject = new ClaimsIdentity(claims),
-                Issuer = _config.GetSection("JWT").GetValue<string>("ValidIssuer"),
-                Audience = _config.GetSection("JWT").GetValue<string>("ValidAudience"),
-                Expires = DateTime.UtcNow.AddMinutes(_config.GetSection("JWT").GetValue<double>("TokenValidInMinutes")),
+                Issuer = _config["JWT:Issuer"],
+                Audience = _config["JWT:Audience"],
+                Expires = DateTime.UtcNow.AddMinutes(Convert.ToDouble(_config["JWT:TokenValidInMinutes"] ?? "30")),
                 SigningCredentials = signingCredentials
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            var token = tokenHandler.CreateJwtSecurityToken(tokenDescriptor);
+            var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            return token;
+            return (JwtSecurityToken)token;
         }
+
         public string GenerateRefreshToken()
         {
             var secureRandomBytes = new byte[128];
@@ -68,9 +73,12 @@ namespace API.Services
 
             randomNumberGenerator.GetBytes(secureRandomBytes);
 
-            var refreshToken = Convert.ToBase64String(secureRandomBytes);
+            return Base64UrlEncoder.Encode(secureRandomBytes);
+        }
 
-            return refreshToken;
+        private string GetPrivateKey()
+        {
+            return _config["JWT:SecretKey"] ?? throw new InvalidOperationException("Invalid key");
         }
     }
 }
