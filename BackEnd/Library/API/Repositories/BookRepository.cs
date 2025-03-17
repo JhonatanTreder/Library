@@ -1,5 +1,6 @@
 ﻿using API.Context;
 using API.DTO.Book;
+using API.DTO.Responses;
 using API.Models;
 using API.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -15,8 +16,24 @@ namespace API.Repositories
             _context = context;
         }
 
-        public async Task<Book> AddBookAsync(Book book)
+        public async Task<Book?> AddBookAsync(CreateBookDTO bookDTO)
         {
+            if (bookDTO is null)
+            {
+                return null;
+            }
+
+            var book = new Book
+            {
+                Title = bookDTO.Title,
+                Author = bookDTO.Author,
+                Description = bookDTO.Description,
+                PublicationYear = bookDTO.PublicationYear,
+                Publisher = bookDTO.Publisher,
+                Category = bookDTO.Category,
+                Quantity = bookDTO.Quantity
+            };
+
             await _context.AddAsync(book);
             await _context.SaveChangesAsync();
 
@@ -43,7 +60,7 @@ namespace API.Repositories
             return await _context.Books.FindAsync(id);
         }
 
-        public async Task<IEnumerable<Book>> GetBooksAsync(BookFilterDTO filterBookDTO)
+        public async Task<IEnumerable<Book?>> GetBooksAsync(BookFilterDTO filterBookDTO)
         {
             var query = _context.Books.AsQueryable();
 

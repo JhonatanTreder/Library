@@ -32,7 +32,7 @@ namespace API.Controllers
             _configuration = configuration;
         }
 
-        [HttpPut]
+        [HttpPost]
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
         {
@@ -98,7 +98,7 @@ namespace API.Controllers
                 UserName = userRegisterDTO.Name
             };
 
-            var result = await _userManager.CreateAsync(user);
+            var result = await _userManager.CreateAsync(user, userRegisterDTO.Password);
 
             if (!result.Succeeded)
             {
