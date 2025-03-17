@@ -1,7 +1,9 @@
 ﻿using API.DTO.Login;
 using API.DTO.Responses;
+using API.DTO.Token;
 using API.Models;
 using API.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +32,7 @@ namespace API.Controllers
             _configuration = configuration;
         }
 
-        [HttpPost]
+        [HttpPut]
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
         {
@@ -73,6 +75,8 @@ namespace API.Controllers
             return Unauthorized();
         }
 
+        [HttpPost]
+        [Route("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO userRegisterDTO)
         {
             var userExists = await _userManager.FindByEmailAsync(userRegisterDTO.Email);
@@ -80,7 +84,7 @@ namespace API.Controllers
             if (userExists != null)
             {
                 return StatusCode(StatusCodes.Status409Conflict,
-                new Response
+                new ApiResponse
                 {
                     Status = "Error",
                     Message = "User already exists"
@@ -99,7 +103,7 @@ namespace API.Controllers
             if (!result.Succeeded)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError,
-                new Response
+                new ApiResponse
                 {
                     Status = "Error",
                     Message = "User creation failed"
@@ -107,10 +111,100 @@ namespace API.Controllers
             }
 
             return Ok(
-            new Response
+            new ApiResponse
             {
                 Status = "Success",
                 Message = "User created successfully!"
+            });
+        }
+
+        [HttpPost]
+        [Route("refresh-token")]
+        public async Task<IActionResult> RefreshToken(TokenDTO tokenDTO)
+        {
+            if (tokenDTO is null)
+            {
+                return BadRequest(new ApiResponse
+                {
+                    Status = "Error",
+                    Message = "Invalid client request"
+                });
+            }
+
+            string? accessToken = tokenDTO.AccessToken ?? throw new ArgumentNullException(nameof(tokenDTO));
+            string? refreshToken = tokenDTO.RefreshToken ?? throw new ArgumentNullException(nameof(tokenDTO));
+
+            var principal = _tokenService.GetClaimsFromExpiredToken(accessToken!);
+
+            if (principal is null)
+            {
+                return BadRequest(new ApiResponse
+                {
+                    Status = "Error",
+                    Message = "Invalid access/refresh token"
+                });
+            }
+
+            string username = principal.Identity!.Name!;
+
+            var user = await _userManager.FindByNameAsync(username!);
+
+            if (user is null || user.RefreshToken != refreshToken 
+                             || user.RefreshTokenExpiryTime <= DateTime.Now)
+            {
+                return BadRequest(new ApiResponse 
+                {
+                    Status = "Error",
+                    Message = "Invalid access/refresh token"
+                });
+            }
+
+            var newAccessToken = _tokenService.GenerateAccessToken(principal.Claims.ToList());
+            var newRefreshToken = _tokenService.GenerateRefreshToken();
+
+            user.RefreshToken = newRefreshToken;
+
+            await _userManager.UpdateAsync(user);
+
+            return Ok(new
+            {
+                AccessToken = new JwtSecurityTokenHandler().WriteToken(newAccessToken)
+            });
+        }
+
+        [HttpPut]
+        [Authorize]
+        [Route("revoke/{username}")]
+        public async Task<IActionResult> RevokeToken(string username)
+        {
+            var user = await _userManager.FindByNameAsync(username);
+
+            if (user is null) 
+            {
+                return NotFound(new ApiResponse 
+                {
+                    Status = "Not found",
+                    Message = $"User '{username}' not found"
+                }); 
+            }
+
+            user.RefreshToken = null;
+
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                return BadRequest(new ApiResponse 
+                {
+                    Status = "Error",
+                    Message = "Failed to revoke token"
+                });
+            }
+
+            return Ok(new ApiResponse 
+            {
+                Status = "Success",
+                Message = $"Token revoked for user '{username}'"
             });
         }
     }
