@@ -53,9 +53,9 @@ namespace API.Services
             var tokenDescriptor = new SecurityTokenDescriptor()
             {
                 Subject = new ClaimsIdentity(claims),
-                Issuer = _config["JWT:Issuer"],
-                Audience = _config["JWT:Audience"],
-                Expires = DateTime.UtcNow.AddMinutes(Convert.ToDouble(_config["JWT:TokenValidInMinutes"] ?? "30")),
+                Issuer = _config["JWT:ValidIssuer"],
+                Audience = _config["JWT:ValidAudience"],
+                Expires = DateTime.UtcNow.AddMinutes(Convert.ToDouble(_config["JWT:TokenValidityInMinutes"] ?? "30")),
                 SigningCredentials = signingCredentials
             };
 

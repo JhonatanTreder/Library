@@ -19,7 +19,7 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles = "user,librarian,admin")]
         public async Task<IActionResult> Get([FromQuery] BookFilterDTO bookDTO)
         {
             var books = await _bookRepository.GetBooksAsync(bookDTO);
@@ -42,7 +42,7 @@ namespace API.Controllers
         }
 
         [HttpGet("{id}")]
-        [Authorize]
+        [Authorize(Roles = "user,librarian,admin")]
         public async Task<IActionResult> Get(int id)
         {
             var book = await _bookRepository.GetBookByIdAsync(id);
@@ -65,7 +65,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "librarian")]
         public async Task<IActionResult> Post([FromBody] CreateBookDTO bookDTO)
         {
             var book = await _bookRepository.AddBookAsync(bookDTO);
@@ -88,7 +88,7 @@ namespace API.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize]
+        [Authorize(Roles = "librarian")]
         public async Task<IActionResult> Update(int id, [FromBody] BookUpdateDTO bookUpdateDTO)
         {
             var updated = await _bookRepository.UpdateBookAsync(id, bookUpdateDTO);
@@ -106,7 +106,7 @@ namespace API.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize]
+        [Authorize(Roles = "librarian")]
         public async Task<IActionResult> Delete(int id)
         {
             var deleted = await _bookRepository.DeleteBookAsync(id);

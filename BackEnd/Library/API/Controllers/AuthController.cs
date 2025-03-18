@@ -100,6 +100,13 @@ namespace API.Controllers
 
             var result = await _userManager.CreateAsync(user, userRegisterDTO.Password);
 
+            if (!await _roleManager.RoleExistsAsync("user"))
+            {
+                await _roleManager.CreateAsync(new IdentityRole("user"));
+            }
+
+            await _userManager.AddToRoleAsync(user, "user");
+
             if (!result.Succeeded)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError,
@@ -173,7 +180,7 @@ namespace API.Controllers
         }
 
         [HttpPut]
-        [Authorize]
+        [Authorize(Roles = "user,librarian,admin")]
         [Route("revoke/{username}")]
         public async Task<IActionResult> RevokeToken(string username)
         {
