@@ -2,6 +2,7 @@
 using API.DTO.Event;
 using API.Models;
 using API.Repositories.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 
@@ -16,19 +17,34 @@ namespace API.Repositories
             _context = context;
         }
 
-        public async Task<Event> AddEventAsync(Event _event)
+        public async Task<Event?> AddEventAsync(EventCreateDTO _event)
         {
-            await _context.AddAsync(_event);
+            if (_event is null)
+            {
+                return null;
+            }
+
+            var newEvent = new Event
+            {
+                Title = _event.Title,
+                Description = _event.Description,
+                TargetAudience = _event.TargetAudience,
+                Location = _event.Location,
+                StartDate = _event.StartDate,
+                EndDate = _event.EndDate
+            };
+
+            await _context.AddAsync(newEvent);
             await _context.SaveChangesAsync();
 
-            return _event;
+            return newEvent;
         }
 
         public async Task<bool> DeleteEventAsync(int id)
         {
             var _event = await _context.Events.FindAsync(id);
 
-            if(_event is null)
+            if (_event is null)
             {
                 return false;
             }
@@ -71,7 +87,7 @@ namespace API.Repositories
         {
             var _event = await _context.Events.FindAsync(id);
 
-            if(_event is null)
+            if (_event is null)
             {
                 return false;
             }

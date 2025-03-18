@@ -60,8 +60,9 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     .AddDefaultTokenProviders();
 //------------------------------------------------------
 
-//Implementando o serviço de Token JWT na aplicação.
+//Implementando os serviços na aplicação.
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IEventRepository, EventRepository>();
 
 var secrectKey = builder.Configuration["JWT:SecretKey"] 
     ?? throw new ArgumentException("Invalid secret key!");

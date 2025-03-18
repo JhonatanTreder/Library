@@ -60,7 +60,7 @@ namespace API.Controllers
             {
                 Status = "Ok",
                 Data = book,
-                Message = "Livro localizado com sucesso"
+                Message = $"Livro de id '{id}' localizado com sucesso"
             });
         }
 

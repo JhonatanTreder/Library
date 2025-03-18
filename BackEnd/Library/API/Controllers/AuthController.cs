@@ -72,7 +72,11 @@ namespace API.Controllers
                 });
             }
 
-            return Unauthorized();
+            return Unauthorized(new ApiResponse 
+            {
+                Status = "Error",
+                Message = "Usuário não autorizado"
+            });
         }
 
         [HttpPost]
@@ -87,7 +91,16 @@ namespace API.Controllers
                 new ApiResponse
                 {
                     Status = "Error",
-                    Message = "User already exists"
+                    Message = "Já existe um usuário com este email"
+                });
+            }
+
+            if (userRegisterDTO.Password.Length < 6)
+            {
+                return BadRequest(new ApiResponse 
+                {
+                    Status = "Error",
+                    Message = "A quantidade de caracteres para a senha é de no mínimo 6"
                 });
             }
 
@@ -113,7 +126,7 @@ namespace API.Controllers
                 new ApiResponse
                 {
                     Status = "Error",
-                    Message = "User creation failed"
+                    Message = "Falha ao criar um usuário"
                 });
             }
 
@@ -121,7 +134,7 @@ namespace API.Controllers
             new ApiResponse
             {
                 Status = "Success",
-                Message = "User created successfully!"
+                Message = "Usuário criado com sucesso!"
             });
         }
 
@@ -134,7 +147,7 @@ namespace API.Controllers
                 return BadRequest(new ApiResponse
                 {
                     Status = "Error",
-                    Message = "Invalid client request"
+                    Message = "Requisição inválida do cliente"
                 });
             }
 
@@ -148,7 +161,7 @@ namespace API.Controllers
                 return BadRequest(new ApiResponse
                 {
                     Status = "Error",
-                    Message = "Invalid access/refresh token"
+                    Message = "access/refresh token inválido"
                 });
             }
 
@@ -156,13 +169,13 @@ namespace API.Controllers
 
             var user = await _userManager.FindByNameAsync(username!);
 
-            if (user is null || user.RefreshToken != refreshToken 
+            if (user is null || user.RefreshToken != refreshToken
                              || user.RefreshTokenExpiryTime <= DateTime.Now)
             {
-                return BadRequest(new ApiResponse 
+                return BadRequest(new ApiResponse
                 {
                     Status = "Error",
-                    Message = "Invalid access/refresh token"
+                    Message = "access/refresh token inválido"
                 });
             }
 
@@ -180,19 +193,19 @@ namespace API.Controllers
         }
 
         [HttpPut]
-        [Authorize(Roles = "user,librarian,admin")]
+        [Authorize()]
         [Route("revoke/{username}")]
         public async Task<IActionResult> RevokeToken(string username)
         {
             var user = await _userManager.FindByNameAsync(username);
 
-            if (user is null) 
+            if (user is null)
             {
-                return NotFound(new ApiResponse 
+                return NotFound(new ApiResponse
                 {
                     Status = "Not found",
-                    Message = $"User '{username}' not found"
-                }); 
+                    Message = $"Usuário '{username}' não encontrado"
+                });
             }
 
             user.RefreshToken = null;
@@ -201,17 +214,17 @@ namespace API.Controllers
 
             if (!result.Succeeded)
             {
-                return BadRequest(new ApiResponse 
+                return BadRequest(new ApiResponse
                 {
                     Status = "Error",
-                    Message = "Failed to revoke token"
+                    Message = "Falha ao revogar o token"
                 });
             }
 
-            return Ok(new ApiResponse 
+            return Ok(new ApiResponse
             {
                 Status = "Success",
-                Message = $"Token revoked for user '{username}'"
+                Message = $"Token revogado com sucesso para o usuário '{username}'"
             });
         }
     }

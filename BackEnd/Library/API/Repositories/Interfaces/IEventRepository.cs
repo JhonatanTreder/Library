@@ -5,7 +5,7 @@ namespace API.Repositories.Interfaces
 {
     public interface IEventRepository
     {
-        Task<Event> AddEventAsync(Event _event);
+        Task<Event?> AddEventAsync(EventCreateDTO _eventCreateDTO);
         Task<IEnumerable<Event>> GetEventsAsync(EventFilterDTO eventFilterDTO);
         Task<Event?> GetEventByIdAsync(int id);
         Task<bool> UpdateEventAsync(int id, EventUpdateDTO updateEventDTO);
