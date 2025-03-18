@@ -14,8 +14,23 @@ namespace API.Repositories
             _context = context;
         }
 
-        public async Task<Loan> AddLoanAsync(Loan loan)
+        public async Task<Loan?> AddLoanAsync(CreateLoanDTO createLoanDTO)
         {
+            if (createLoanDTO is null)
+            {
+                return null;
+            }
+
+            var loan = new Loan
+            {
+                UserId = createLoanDTO.UserId,
+                BookId = createLoanDTO.BookId,
+                LibrarianId = createLoanDTO.LibrarianId,
+                LoanDate = createLoanDTO.LoanDate,
+                ReturnDate = createLoanDTO.ReturnDate,
+                Status = createLoanDTO.Status
+            };
+
             await _context.AddAsync(loan);
             await _context.SaveChangesAsync();
 
@@ -42,7 +57,7 @@ namespace API.Repositories
             return await _context.Loans.FindAsync();
         }
 
-        public async Task<IEnumerable<Loan>> GetLoansAsync(LoanFilterDTO loanFilterDTO)
+        public async Task<IEnumerable<Loan?>> GetLoansAsync(LoanFilterDTO loanFilterDTO)
         {
             var query = _context.Loans.AsQueryable();
 

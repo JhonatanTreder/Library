@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using API.Enum;
+using System.ComponentModel.DataAnnotations;
 
 namespace API.DTO.Loan
 {
@@ -20,5 +21,9 @@ namespace API.DTO.Loan
         [Required(ErrorMessage = "A data de devolução é obrigatória")]
         [DataType(DataType.Date, ErrorMessage = "A data de devolução deve estar no formato válido de data")]
         public DateTime ReturnDate { get; set; }
+
+        [Required(ErrorMessage = "O status do empréstimo é obrigatório")]
+        [EnumDataType(typeof(LoanStatus), ErrorMessage = "O status de empréstimo deve ser um valor válido")]
+        public LoanStatus Status { get; set; }
     }
 }
