@@ -2,9 +2,12 @@
 using API.DTO.Authentication;
 using API.DTO.Login;
 using API.DTO.User;
+using API.Enum;
 using API.Models;
 using API.Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace API.Repositories
 {
@@ -50,9 +53,27 @@ namespace API.Repositories
             return result.Succeeded;
         }
 
-        public async Task<User> GetUserAsync()
+        public async Task<IEnumerable<UserFilterDTO?>> GetUsersAsync(UserFilterDTO userDTO)
         {
-            throw new NotImplementedException();
+            var query = _userManager.Users.AsQueryable();
+
+            if (!string.IsNullOrEmpty(userDTO.Name))
+                query = query.Where(n => n.Name == userDTO.Name);
+
+            if (!string.IsNullOrEmpty(userDTO.Email))
+                query = query.Where(n => n.Email == userDTO.Email);
+
+            if (userDTO.UserType != null)
+                query = query.Where(t => t.UserType == userDTO.UserType);
+
+            var users = await query.ToListAsync();
+
+            return users.Select(u => new UserFilterDTO 
+            {
+                Name = u.Name,
+                Email = u.Email,
+                UserType = u.UserType
+            });
         }
 
         public async Task<ApplicationUser?> GetUserByIdAsync(string id)
