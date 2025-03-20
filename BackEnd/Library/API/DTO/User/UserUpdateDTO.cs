@@ -12,7 +12,7 @@ namespace API.DTO.User
         
         [Required]
         [StringLength(20, MinimumLength = 3, ErrorMessage = "A senha deve conter de 3 a 20 caracteres")]
-        public string? Password { get; set; } = string.Empty;
+        public string? Password { get; set; }
 
         [Phone(ErrorMessage = "O número de telefone deve estar em um formator válido")]
         public string? PhoneNumber { get; set; }

@@ -27,6 +27,5 @@ namespace API.Models
         public UserType UserType { get; set; }
         public ICollection<Loan>? Loans { get; set; }
         public ICollection<Event>? Events { get; set; }
-
     }
 }
