@@ -37,7 +37,7 @@ namespace API.Controllers
             {
                 Status = "Ok",
                 Data = books,
-                Message = "Livro(s) encontrado(s) com sucesso"
+                Message = "Livros encontrados com sucesso"
             });
         }
 
@@ -89,7 +89,7 @@ namespace API.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = "librarian")]
-        public async Task<IActionResult> Update(int id, [FromBody] BookUpdateDTO bookUpdateDTO)
+        public async Task<IActionResult> Put(int id, [FromBody] BookUpdateDTO bookUpdateDTO)
         {
             var updated = await _bookRepository.UpdateBookAsync(id, bookUpdateDTO);
 
@@ -97,7 +97,7 @@ namespace API.Controllers
             {
                 return NotFound(new ApiResponse 
                 {
-                    Status = "Not found",
+                    Status = "Not Found",
                     Message = $"Livro de id '{id}' não encontrado"
                 });
             }
@@ -115,7 +115,7 @@ namespace API.Controllers
             {
                 return NotFound(new ApiResponse 
                 {
-                    Status = "Not found",
+                    Status = "Not Found",
                     Message = $"Livro de id '{id}' não encontrado"
                 });
             }

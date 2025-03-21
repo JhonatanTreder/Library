@@ -13,6 +13,9 @@ namespace API.DTO.Login
         [EmailAddress(ErrorMessage = "O e-mail deve estar em um formato válido")]
         public string Email { get; set; } = string.Empty;
 
+        [Phone(ErrorMessage = "O número de telefone deve estar em um formato válido")]
+        public string? PhoneNumber { get; set; } = string.Empty;
+
         [Required(ErrorMessage = "A senha é obrigatória.")]
         [StringLength(20, MinimumLength = 3, ErrorMessage = "A senha deve conter de 3 a 12 caracteres")]
         public string Password { get; set; } = string.Empty;

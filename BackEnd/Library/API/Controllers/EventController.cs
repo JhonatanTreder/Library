@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class EventController : ControllerBase
     {
@@ -29,7 +29,7 @@ namespace API.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
                 {
                     Status = "Internal Server Error",
-                    Message = "Erro ao tentar criar um evento"
+                    Message = "Falha ao tentar criar um evento"
                 });
             }
 
@@ -89,11 +89,11 @@ namespace API.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = "librarian")]
-        public async Task<IActionResult> Update(int id, [FromBody] EventUpdateDTO eventUpdateDTO)
+        public async Task<IActionResult> Put(int id, [FromBody] EventUpdateDTO eventUpdateDTO)
         {
             var updated = await _eventRepository.UpdateEventAsync(id, eventUpdateDTO);
 
-            if (!updated)
+            if (updated is false)
             {
                 return NotFound(new ApiResponse 
                 {
@@ -102,11 +102,7 @@ namespace API.Controllers
                 });
             }
 
-            return Ok(new ApiResponse
-            {
-                Status = "Success",
-                Message = $"O evento de id '{id}' foi atualizado com sucesso"
-            });
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
@@ -115,7 +111,7 @@ namespace API.Controllers
         {
             var deleted = await _eventRepository.DeleteEventAsync(id);
 
-            if (!deleted)
+            if (deleted is false)
             {
                 return NotFound(new ApiResponse 
                 {
@@ -124,11 +120,7 @@ namespace API.Controllers
                 });
             }
 
-            return Ok(new ApiResponse
-            {
-                Status = "Success",
-                Message = $"O evento de id '{id}' foi deletado com sucesso"
-            });
+            return NoContent();
         }
     }
 }

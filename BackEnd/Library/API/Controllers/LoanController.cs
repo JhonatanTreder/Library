@@ -8,7 +8,7 @@ using System.Reflection.Metadata.Ecma335;
 
 namespace API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class LoanController : ControllerBase
     {
@@ -36,13 +36,14 @@ namespace API.Controllers
             return Ok(new ApiResponse
             {
                 Status = "Ok",
+                Data = loan,
                 Message = $"O empréstimo de id '{id}' foi encontrado com sucesso"
             });
         }
 
         [HttpGet]
         [Authorize(Roles = "user,librarian,admin")]
-        public async Task<IActionResult> Get([FromBody] LoanFilterDTO loanFilterDTO)
+        public async Task<IActionResult> Get([FromQuery] LoanFilterDTO loanFilterDTO)
         {
             var loans = await _loanRepository.GetLoansAsync(loanFilterDTO);
 
@@ -58,17 +59,18 @@ namespace API.Controllers
             return Ok(new ApiResponse
             {
                 Status = "Ok",
+                Data = loans,
                 Message = "Empréstimos encontrados com sucesso"
             });
         }
 
         [HttpPut("{id}")]
         [Authorize(Roles = "librarian")]
-        public async Task<IActionResult> Update(int id, [FromBody] LoanUpdateDTO loanUpdateDTO)
+        public async Task<IActionResult> Put(int id, [FromBody] LoanUpdateDTO loanUpdateDTO)
         {
             var updated = await _loanRepository.UpdateLoanAsync(id, loanUpdateDTO);
 
-            if (!updated)
+            if (updated is false)
             {
                 return NotFound(new ApiResponse
                 {
@@ -91,7 +93,7 @@ namespace API.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
                 {
                     Status = "Internal Server Error",
-                    Message = "Erro inesperado ao criar um empréstimo"
+                    Message = "Erro inesperado ao tentar criar um empréstimo"
                 });
             }
 
@@ -109,7 +111,7 @@ namespace API.Controllers
         {
             var deleted = await _loanRepository.DeleteLoanAsync(id);
 
-            if (!deleted)
+            if (deleted is false)
             {
                 return NotFound(new ApiResponse
                 {

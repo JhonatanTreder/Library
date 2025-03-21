@@ -35,6 +35,7 @@ namespace API.Repositories
             };
 
             await _context.AddAsync(book);
+
             await _context.SaveChangesAsync();
 
             return book;

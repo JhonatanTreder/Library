@@ -8,11 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
+
         public UserController(IUserRepository userRepository)
         {
             _userRepository = userRepository;
@@ -33,7 +34,7 @@ namespace API.Controllers
 
             var users = await _userRepository.GetUsersAsync(userFilterDTO);
 
-            if (users == null || !users.Any())
+            if (users is null || !users.Any())
             {
                 return NotFound( new ApiResponse
                 {

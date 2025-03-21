@@ -1,6 +1,7 @@
 ﻿using API.DTO.Login;
 using API.DTO.Responses;
 using API.DTO.Token;
+using API.DTO.User;
 using API.Enum;
 using API.Models;
 using API.Services.Interfaces;
@@ -156,6 +157,13 @@ namespace API.Controllers
             new ApiResponse
             {
                 Status = "Ok",
+                Data = new UserDTO
+                {
+                    Name = userRegisterDTO.Name,
+                    Email = userRegisterDTO.Email,
+                    PhoneNumber = userRegisterDTO.PhoneNumber,
+                    UserType = UserType.User
+                },
                 Message = "Usuário criado com sucesso!"
             });
         }
@@ -183,7 +191,7 @@ namespace API.Controllers
                 return BadRequest(new ApiResponse
                 {
                     Status = "Bad Request",
-                    Message = "access/refresh token inválido"
+                    Message = "Access/refresh token inválido"
                 });
             }
 
@@ -255,11 +263,7 @@ namespace API.Controllers
                 });
             }
 
-            return Ok(new ApiResponse
-            {
-                Status = "Ok",
-                Message = $"Token revogado com sucesso para o usuário '{username}'"
-            });
+            return NoContent();
         }
     }
 }
