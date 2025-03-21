@@ -1,6 +1,7 @@
 ﻿using API.DTO.Login;
 using API.DTO.Responses;
 using API.DTO.Token;
+using API.Enum;
 using API.Models;
 using API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -17,9 +18,9 @@ namespace API.Controllers
     public class AuthController : ControllerBase
     {
         private readonly ITokenService _tokenService;
-        private UserManager<ApplicationUser> _userManager;
-        private RoleManager<IdentityRole> _roleManager;
-        private IConfiguration _configuration;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IConfiguration _configuration;
 
         public AuthController(ITokenService tokenService,
             UserManager<ApplicationUser> userManager,
@@ -46,7 +47,9 @@ namespace API.Controllers
                 {
                     new Claim(ClaimTypes.Name, user.UserName!),
                     new Claim(ClaimTypes.Email, user.Email!),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Role, user.UserType.ToString())
                 };
 
                 foreach (var userRole in userRoles)
@@ -72,9 +75,9 @@ namespace API.Controllers
                 });
             }
 
-            return Unauthorized(new ApiResponse 
+            return Unauthorized(new ApiResponse
             {
-                Status = "Error",
+                Status = "Unauthorized",
                 Message = "Usuário não autorizado"
             });
         }
@@ -90,16 +93,16 @@ namespace API.Controllers
                 return StatusCode(StatusCodes.Status409Conflict,
                 new ApiResponse
                 {
-                    Status = "Error",
+                    Status = "Conflict",
                     Message = "Já existe um usuário com este email"
                 });
             }
 
             if (userRegisterDTO.Password.Length < 6)
             {
-                return BadRequest(new ApiResponse 
+                return BadRequest(new ApiResponse
                 {
-                    Status = "Error",
+                    Status = "Bad Request",
                     Message = "A quantidade de caracteres para a senha é de no mínimo 6"
                 });
             }
@@ -113,27 +116,46 @@ namespace API.Controllers
 
             var result = await _userManager.CreateAsync(user, userRegisterDTO.Password);
 
-            if (!await _roleManager.RoleExistsAsync("user"))
-            {
-                await _roleManager.CreateAsync(new IdentityRole("user"));
-            }
-
-            await _userManager.AddToRoleAsync(user, "user");
-
             if (!result.Succeeded)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                new ApiResponse
+                return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
                 {
-                    Status = "Error",
+                    Status = "Internal Server Error",
                     Message = "Falha ao criar um usuário"
+                });
+            }
+
+            var roleName = UserType.User.ToString();
+
+            if (!await _roleManager.RoleExistsAsync(roleName))
+            {
+                var roleResult = await _roleManager.CreateAsync(new IdentityRole(roleName));
+
+                if (!roleResult.Succeeded)
+                {
+                    return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                    {
+                        Status = "Internal Server Error",
+                        Message = "Falha ao criar a role do usuário"
+                    });
+                }
+            }
+
+            var roleAssignmentResult = await _userManager.AddToRoleAsync(user, roleName);
+
+            if (!roleAssignmentResult.Succeeded)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Message = "Falha ao associar um usuário à role"
                 });
             }
 
             return Ok(
             new ApiResponse
             {
-                Status = "Success",
+                Status = "Ok",
                 Message = "Usuário criado com sucesso!"
             });
         }
@@ -146,7 +168,7 @@ namespace API.Controllers
             {
                 return BadRequest(new ApiResponse
                 {
-                    Status = "Error",
+                    Status = "Bad Request",
                     Message = "Requisição inválida do cliente"
                 });
             }
@@ -160,7 +182,7 @@ namespace API.Controllers
             {
                 return BadRequest(new ApiResponse
                 {
-                    Status = "Error",
+                    Status = "Bad Request",
                     Message = "access/refresh token inválido"
                 });
             }
@@ -169,13 +191,15 @@ namespace API.Controllers
 
             var user = await _userManager.FindByNameAsync(username!);
 
-            if (user is null || user.RefreshToken != refreshToken
-                             || user.RefreshTokenExpiryTime <= DateTime.Now)
+            if (user is null ||
+                string.IsNullOrEmpty(user.RefreshToken) ||
+                user.RefreshToken != refreshToken ||
+                user.RefreshTokenExpiryTime <= DateTime.UtcNow)
             {
                 return BadRequest(new ApiResponse
                 {
-                    Status = "Error",
-                    Message = "access/refresh token inválido"
+                    Status = "Bad Request",
+                    Message = "Access/Refresh token inválido"
                 });
             }
 
@@ -184,11 +208,21 @@ namespace API.Controllers
 
             user.RefreshToken = newRefreshToken;
 
-            await _userManager.UpdateAsync(user);
+            var updateResult = await _userManager.UpdateAsync(user);
+
+            if (!updateResult.Succeeded)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Message = "Falha ao atualizar um usuário"
+                });
+            }
 
             return Ok(new
             {
-                AccessToken = new JwtSecurityTokenHandler().WriteToken(newAccessToken)
+                AccessToken = new JwtSecurityTokenHandler().WriteToken(newAccessToken),
+                RefeshToken = newRefreshToken
             });
         }
 
@@ -203,7 +237,7 @@ namespace API.Controllers
             {
                 return NotFound(new ApiResponse
                 {
-                    Status = "Not found",
+                    Status = "Not Found",
                     Message = $"Usuário '{username}' não encontrado"
                 });
             }
@@ -216,14 +250,14 @@ namespace API.Controllers
             {
                 return BadRequest(new ApiResponse
                 {
-                    Status = "Error",
+                    Status = "Bad Request",
                     Message = "Falha ao revogar o token"
                 });
             }
 
             return Ok(new ApiResponse
             {
-                Status = "Success",
+                Status = "Ok",
                 Message = $"Token revogado com sucesso para o usuário '{username}'"
             });
         }
