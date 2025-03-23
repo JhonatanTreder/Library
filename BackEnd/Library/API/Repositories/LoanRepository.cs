@@ -1,14 +1,18 @@
 ﻿using API.Context;
 using API.DTO.Loan;
+using API.Enum;
+using API.Enum.Responses.Loan;
 using API.Models;
 using API.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 namespace API.Repositories
 {
     public class LoanRepository : ILoanRepository
     {
         private readonly AppDbContext _context;
+
         public LoanRepository(AppDbContext context)
         {
             _context = context;
@@ -37,24 +41,72 @@ namespace API.Repositories
             return loan;
         }
 
-        public async Task<bool> DeleteLoanAsync(int id)
+        public async Task<LoanResponse> DeleteLoanAsync(int id)
         {
             var loan = await _context.Loans.FindAsync(id);
 
             if (loan is null)
-            {
-                return false;
-            }
+                return LoanResponse.NullObject;
 
             _context.Remove(loan);
             await _context.SaveChangesAsync();
 
-            return true;
+            return LoanResponse.Success;
         }
 
         public async Task<Loan?> GetLoanByIdAsync(int id)
         {
             return await _context.Loans.FindAsync(id);
+        }
+
+        public async Task<LoanResponse> IsBookAvailableAsync(int id)
+        {
+            var bookAvailable =  !await _context.Loans.AnyAsync(l => l.BookId == id && l.Status == LoanStatus.InProgress);
+
+            if (bookAvailable is false)
+                return LoanResponse.BookNotAvailable;
+
+            return LoanResponse.Success;
+        }
+
+        public async Task<LoanResponse> RegisterReturnAsync(int loanId)
+        {
+            var loan = await _context.Loans.FindAsync(loanId);
+
+            if (loan is null)
+                return LoanResponse.NullObject;
+
+            if (loan.Status != LoanStatus.InProgress)
+                return LoanResponse.InvalidStatus;
+
+            loan.Status = LoanStatus.Finished;
+            loan.ReturnDate = DateTime.UtcNow;
+
+            _context.Update(loan);
+            await _context.SaveChangesAsync();
+
+            return LoanResponse.Success;
+        }
+
+        public async Task<LoanResponse> ExtendLoanAsync(int id, DateTime newDate)
+        {
+            var loan = await GetLoanByIdAsync(id);
+
+            if (loan is null)
+                return LoanResponse.NullObject;
+
+            if (loan.Status != LoanStatus.InProgress)
+                return LoanResponse.InvalidStatus;
+
+            if (newDate > loan.ReturnDate)
+                return LoanResponse.InvalidDate;
+
+            loan.ReturnDate = newDate;
+            _context.Loans.Update(loan);
+
+            await _context.SaveChangesAsync();
+
+            return LoanResponse.Success;
         }
 
         public async Task<IEnumerable<Loan?>> GetLoansAsync(LoanFilterDTO loanFilterDTO)
@@ -67,26 +119,27 @@ namespace API.Repositories
             if (loanFilterDTO.UserId.HasValue)
                 query = query.Where(i => i.UserId == loanFilterDTO.UserId);
 
+            if (loanFilterDTO.BookId.HasValue)
+                query = query.Where(i => i.BookId == loanFilterDTO.BookId);
+
             if (loanFilterDTO.LibrarianId.HasValue)
                 query = query.Where(i => i.LibrarianId == loanFilterDTO.LibrarianId);
 
             if (loanFilterDTO.LoanDate.HasValue)
                 query = query.Where(l => l.LoanDate == loanFilterDTO.LoanDate);
 
-            if (loanFilterDTO.LoanDate.HasValue)
+            if (loanFilterDTO.ReturnDate.HasValue)
                 query = query.Where(l => l.ReturnDate == loanFilterDTO.ReturnDate);
 
             return await query.ToListAsync();
         }
 
-        public async Task<bool> UpdateLoanAsync(int id, LoanUpdateDTO loanUpdateDTO)
+        public async Task<LoanResponse> UpdateLoanAsync(int id, LoanUpdateDTO loanUpdateDTO)
         {
-            var loan = await _context.Loans.FindAsync(id);
+            var loan = await GetLoanByIdAsync(id);
 
             if (loan is null)
-            {
-                return false;
-            }
+                return LoanResponse.NullObject;
 
             loan.ReturnDate = loanUpdateDTO.ReturnDate;
             loan.Status = loanUpdateDTO.Status;
@@ -94,7 +147,7 @@ namespace API.Repositories
             _context.Update(loan);
             await _context.SaveChangesAsync();
 
-            return true;
+            return LoanResponse.Success;
         }
     }
 }
