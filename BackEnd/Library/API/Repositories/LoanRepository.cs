@@ -1,7 +1,7 @@
 ﻿using API.Context;
 using API.DTO.Loan;
 using API.Enum;
-using API.Enum.Responses.Loan;
+using API.Enum.Responses;
 using API.Models;
 using API.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -32,7 +32,7 @@ namespace API.Repositories
                 LibrarianId = createLoanDTO.LibrarianId,
                 LoanDate = createLoanDTO.LoanDate,
                 ReturnDate = createLoanDTO.ReturnDate,
-                Status = createLoanDTO.Status
+                Status = LoanStatus.Pending
             };
 
             await _context.AddAsync(loan);
@@ -47,6 +47,10 @@ namespace API.Repositories
 
             if (loan is null)
                 return LoanResponse.NullObject;
+
+            if (loan.Status == LoanStatus.InProgress ||
+                loan.Status == LoanStatus.Pending)
+                return LoanResponse.CannotDelete;
 
             _context.Remove(loan);
             await _context.SaveChangesAsync();
@@ -141,13 +145,36 @@ namespace API.Repositories
             if (loan is null)
                 return LoanResponse.NullObject;
 
+            if (loan.Status == LoanStatus.Finished && loanUpdateDTO.Status != LoanStatus.Canceled)
+                return LoanResponse.InvalidStatusTransition;
+
+            if (loan.Status == LoanStatus.Canceled && loanUpdateDTO.Status != LoanStatus.Finished)
+                return LoanResponse.InvalidStatusTransition;
+
+            if (loanUpdateDTO.ReturnDate < DateTime.Today && loanUpdateDTO.Status != LoanStatus.Finished)
+                return LoanResponse.InvalidReturnDate;
+
             loan.ReturnDate = loanUpdateDTO.ReturnDate;
             loan.Status = loanUpdateDTO.Status;
+
+            if (loan.Status == LoanStatus.Finished)
+            {
+                var book = await _context.Books.FindAsync(loan.BookId);
+
+                if (book is null)
+                {
+                    return LoanResponse.BookNotFound;
+                }
+
+                book.Status = BookStatus.Available;
+                _context.Update(book);
+            }
 
             _context.Update(loan);
             await _context.SaveChangesAsync();
 
             return LoanResponse.Success;
         }
+
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace API.Enum.Responses.Loan
+﻿namespace API.Enum.Responses
 {
     public enum LoanResponse
     {
@@ -6,9 +6,13 @@
         NotFound,
         InvalidDate,
         InvalidStatus,
+        InvalidReturnDate,
+        InvalidStatusTransition,
+        BookNotFound,
         BookNotAvailable,
         Success,
         AlreadyReturned,
+        CannotDelete,
         CannotExtend,
         StatusUpdated,
         LoanExpired

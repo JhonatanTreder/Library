@@ -33,9 +33,9 @@ namespace API.Models
         [Range(1440, 2999, ErrorMessage = "O ano de publicação deve estar entre 1440 a 2999")]
         public int PublicationYear { get; set; }
 
-        [Required(ErrorMessage = "O status do empréstimo é obrigatório.")]
-        [EnumDataType(typeof(LoanStatus), ErrorMessage = "O status deve estar em um formato válido.")]
-        public LoanStatus Status { get; set; }
+        [Required(ErrorMessage = "O status do livro é obrigatório.")]
+        [EnumDataType(typeof(BookStatus), ErrorMessage = "O status do livro deve estar em um formato válido.")]
+        public BookStatus Status { get; set; }
 
         public ICollection<Loan>? Loans { get; set; }
     }

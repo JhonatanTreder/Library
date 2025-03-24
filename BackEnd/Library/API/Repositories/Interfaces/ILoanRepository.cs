@@ -1,5 +1,5 @@
 ﻿using API.DTO.Loan;
-using API.Enum.Responses.Loan;
+using API.Enum.Responses;
 using API.Models;
 
 namespace API.Repositories.Interfaces

@@ -1,6 +1,7 @@
 ﻿using API.Context;
 using API.DTO.Book;
-using API.DTO.Responses;
+using API.Enum;
+using API.Enum.Responses;
 using API.Models;
 using API.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -31,29 +32,33 @@ namespace API.Repositories
                 PublicationYear = bookDTO.PublicationYear,
                 Publisher = bookDTO.Publisher,
                 Category = bookDTO.Category,
-                Quantity = bookDTO.Quantity
+                Quantity = bookDTO.Quantity,
+                Status = BookStatus.Available
             };
 
             await _context.AddAsync(book);
-
             await _context.SaveChangesAsync();
 
             return book;
         }
 
-        public async Task<bool> DeleteBookAsync(int id)
+        public async Task<BookResponse> DeleteBookAsync(int id)
         {
             var book = await _context.Books.FindAsync(id);
 
-            if(book is null)
-            {
-                return false;
-            }
+            if (book is null)
+                return BookResponse.NullObject;
+
+            var bookInProgress = await _context.Loans
+                .AnyAsync(loan => loan.BookId == book.Id && loan.Status == LoanStatus.InProgress);
+
+            if (bookInProgress is false)
+                return BookResponse.CannotDelete;
 
             _context.Books.Remove(book);
             await _context.SaveChangesAsync();
 
-            return true;
+            return BookResponse.Success;
         }
 
         public async Task<Book?> GetBookByIdAsync(int id)
@@ -83,23 +88,38 @@ namespace API.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<bool> UpdateBookAsync(int id, BookUpdateDTO updateBookDTO)
+        public async Task<IEnumerable<Book?>> GetAvailableBooksAsync()
         {
+            return await _context.Books
+                .Where(book => book.Status != BookStatus.Available)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Book?>> GetBorrowedBooksAsync()
+        {
+            return await _context.Books
+                .Where(book => book.Status == BookStatus.Borrowed)
+                .ToListAsync();
+        }
+
+        public async Task<BookResponse> UpdateBookAsync(int id, BookUpdateDTO updateBookDTO)
+        {
+            if (updateBookDTO is null)
+                return BookResponse.NullObject;
+
             var book = await _context.Books.FindAsync(id);
 
-            if(book is null)
-            {
-                return false;
-            }
+            if (book is null)
+                return BookResponse.NullObject;
 
-            book.Description = updateBookDTO.Description;
-            book.Quantity = updateBookDTO.Quantity;
+            if (!string.IsNullOrWhiteSpace(updateBookDTO.Description))
+                book.Description = updateBookDTO.Description;
 
             if (updateBookDTO.Quantity.HasValue)
             {
                 if (updateBookDTO.Quantity.Value < 1)
                 {
-                    return false;
+                    return BookResponse.InvalidQuantity;
                 }
 
                 book.Quantity = updateBookDTO.Quantity.Value;
@@ -108,7 +128,7 @@ namespace API.Repositories
             _context.Update(book);
             await _context.SaveChangesAsync();
 
-            return true;
+            return BookResponse.Success;
         }
     }
 }
