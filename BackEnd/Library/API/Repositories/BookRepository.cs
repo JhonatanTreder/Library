@@ -47,7 +47,7 @@ namespace API.Repositories
             var book = await _context.Books.FindAsync(id);
 
             if (book is null)
-                return BookResponse.NullObject;
+                return BookResponse.NotFound;
 
             var bookInProgress = await _context.Loans
                 .AnyAsync(loan => loan.BookId == book.Id && loan.Status == LoanStatus.InProgress);
@@ -110,7 +110,7 @@ namespace API.Repositories
             var book = await _context.Books.FindAsync(id);
 
             if (book is null)
-                return BookResponse.NullObject;
+                return BookResponse.NotFound;
 
             if (!string.IsNullOrWhiteSpace(updateBookDTO.Description))
                 book.Description = updateBookDTO.Description;

@@ -1,5 +1,6 @@
 ﻿using API.DTO.Book;
 using API.DTO.Responses;
+using API.Enum.Responses;
 using API.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -26,14 +27,14 @@ namespace API.Controllers
 
             if (books is null || !books.Any())
             {
-                return NotFound(new ApiResponse 
+                return NotFound(new ApiResponse
                 {
                     Status = "Not Found",
                     Message = "Nenhum livro foi encontrado"
                 });
             }
 
-            return Ok(new ApiResponse 
+            return Ok(new ApiResponse
             {
                 Status = "Ok",
                 Data = books,
@@ -64,6 +65,52 @@ namespace API.Controllers
             });
         }
 
+        [HttpGet("available")]
+        [Authorize(Roles = "user,librarian,admin")]
+        public async Task<IActionResult> GetAvailableBooks()
+        {
+            var books = await _bookRepository.GetAvailableBooksAsync();
+
+            if (books is null || !books.Any())
+            {
+                return NotFound(new ApiResponse 
+                {
+                    Status = "Not Found",
+                    Message = "Nenhum livro disponível foi encontrado"
+                });
+            }
+
+            return Ok(new ApiResponse 
+            {
+                Status = "Ok",
+                Data = books,
+                Message = "Livros disponíveis encontrados com sucesso"
+            });
+        }
+
+        [HttpGet("borrowed")]
+        [Authorize(Roles = "user,librarian,admin")]
+        public async Task<IActionResult> GetBorrowedBooks()
+        {
+            var books = await _bookRepository.GetBorrowedBooksAsync();
+
+            if (books is null || !books.Any())
+            {
+                return NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Message = "Nenhum livro emprestado foi encontrado"
+                });
+            }
+
+            return Ok(new ApiResponse
+            {
+                Status = "Ok",
+                Data = books,
+                Message = "Livros emprestados encontrados com sucesso"
+            });
+        }
+
         [HttpPost]
         [Authorize(Roles = "librarian")]
         public async Task<IActionResult> Post([FromBody] CreateBookDTO bookDTO)
@@ -91,36 +138,67 @@ namespace API.Controllers
         [Authorize(Roles = "librarian")]
         public async Task<IActionResult> Put(int id, [FromBody] BookUpdateDTO bookUpdateDTO)
         {
-            var updated = await _bookRepository.UpdateBookAsync(id, bookUpdateDTO);
+            var response = await _bookRepository.UpdateBookAsync(id, bookUpdateDTO);
 
-            if (updated is false)
+            return response switch
             {
-                return NotFound(new ApiResponse 
-                {
-                    Status = "Not Found",
-                    Message = $"Livro de id '{id}' não encontrado"
-                });
-            }
+                BookResponse.Success => NoContent(),
 
-            return NoContent();
+                BookResponse.InvalidQuantity => BadRequest(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Message = "A quantidade de livros deve ser maior que zero"
+                }),
+
+                BookResponse.NotFound => NotFound(new ApiResponse
+                {
+                    Status = "NotFound",
+                    Message = $"O livro de id '{id}' não foi encontrado"
+                }),
+
+                BookResponse.NullObject => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Message = "O livro não pode ser nulo"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Message = "Erro inesperado ao atualizar o livro"
+                })
+            };
         }
+
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "librarian")]
         public async Task<IActionResult> Delete(int id)
         {
-            var deleted = await _bookRepository.DeleteBookAsync(id);
+            var response = await _bookRepository.DeleteBookAsync(id);
 
-            if (deleted is false)
+            return response switch
             {
-                return NotFound(new ApiResponse 
-                {
-                    Status = "Not Found",
-                    Message = $"Livro de id '{id}' não encontrado"
-                });
-            }
+                BookResponse.Success => NoContent(),
 
-            return NoContent();
+                BookResponse.NotFound => NotFound(new ApiResponse
+                {
+                    Status = "NotFound",
+                    Message = $"O livro de id '{id}' não foi encontrado"
+                }),
+
+                BookResponse.CannotDelete => Conflict( new ApiResponse 
+                {
+                    Status = "Conlfict",
+                    Message = "Não é possível deletar um livro que está em progresso"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse 
+                {
+                    Status = "Internal Server Error",
+                    Message = "Erro inesperado ao deletar um livro"
+                })
+            };
         }
     }
 }
