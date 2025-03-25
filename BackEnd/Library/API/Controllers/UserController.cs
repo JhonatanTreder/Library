@@ -1,9 +1,9 @@
 ﻿using API.DTO.Responses;
 using API.DTO.User;
+using API.Enum.Responses;
 using API.Models;
 using API.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -93,27 +93,36 @@ namespace API.Controllers
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete(string id)
         {
-            if (string.IsNullOrWhiteSpace(id))
+            var response = await _userRepository.DeleteUserAsync(id);
+
+            return response switch 
             {
-                return BadRequest(new ApiResponse
+                UserResponse.Success => NoContent(),
+
+                UserResponse.InvalidId => BadRequest(new ApiResponse
                 {
                     Status = "Bad Request",
-                    Message = "O id do usuário não pode ser nulo ou vazio"
-                });
-            }
+                    Message = "O id do usuário não pode ser nulo ou conter espaços em brancos"
+                }),
 
-            var deleted = await _userRepository.DeleteUserAsync(id);
-
-            if (deleted is false)
-            {
-                return NotFound(new ApiResponse
+                UserResponse.NotFound => NotFound(new ApiResponse 
                 {
                     Status = "Not Found",
-                    Message = $"Usuário de id '{id}' não encontrado"
-                });
-            }
+                    Message = "O usuário de id '{id}' não foi encontrado"
+                }),
 
-            return NoContent();
+                UserResponse.Failed => Conflict(new ApiResponse
+                {
+                    Status = "Conflict",
+                    Message = $"Erro ao tentar deletar o usuário de id '{id}'"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Message = "Erro inesperado ao tentar deletar o usuário"
+                })
+            };
         }
 
         [HttpPut("{id}")]
@@ -129,45 +138,91 @@ namespace API.Controllers
                 });
             }
 
-            var updated = await _userRepository.UpdateUserAsync(id, userUpdateDTO);
+            var response = await _userRepository.UpdateUserAsync(id, userUpdateDTO);
 
-            if (updated is false)
+            return response switch 
             {
-                return NotFound(new ApiResponse
+                UserResponse.Success => NoContent(),
+
+                UserResponse.NotFound => NotFound(new ApiResponse
                 {
                     Status = "Not Found",
-                    Message = $"Usuário de id '{id}' não encontrado"
-                });
-            }
+                    Message = $"O usuário de id '{id}' não foi encontrado"
+                }),
 
-            return NoContent();
+                UserResponse.NullObject => BadRequest(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Message = "O usuário não pode ser nulo"
+                }),
+
+                UserResponse.FailedToResetPassword => Conflict(new ApiResponse
+                {
+                    Status = "Conflict",
+                    Message = "Erro inesperado ao tentar atualizar a senha do usuário"
+                }),
+
+                UserResponse.Failed => Conflict(new ApiResponse
+                {
+                    Status = "Conflict",
+                    Message = "Erro inesperado ao tentar atualizar o usuário"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Message = "Erro inesperado ao tentar atualizar um usuário"
+                })
+            };
         }
 
         [HttpPut("{id}/role/{newRole}")]
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> Put(string id, string newRole)
         {
-            if (string.IsNullOrWhiteSpace(id) || string.IsNullOrEmpty(newRole)) 
-            {
-                return BadRequest(new ApiResponse 
+            var response = await _userRepository.UpdateUserRoleAsync(id, newRole);
+                
+                return response switch 
                 {
-                    Status = "Bad Request",
-                    Message = "O id do usuário ou a nova role não podem ser nulos ou vazios"
-                });
-            }
+                    UserResponse.Success => NoContent(),
 
-            var updated = await _userRepository.UpdateUserRoleAsync(id, newRole);
+                    UserResponse.AlreadyInRole => NoContent(),
 
-            if (!updated)
-            {
-                return NotFound(new ApiResponse 
-                {
-                    Status = "Internal Server Error",
-                    Message = $"Usuário com id '{id}' não encontrado ou falha ao atualizar uma role"
-                });
-            }
+                    UserResponse.InvalidId => BadRequest(new ApiResponse
+                    {
+                        Status = "Bad Request",
+                        Message = "O id do usuário não pode ser nulo ou conter espaços em branco"
+                    }),
 
-            return NoContent();
+                    UserResponse.InvalidRole => BadRequest(new ApiResponse
+                    {
+                        Status = "Bad Request",
+                        Message = "A role do usuário não pode ser nula ou vazia"
+                    }),
+
+                    UserResponse.NotFound => NotFound(new ApiResponse
+                    {
+                        Status = "Not Found",
+                        Message = "O usuário de id '{id}' não foi encontrado"
+                    }),
+
+                    UserResponse.RoleRemovedFailed => Conflict(new ApiResponse
+                    {
+                        Status = "Erro inesperado ao tentar remover a role antiga do usuário"
+                    }),
+
+                    UserResponse.RoleUpdatedFailed => Conflict(new ApiResponse
+                    {
+                        Status = "Conflict",
+                        Message = "Erro inesperado ao tentar atribuir o usuário a uma nova role"
+                    }),
+
+                    _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                    {
+                        Status = "Internal Server Error",
+                        Message = "Erro inesperado ao tentar atualizar a role do usuário"
+                    })
+                };
         }
     }
 }

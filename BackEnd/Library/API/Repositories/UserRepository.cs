@@ -3,6 +3,7 @@ using API.DTO.Authentication;
 using API.DTO.Login;
 using API.DTO.User;
 using API.Enum;
+using API.Enum.Responses;
 using API.Models;
 using API.Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -20,37 +21,53 @@ namespace API.Repositories
             _userManager = userManager;
         }
 
-        public async Task<bool> UpdateUserRoleAsync(string id, string newRole)
+        public async Task<UserResponse> UpdateUserRoleAsync(string id, string newRole)
         {
+            if (string.IsNullOrWhiteSpace(id))
+                return UserResponse.InvalidId;
+
+            if (string.IsNullOrEmpty(newRole))
+                return UserResponse.InvalidRole;
+
             var user = await _userManager.FindByIdAsync(id);
 
-            if (user == null) 
-                return false;
+            if (user is null)
+                return UserResponse.NotFound;
 
             var currentRoles = await _userManager.GetRolesAsync(user);
 
-            if (currentRoles.Contains(newRole)) 
-                return true;
+            if (currentRoles.Contains(newRole))
+                return UserResponse.AlreadyInRole;
 
             var removeResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);
 
-            if (!removeResult.Succeeded)
-                return false;
+            if (removeResult.Succeeded is false)
+                return UserResponse.RoleRemovedFailed;
 
             var addResult = await _userManager.AddToRoleAsync(user, newRole);
 
-            return addResult.Succeeded;
+            if (addResult.Succeeded is false)
+                return UserResponse.RoleUpdatedFailed;
+
+            return UserResponse.Success;
         }
 
-        public async Task<bool> DeleteUserAsync(string id)
+        public async Task<UserResponse> DeleteUserAsync(string id)
         {
+            if (string.IsNullOrWhiteSpace(id))
+                return UserResponse.InvalidId;
+
             var user = await _userManager.FindByIdAsync(id);
 
-            if (user == null) return false;
+            if (user is null)
+                return UserResponse.NotFound;
 
-            var result = await _userManager.DeleteAsync(user);
+            var deleted = await _userManager.DeleteAsync(user);
 
-            return result.Succeeded;
+            if (deleted.Succeeded is false)
+                return UserResponse.Failed;
+
+            return UserResponse.Success;
         }
 
         public async Task<IEnumerable<UserFilterDTO?>> GetUsersAsync(UserFilterDTO userDTO)
@@ -68,7 +85,7 @@ namespace API.Repositories
 
             var users = await query.ToListAsync();
 
-            return users.Select(u => new UserFilterDTO 
+            return users.Select(u => new UserFilterDTO
             {
                 Name = u.Name,
                 Email = u.Email,
@@ -81,11 +98,15 @@ namespace API.Repositories
             return await _userManager.FindByIdAsync(id);
         }
 
-        public async Task<bool> UpdateUserAsync(string id, UserUpdateDTO userUpdateDTO)
+        public async Task<UserResponse> UpdateUserAsync(string id, UserUpdateDTO userUpdateDTO)
         {
+            if (userUpdateDTO is null)
+                return UserResponse.NullObject;
+
             var user = await _userManager.FindByIdAsync(id);
 
-            if (user == null) return false;
+            if (user is null)
+                return UserResponse.NotFound;
 
             if (!string.IsNullOrEmpty(userUpdateDTO.Name))
                 user.Name = userUpdateDTO.Name;
@@ -102,17 +123,20 @@ namespace API.Repositories
             if (!string.IsNullOrEmpty(userUpdateDTO.Password))
             {
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var result = await _userManager.ResetPasswordAsync(user, token, userUpdateDTO.Password);
+                var resetPassword = await _userManager.ResetPasswordAsync(user, token, userUpdateDTO.Password);
 
-                if (!result.Succeeded)
+                if (resetPassword.Succeeded is false)
                 {
-                    return false;
+                    return UserResponse.FailedToResetPassword;
                 }
             }
 
             var updatedResult = await _userManager.UpdateAsync(user);
 
-            return updatedResult.Succeeded;
+            if (updatedResult.Succeeded)
+                return UserResponse.Failed;
+
+            return UserResponse.Success;
         }
     }
 }
