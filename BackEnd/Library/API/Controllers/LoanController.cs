@@ -1,9 +1,11 @@
 ﻿using API.DTO.Loan;
 using API.DTO.Responses;
+using API.Enum.Responses;
 using API.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 using System.Reflection.Metadata.Ecma335;
 
 namespace API.Controllers
@@ -68,18 +70,48 @@ namespace API.Controllers
         [Authorize(Roles = "librarian")]
         public async Task<IActionResult> Put(int id, [FromBody] LoanUpdateDTO loanUpdateDTO)
         {
-            var updated = await _loanRepository.UpdateLoanAsync(id, loanUpdateDTO);
+            var response = await _loanRepository.UpdateLoanAsync(id, loanUpdateDTO);
 
-            if (updated is false)
+            return response switch
             {
-                return NotFound(new ApiResponse
+                LoanResponse.Success => NoContent(),
+
+                LoanResponse.NotFound => NotFound(new ApiResponse 
                 {
                     Status = "Not Found",
-                    Message = $"Empréstimo de id '{id}' não encontrado"
-                });
-            }
+                    Message = $"O empréstimo de id '{id}' não foi encontrado"
+                }),
 
-            return NoContent();
+                LoanResponse.BookNotFound => NotFound(new ApiResponse 
+                {
+                    Status = "Not Found",
+                    Message = $"O livro que corresponde ao empréstimo de id '{id}' não foi encontrado"
+                }),
+
+                LoanResponse.InvalidStatusTransition => Conflict(new ApiResponse 
+                {
+                    Status = "Conflict",
+                    Message = "O novo status fornecido é inválido"
+                }),
+
+                LoanResponse.InvalidReturnDate => Conflict(new ApiResponse 
+                {
+                    Status = "Conflict",
+                    Message = "A nova data fornecida é inválida"
+                }),
+
+                LoanResponse.NullObject => StatusCode(StatusCodes.Status500InternalServerError , new ApiResponse 
+                {
+                    Status = "Internal Server Error",
+                    Message = "O empréstimo não pode ser nulo"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse 
+                {
+                    Status = "Internal Server Error",
+                    Message = "Erro inesperado ao atualizar um empréstimo"
+                })
+            };
         }
 
         [HttpPost]
@@ -109,18 +141,88 @@ namespace API.Controllers
         [Authorize(Roles = "librarian")]
         public async Task<IActionResult> Delete(int id)
         {
-            var deleted = await _loanRepository.DeleteLoanAsync(id);
+            var response = await _loanRepository.DeleteLoanAsync(id);
 
-            if (deleted is false)
+            return response switch
             {
-                return NotFound(new ApiResponse
+                LoanResponse.Success => NoContent(),
+
+                LoanResponse.NotFound => NotFound(new ApiResponse
                 {
                     Status = "Not Found",
-                    Message = $"Empréstimo de id '{id}' não encontrado"
-                });
-            }
+                    Message = $"O empréstimo de id '{id}' não foi encontrado"
+                }),
 
-            return NoContent();
+                LoanResponse.CannotDelete => Conflict(new ApiResponse 
+                {
+                    Status = "Conflict",
+                    Message = "Não é possível deletar um empréstimo com o status 'pending' ou 'in progress'"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse 
+                {
+                    Status = "Internal Server Error",
+                    Message = "Erro inesperado ao deletar um empréstimo"
+                })
+            };
+        }
+
+        [HttpGet("{id}/availability")]
+        [Authorize(Roles = "user,librarian,admin")]
+        public async Task<IActionResult> GetBookAvailability(int id)
+        {
+            var response = await _loanRepository.IsBookAvailableAsync(id);
+
+            return response switch
+            {
+                LoanResponse.Success => Ok(new ApiResponse
+                {
+                    Status = "Ok",
+                    Message = $"O livro de id '{id}' está disponível para empréstimo"
+                }),
+
+                LoanResponse.BookNotAvailable => Conflict(new ApiResponse
+                {
+                    Status = "Conflict",
+                    Message = $"O livro de id '{id}' não está disponível para empréstimo no momento."
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Message = "Erro ao verificar a disponibilidade do livro."
+                })
+            };
+        }
+
+        [HttpPut("{id}/register-return")]
+        [Authorize(Roles = "librarian")]
+        public async Task<IActionResult> Put(int id)
+        {
+            var response = await _loanRepository.RegisterReturnAsync(id);
+
+            return response switch
+            {
+                LoanResponse.Success => NoContent(),
+
+                LoanResponse.NotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Message = $"O empréstimo de id '{id}' não foi encontrado"
+                }),
+
+                LoanResponse.InvalidStatus => Conflict(new ApiResponse 
+                {
+                    Status = "Conflict",
+                    Message = "O status do empréstimo deve estar em 'in progress' para ser registrado como 'finished'"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Message = "Erro inesperado ao tentar registrar a devolução do empréstimo"
+                })
+            };
         }
     }
 }

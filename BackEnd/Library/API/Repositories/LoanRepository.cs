@@ -43,10 +43,10 @@ namespace API.Repositories
 
         public async Task<LoanResponse> DeleteLoanAsync(int id)
         {
-            var loan = await _context.Loans.FindAsync(id);
+            var loan = await GetLoanByIdAsync(id);
 
             if (loan is null)
-                return LoanResponse.NullObject;
+                return LoanResponse.NotFound;
 
             if (loan.Status == LoanStatus.InProgress ||
                 loan.Status == LoanStatus.Pending)
@@ -73,12 +73,12 @@ namespace API.Repositories
             return LoanResponse.Success;
         }
 
-        public async Task<LoanResponse> RegisterReturnAsync(int loanId)
+        public async Task<LoanResponse> RegisterReturnAsync(int id)
         {
-            var loan = await _context.Loans.FindAsync(loanId);
+            var loan = await GetLoanByIdAsync(id);
 
             if (loan is null)
-                return LoanResponse.NullObject;
+                return LoanResponse.NotFound;
 
             if (loan.Status != LoanStatus.InProgress)
                 return LoanResponse.InvalidStatus;
@@ -97,7 +97,7 @@ namespace API.Repositories
             var loan = await GetLoanByIdAsync(id);
 
             if (loan is null)
-                return LoanResponse.NullObject;
+                return LoanResponse.NotFound;
 
             if (loan.Status != LoanStatus.InProgress)
                 return LoanResponse.InvalidStatus;
@@ -142,8 +142,11 @@ namespace API.Repositories
         {
             var loan = await GetLoanByIdAsync(id);
 
-            if (loan is null)
+            if (loanUpdateDTO is null)
                 return LoanResponse.NullObject;
+
+            if (loan is null)
+                return LoanResponse.NotFound;
 
             if (loan.Status == LoanStatus.Finished && loanUpdateDTO.Status != LoanStatus.Canceled)
                 return LoanResponse.InvalidStatusTransition;
@@ -151,7 +154,7 @@ namespace API.Repositories
             if (loan.Status == LoanStatus.Canceled && loanUpdateDTO.Status != LoanStatus.Finished)
                 return LoanResponse.InvalidStatusTransition;
 
-            if (loanUpdateDTO.ReturnDate < DateTime.Today && loanUpdateDTO.Status != LoanStatus.Finished)
+            if (loanUpdateDTO.ReturnDate < DateTime.UtcNow.Date && loanUpdateDTO.Status != LoanStatus.Finished)
                 return LoanResponse.InvalidReturnDate;
 
             loan.ReturnDate = loanUpdateDTO.ReturnDate;
@@ -175,6 +178,5 @@ namespace API.Repositories
 
             return LoanResponse.Success;
         }
-
     }
 }

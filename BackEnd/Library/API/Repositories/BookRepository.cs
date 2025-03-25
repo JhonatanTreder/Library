@@ -52,7 +52,7 @@ namespace API.Repositories
             var bookInProgress = await _context.Loans
                 .AnyAsync(loan => loan.BookId == book.Id && loan.Status == LoanStatus.InProgress);
 
-            if (bookInProgress is false)
+            if (bookInProgress)
                 return BookResponse.CannotDelete;
 
             _context.Books.Remove(book);
@@ -71,19 +71,19 @@ namespace API.Repositories
             var query = _context.Books.AsQueryable();
 
             if (!string.IsNullOrEmpty(filterBookDTO.Title))
-                query = query.Where(t => t.Title == filterBookDTO.Title);
+                query = query.Where(t => t.Title.Contains(filterBookDTO.Title));
 
             if (!string.IsNullOrEmpty(filterBookDTO.Author))
-                query = query.Where(a => a.Author == filterBookDTO.Author);
+                query = query.Where(a => a.Author.Contains(filterBookDTO.Author));
 
             if (!string.IsNullOrEmpty(filterBookDTO.Category))
-                query = query.Where(c => c.Category == filterBookDTO.Category);
+                query = query.Where(c => c.Category.Contains(filterBookDTO.Category));
 
             if (filterBookDTO.PublicationYear != 0)
                 query = query.Where(y => y.PublicationYear == filterBookDTO.PublicationYear);
 
             if (!string.IsNullOrEmpty(filterBookDTO.Publisher))
-                query = query.Where(p => p.Publisher == filterBookDTO.Publisher);
+                query = query.Where(p => p.Publisher.Contains(filterBookDTO.Publisher));
 
             return await query.ToListAsync();
         }
@@ -91,7 +91,7 @@ namespace API.Repositories
         public async Task<IEnumerable<Book?>> GetAvailableBooksAsync()
         {
             return await _context.Books
-                .Where(book => book.Status != BookStatus.Available)
+                .Where(book => book.Status == BookStatus.Available)
                 .ToListAsync();
         }
 
@@ -117,7 +117,9 @@ namespace API.Repositories
 
             if (updateBookDTO.Quantity.HasValue)
             {
-                if (updateBookDTO.Quantity.Value < 1)
+                var newQuantity = updateBookDTO.Quantity.Value;
+
+                if (newQuantity < 1)
                 {
                     return BookResponse.InvalidQuantity;
                 }
