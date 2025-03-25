@@ -224,5 +224,41 @@ namespace API.Controllers
                 })
             };
         }
+
+        [HttpPut("{id}/extend-loan")]
+        [Authorize(Roles = "librarian")]
+        public async Task<IActionResult> Put(int id, [FromBody] DateTime newDate)
+        {
+            var response = await _loanRepository.ExtendLoanAsync(id, newDate);
+
+            return response switch 
+            {
+                LoanResponse.Success => NoContent(),
+
+                LoanResponse.NotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Message = $"O empréstimo de id '{id}' não foi encontrado"
+                }),
+
+                LoanResponse.InvalidStatus => Conflict(new ApiResponse 
+                {
+                    Status = "Conflict",
+                    Message = "O status do empréstimo deve estar em 'in progress' para poder extender o prazo de devolucao"
+                }),
+
+                LoanResponse.InvalidDate => Conflict(new ApiResponse
+                {
+                    Status = "Conflict",
+                    Message = "A nova data de devolução não pode ser menor ou igual a data de devolução antiga"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Message = "Erro inesperado ao prolongar a devolução do empréstimo"
+                })
+            };
+        }
     }
 }

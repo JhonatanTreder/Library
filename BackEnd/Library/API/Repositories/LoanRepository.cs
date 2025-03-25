@@ -102,7 +102,7 @@ namespace API.Repositories
             if (loan.Status != LoanStatus.InProgress)
                 return LoanResponse.InvalidStatus;
 
-            if (newDate > loan.ReturnDate)
+            if (newDate <= loan.ReturnDate)
                 return LoanResponse.InvalidDate;
 
             loan.ReturnDate = newDate;
