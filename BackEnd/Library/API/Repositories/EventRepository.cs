@@ -1,5 +1,6 @@
 ﻿using API.Context;
 using API.DTO.Event;
+using API.Enum.Responses;
 using API.Models;
 using API.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -40,19 +41,17 @@ namespace API.Repositories
             return newEvent;
         }
 
-        public async Task<bool> DeleteEventAsync(int id)
+        public async Task<EventResponse> DeleteEventAsync(int id)
         {
             var _event = await _context.Events.FindAsync(id);
 
             if (_event is null)
-            {
-                return false;
-            }
+                return EventResponse.NotFound;
 
             _context.Events.Remove(_event);
             await _context.SaveChangesAsync();
 
-            return true;
+            return EventResponse.Success;
         }
 
         public async Task<Event?> GetEventByIdAsync(int id)
@@ -65,17 +64,16 @@ namespace API.Repositories
             var query = _context.Events.AsQueryable();
 
             if (!string.IsNullOrEmpty(eventFilterDTO.Title))
-                query = query.Where(e => e.Title == eventFilterDTO.Title);
+                query = query.Where(e => e.Title.Contains(eventFilterDTO.Title));
 
             if (!string.IsNullOrEmpty(eventFilterDTO.Location))
-                query = query.Where(e => e.Location == eventFilterDTO.Location);
+                query = query.Where(e => e.Location.Contains(eventFilterDTO.Location));
 
             if (!string.IsNullOrEmpty(eventFilterDTO.TargetAudience))
-                query = query.Where(e => e.TargetAudience == eventFilterDTO.TargetAudience);
+                query = query.Where(e => e.TargetAudience.Contains(eventFilterDTO.TargetAudience));
 
             if (eventFilterDTO.StartDate.HasValue)
                 query = query.Where(e => e.StartDate >= eventFilterDTO.StartDate.Value);
-
 
             if (eventFilterDTO.EndDate.HasValue)
                 query = query.Where(e => e.EndDate == eventFilterDTO.EndDate);
@@ -83,24 +81,38 @@ namespace API.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<bool> UpdateEventAsync(int id, EventUpdateDTO updateEventDTO)
+        public async Task<EventResponse> UpdateEventAsync(int id, EventUpdateDTO updateEventDTO)
         {
+            if (updateEventDTO is null)
+                return EventResponse.NullObject;
+
             var _event = await _context.Events.FindAsync(id);
 
             if (_event is null)
-            {
-                return false;
-            }
+                return EventResponse.NotFound;
 
-            _event.Title = updateEventDTO.Title!;
-            _event.Description = updateEventDTO.Description;
-            _event.Location = updateEventDTO.Location!;
-            _event.TargetAudience = updateEventDTO.TargetAudience!;
+            if (!string.IsNullOrEmpty(updateEventDTO.Title))
+                _event.Title = updateEventDTO.Title!;
+
+            if (!string.IsNullOrEmpty(updateEventDTO.Description))
+                _event.Description = updateEventDTO.Description;
+
+            if (!string.IsNullOrEmpty(updateEventDTO.Location))
+                _event.Location = updateEventDTO.Location!;
+
+            if (!string.IsNullOrEmpty(updateEventDTO.TargetAudience))
+                _event.TargetAudience = updateEventDTO.TargetAudience!;
+
+            if (updateEventDTO.StartDate.HasValue)
+                _event.StartDate = updateEventDTO.StartDate.Value;
+
+            if (updateEventDTO.EndDate.HasValue)
+                _event.EndDate = updateEventDTO.EndDate.Value;
 
             _context.Update(_event);
             await _context.SaveChangesAsync();
 
-            return true;
+            return EventResponse.Success;
         }
     }
 }

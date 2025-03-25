@@ -1,9 +1,11 @@
 ﻿using API.DTO.Event;
 using API.DTO.Responses;
+using API.Enum.Responses;
 using API.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection.Metadata.Ecma335;
 
 namespace API.Controllers
 {
@@ -91,36 +93,54 @@ namespace API.Controllers
         [Authorize(Roles = "librarian")]
         public async Task<IActionResult> Put(int id, [FromBody] EventUpdateDTO eventUpdateDTO)
         {
-            var updated = await _eventRepository.UpdateEventAsync(id, eventUpdateDTO);
+            var response = await _eventRepository.UpdateEventAsync(id, eventUpdateDTO);
 
-            if (updated is false)
+            return response switch
             {
-                return NotFound(new ApiResponse 
+                EventResponse.Success => NoContent(),
+
+                EventResponse.NullObject => BadRequest(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Message = $"O evento de id '{id}' não pode ser nulo"
+                }),
+
+                EventResponse.NotFound => NotFound(new ApiResponse 
                 {
                     Status = "Not Found",
                     Message = $"O evento de id '{id}' não foi encontrado"
-                });
-            }
+                }),
 
-            return NoContent();
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Message = "Erro inesperado ao tentar atualizar um evento"
+                })
+            };
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "librarian")]
         public async Task<IActionResult> Delete(int id)
         {
-            var deleted = await _eventRepository.DeleteEventAsync(id);
+            var response = await _eventRepository.DeleteEventAsync(id);
 
-            if (deleted is false)
+            return response switch 
             {
-                return NotFound(new ApiResponse 
+                EventResponse.Success => NoContent(),
+
+                EventResponse.NotFound => NotFound(new ApiResponse
                 {
                     Status = "Not Found",
                     Message = $"O evento de id '{id}' não foi encontrado"
-                });
-            }
+                }),
 
-            return NoContent();
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Message = "Erro inesperado ao tentar deletar um evento"
+                })
+            }; 
         }
     }
 }
