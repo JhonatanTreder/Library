@@ -90,6 +90,20 @@ namespace API.Controllers
                     Status = "Ok",
                     Data = response.Data,
                     Message = $"Usuário de id '{id}' encontrado com sucesso"
+                }),
+
+                RepositoryStatus.NotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = $"Usuário de id '{id}' não encontrado"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Erro inesperado ao buscar um usuário"
                 })
             };
         }
