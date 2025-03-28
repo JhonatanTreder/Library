@@ -1,5 +1,6 @@
 ﻿using API.Context;
 using API.DTO.Event;
+using API.DTO.Responses;
 using API.Enum.Responses;
 using API.Models;
 using API.Repositories.Interfaces;
@@ -18,11 +19,11 @@ namespace API.Repositories
             _context = context;
         }
 
-        public async Task<Event?> AddEventAsync(EventCreateDTO _event)
+        public async Task<RepositoryResponse<Event>> AddEventAsync(EventCreateDTO _event)
         {
             if (_event is null)
             {
-                return null;
+                return new RepositoryResponse<Event>(RepositoryStatus.NullObject);
             }
 
             var newEvent = new Event
@@ -38,29 +39,44 @@ namespace API.Repositories
             await _context.AddAsync(newEvent);
             await _context.SaveChangesAsync();
 
-            return newEvent;
+            return new RepositoryResponse<Event>(RepositoryStatus.Success, newEvent);
         }
 
-        public async Task<EventResponse> DeleteEventAsync(int id)
+        public async Task<RepositoryStatus> DeleteEventAsync(int id)
         {
             var _event = await _context.Events.FindAsync(id);
 
             if (_event is null)
-                return EventResponse.NotFound;
+                return RepositoryStatus.NotFound;
 
             _context.Events.Remove(_event);
             await _context.SaveChangesAsync();
 
-            return EventResponse.Success;
+            return RepositoryStatus.Success;
         }
 
-        public async Task<Event?> GetEventByIdAsync(int id)
+        public async Task<RepositoryResponse<Event>> GetEventByIdAsync(int id)
         {
-            return await _context.Events.FindAsync(id);
+            var _event = await _context.Events.FindAsync(id);
+
+            if (_event is not null)
+            {
+                return new RepositoryResponse<Event>(RepositoryStatus.Success, _event);
+            }
+
+            else
+            {
+                return new RepositoryResponse<Event>(RepositoryStatus.NotFound);
+            }
         }
 
-        public async Task<IEnumerable<Event>> GetEventsAsync(EventFilterDTO eventFilterDTO)
+        public async Task<RepositoryResponse<IEnumerable<Event>>> GetEventsAsync(EventFilterDTO eventFilterDTO)
         {
+            if (eventFilterDTO is null)
+            {
+                return new RepositoryResponse<IEnumerable<Event>>(RepositoryStatus.NullObject);
+            }
+
             var query = _context.Events.AsQueryable();
 
             if (!string.IsNullOrEmpty(eventFilterDTO.Title))
@@ -78,18 +94,28 @@ namespace API.Repositories
             if (eventFilterDTO.EndDate.HasValue)
                 query = query.Where(e => e.EndDate == eventFilterDTO.EndDate);
 
-            return await query.ToListAsync();
+            var events = await query.ToListAsync();
+
+            if (events.Count > 0)
+            {
+                return new RepositoryResponse<IEnumerable<Event>>(RepositoryStatus.Success, events);
+            }
+
+            else
+            {
+                return new RepositoryResponse<IEnumerable<Event>>(RepositoryStatus.NotFound);
+            }
         }
 
-        public async Task<EventResponse> UpdateEventAsync(int id, EventUpdateDTO updateEventDTO)
+        public async Task<RepositoryStatus> UpdateEventAsync(int id, EventUpdateDTO updateEventDTO)
         {
             if (updateEventDTO is null)
-                return EventResponse.NullObject;
+                return RepositoryStatus.NullObject;
 
             var _event = await _context.Events.FindAsync(id);
 
             if (_event is null)
-                return EventResponse.NotFound;
+                return RepositoryStatus.NotFound;
 
             if (!string.IsNullOrEmpty(updateEventDTO.Title))
                 _event.Title = updateEventDTO.Title!;
@@ -112,7 +138,7 @@ namespace API.Repositories
             _context.Update(_event);
             await _context.SaveChangesAsync();
 
-            return EventResponse.Success;
+            return RepositoryStatus.Success;
         }
     }
 }

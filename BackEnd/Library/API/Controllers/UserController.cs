@@ -28,27 +28,43 @@ namespace API.Controllers
                 return BadRequest(new ApiResponse
                 {
                     Status = "Bad Request",
+                    Data = null,
                     Message = "Filtro de pesquisa inválido"
                 });
             }
 
-            var users = await _userRepository.GetUsersAsync(userFilterDTO);
+            var response = await _userRepository.GetUsersAsync(userFilterDTO);
 
-            if (users is null || !users.Any())
+            return response.Status switch 
             {
-                return NotFound( new ApiResponse
+                RepositoryStatus.Success => Ok(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = response.Data,
+                    Message = "Usuários encontrados com sucesso"
+                }),
+
+                RepositoryStatus.NullObject => BadRequest(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = "Filtro de pesquisa inválido"
+                }),
+
+                RepositoryStatus.NotFound => NotFound(new ApiResponse
                 {
                     Status = "Not Found",
-                    Message = "Usuários não encontrados com os critérios fornecidosx"
-                });
-            }
+                    Data = null,
+                    Message = "Nenhum usuário foi encontrado"
+                }),
 
-            return Ok(new ApiResponse 
-            {
-                Status = "Ok",
-                Data = users,
-                Message = "Usuários encontrados com sucesso"
-            });
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Erro inesperado ao buscar usuários"
+                })
+            };
         }
 
         [HttpGet("{id}")]
@@ -57,36 +73,25 @@ namespace API.Controllers
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                return BadRequest(new ApiResponse 
+                return BadRequest(new ApiResponse
                 {
                     Status = "Bad Request",
+                    Data = null,
                     Message = "O id do usuário não pode ser nulo ou vazio"
                 });
             }
 
-            var user = await _userRepository.GetUserByIdAsync(id);
+            var response = await _userRepository.GetUserByIdAsync(id);
 
-            if (user is null)
+            return response.Status switch 
             {
-                return NotFound(new ApiResponse
+                RepositoryStatus.Success => Ok(new ApiResponse
                 {
-                    Status = "Not Found",
-                    Message = $"Usuário de id '{id}' não encontrado"
-                });
-            }
-
-            return Ok(new ApiResponse
-            {
-                Status = "Ok",
-                Data = new UserDTO
-                {
-                    Name = user.Name,
-                    Email = user.Email ?? string.Empty,
-                    PhoneNumber = user.PhoneNumber ?? string.Empty,
-                    UserType = user.UserType,
-                },
-                Message = $"Usuário de id '{id}' encontrado com sucesso"
-            });
+                    Status = "Ok",
+                    Data = response.Data,
+                    Message = $"Usuário de id '{id}' encontrado com sucesso"
+                })
+            };
         }
 
         [HttpDelete("{id}")]
@@ -95,31 +100,35 @@ namespace API.Controllers
         {
             var response = await _userRepository.DeleteUserAsync(id);
 
-            return response switch 
+            return response switch
             {
-                UserResponse.Success => NoContent(),
+                RepositoryStatus.Success => NoContent(),
 
-                UserResponse.InvalidId => BadRequest(new ApiResponse
+                RepositoryStatus.InvalidId => BadRequest(new ApiResponse
                 {
                     Status = "Bad Request",
+                    Data = null,
                     Message = "O id do usuário não pode ser nulo ou conter espaços em brancos"
                 }),
 
-                UserResponse.NotFound => NotFound(new ApiResponse 
+                RepositoryStatus.NotFound => NotFound(new ApiResponse
                 {
                     Status = "Not Found",
-                    Message = "O usuário de id '{id}' não foi encontrado"
+                    Data = null,
+                    Message = $"O usuário de id '{id}' não foi encontrado"
                 }),
 
-                UserResponse.Failed => Conflict(new ApiResponse
+                RepositoryStatus.Failed => Conflict(new ApiResponse
                 {
                     Status = "Conflict",
+                    Data = null,
                     Message = $"Erro ao tentar deletar o usuário de id '{id}'"
                 }),
 
                 _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
                 {
                     Status = "Internal Server Error",
+                    Data = null,
                     Message = "Erro inesperado ao tentar deletar o usuário"
                 })
             };
@@ -129,48 +138,44 @@ namespace API.Controllers
         [Authorize(Roles = "user,librarian,admin")]
         public async Task<IActionResult> Put(string id, UserUpdateDTO userUpdateDTO)
         {
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                return BadRequest(new ApiResponse
-                {
-                    Status = "Bad Request",
-                    Message = "O id do usuário não pode ser nulo ou vazio"
-                });
-            }
-
             var response = await _userRepository.UpdateUserAsync(id, userUpdateDTO);
 
-            return response switch 
+            return response switch
             {
-                UserResponse.Success => NoContent(),
+                RepositoryStatus.Success => NoContent(),
 
-                UserResponse.NotFound => NotFound(new ApiResponse
+                RepositoryStatus.NotFound => NotFound(new ApiResponse
                 {
                     Status = "Not Found",
+                    Data = null,
                     Message = $"O usuário de id '{id}' não foi encontrado"
                 }),
 
-                UserResponse.NullObject => BadRequest(new ApiResponse
+                RepositoryStatus.NullObject => BadRequest(new ApiResponse
                 {
                     Status = "Bad Request",
+                    Data = null,
                     Message = "O usuário não pode ser nulo"
                 }),
 
-                UserResponse.FailedToResetPassword => Conflict(new ApiResponse
+                RepositoryStatus.FailedToResetPassword => Conflict(new ApiResponse
                 {
                     Status = "Conflict",
+                    Data = null,
                     Message = "Erro inesperado ao tentar atualizar a senha do usuário"
                 }),
 
-                UserResponse.Failed => Conflict(new ApiResponse
+                RepositoryStatus.Failed => Conflict(new ApiResponse
                 {
                     Status = "Conflict",
+                    Data = null,
                     Message = "Erro inesperado ao tentar atualizar o usuário"
                 }),
 
                 _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
                 {
                     Status = "Internal Server Error",
+                    Data = null,
                     Message = "Erro inesperado ao tentar atualizar um usuário"
                 })
             };
@@ -181,48 +186,55 @@ namespace API.Controllers
         public async Task<IActionResult> Put(string id, string newRole)
         {
             var response = await _userRepository.UpdateUserRoleAsync(id, newRole);
-                
-                return response switch 
+
+            return response switch
+            {
+                RepositoryStatus.Success => NoContent(),
+
+                RepositoryStatus.AlreadyInRole => NoContent(),
+
+                RepositoryStatus.InvalidId => BadRequest(new ApiResponse
                 {
-                    UserResponse.Success => NoContent(),
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = "O id do usuário não pode ser nulo ou conter espaços em branco"
+                }),
 
-                    UserResponse.AlreadyInRole => NoContent(),
+                RepositoryStatus.InvalidRole => BadRequest(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = "A role do usuário não pode ser nula ou vazia"
+                }),
 
-                    UserResponse.InvalidId => BadRequest(new ApiResponse
-                    {
-                        Status = "Bad Request",
-                        Message = "O id do usuário não pode ser nulo ou conter espaços em branco"
-                    }),
+                RepositoryStatus.NotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = "O usuário de id '{id}' não foi encontrado"
+                }),
 
-                    UserResponse.InvalidRole => BadRequest(new ApiResponse
-                    {
-                        Status = "Bad Request",
-                        Message = "A role do usuário não pode ser nula ou vazia"
-                    }),
+                RepositoryStatus.RoleRemovedFailed => Conflict(new ApiResponse
+                {
+                    Status = "Conflict",
+                    Data = null,
+                    Message = "Erro inesperado ao tentar remover a role antiga do usuário"
+                }),
 
-                    UserResponse.NotFound => NotFound(new ApiResponse
-                    {
-                        Status = "Not Found",
-                        Message = "O usuário de id '{id}' não foi encontrado"
-                    }),
+                RepositoryStatus.RoleUpdatedFailed => Conflict(new ApiResponse
+                {
+                    Status = "Conflict",
+                    Data = null,
+                    Message = "Erro inesperado ao tentar atribuir o usuário a uma nova role"
+                }),
 
-                    UserResponse.RoleRemovedFailed => Conflict(new ApiResponse
-                    {
-                        Status = "Erro inesperado ao tentar remover a role antiga do usuário"
-                    }),
-
-                    UserResponse.RoleUpdatedFailed => Conflict(new ApiResponse
-                    {
-                        Status = "Conflict",
-                        Message = "Erro inesperado ao tentar atribuir o usuário a uma nova role"
-                    }),
-
-                    _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
-                    {
-                        Status = "Internal Server Error",
-                        Message = "Erro inesperado ao tentar atualizar a role do usuário"
-                    })
-                };
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Erro inesperado ao tentar atualizar a role do usuário"
+                })
+            };
         }
     }
 }

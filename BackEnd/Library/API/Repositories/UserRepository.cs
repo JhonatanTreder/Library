@@ -1,6 +1,7 @@
 ﻿using API.Context;
 using API.DTO.Authentication;
 using API.DTO.Login;
+using API.DTO.Responses;
 using API.DTO.User;
 using API.Enum;
 using API.Enum.Responses;
@@ -21,57 +22,62 @@ namespace API.Repositories
             _userManager = userManager;
         }
 
-        public async Task<UserResponse> UpdateUserRoleAsync(string id, string newRole)
+        public async Task<RepositoryStatus> UpdateUserRoleAsync(string id, string newRole)
         {
             if (string.IsNullOrWhiteSpace(id))
-                return UserResponse.InvalidId;
+                return RepositoryStatus.InvalidId;
 
             if (string.IsNullOrEmpty(newRole))
-                return UserResponse.InvalidRole;
+                return RepositoryStatus.InvalidRole;
 
             var user = await _userManager.FindByIdAsync(id);
 
             if (user is null)
-                return UserResponse.NotFound;
+                return RepositoryStatus.NotFound;
 
             var currentRoles = await _userManager.GetRolesAsync(user);
 
             if (currentRoles.Contains(newRole))
-                return UserResponse.AlreadyInRole;
+                return RepositoryStatus.AlreadyInRole;
 
             var removeResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);
 
             if (removeResult.Succeeded is false)
-                return UserResponse.RoleRemovedFailed;
+                return RepositoryStatus.RoleRemovedFailed;
 
             var addResult = await _userManager.AddToRoleAsync(user, newRole);
 
             if (addResult.Succeeded is false)
-                return UserResponse.RoleUpdatedFailed;
+                return RepositoryStatus.RoleUpdatedFailed;
 
-            return UserResponse.Success;
+            return RepositoryStatus.Success;
         }
 
-        public async Task<UserResponse> DeleteUserAsync(string id)
+        public async Task<RepositoryStatus> DeleteUserAsync(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
-                return UserResponse.InvalidId;
+                return RepositoryStatus.InvalidId;
 
             var user = await _userManager.FindByIdAsync(id);
 
             if (user is null)
-                return UserResponse.NotFound;
+                return RepositoryStatus.NotFound;
 
             var deleted = await _userManager.DeleteAsync(user);
 
             if (deleted.Succeeded is false)
-                return UserResponse.Failed;
+                return RepositoryStatus.Failed;
 
-            return UserResponse.Success;
+            return RepositoryStatus.Success;
         }
 
-        public async Task<IEnumerable<UserFilterDTO?>> GetUsersAsync(UserFilterDTO userDTO)
+        public async Task<RepositoryResponse<IEnumerable<UserFilterDTO>>> GetUsersAsync(UserFilterDTO userDTO)
         {
+            if (userDTO is null)
+            {
+                return new RepositoryResponse<IEnumerable<UserFilterDTO>>(RepositoryStatus.NullObject);
+            }
+
             var query = _userManager.Users.AsQueryable();
 
             if (!string.IsNullOrEmpty(userDTO.Name))
@@ -83,30 +89,55 @@ namespace API.Repositories
             if (userDTO.UserType != null)
                 query = query.Where(t => t.UserType == userDTO.UserType);
 
-            var users = await query.ToListAsync();
+            var queryUsers = await query.ToListAsync();
 
-            return users.Select(u => new UserFilterDTO
+            var users = queryUsers.Select(u => new UserFilterDTO
             {
                 Name = u.Name,
                 Email = u.Email,
                 UserType = u.UserType
             });
+
+            if (users.Any() is false)
+            {
+                return new RepositoryResponse<IEnumerable<UserFilterDTO>>(RepositoryStatus.NotFound);
+            }
+
+            else
+            {
+                return new RepositoryResponse<IEnumerable<UserFilterDTO>>(RepositoryStatus.Success, users);
+            }
         }
 
-        public async Task<ApplicationUser?> GetUserByIdAsync(string id)
+        public async Task<RepositoryResponse<UserDTO>> GetUserByIdAsync(string id)
         {
-            return await _userManager.FindByIdAsync(id);
+            var dbUser = await _userManager.FindByIdAsync(id);
+
+            if (dbUser is null)
+            {
+                return new RepositoryResponse<UserDTO>(RepositoryStatus.NotFound);
+            }
+
+            var user = new UserDTO
+            {
+                Name = dbUser.Name,
+                Email = dbUser.Email,
+                PhoneNumber = dbUser.PhoneNumber,
+                UserType = dbUser.UserType
+            };
+
+            return new RepositoryResponse<UserDTO>(RepositoryStatus.Success, user);
         }
 
-        public async Task<UserResponse> UpdateUserAsync(string id, UserUpdateDTO userUpdateDTO)
+        public async Task<RepositoryStatus> UpdateUserAsync(string id, UserUpdateDTO userUpdateDTO)
         {
             if (userUpdateDTO is null)
-                return UserResponse.NullObject;
+                return RepositoryStatus.NullObject;
 
             var user = await _userManager.FindByIdAsync(id);
 
             if (user is null)
-                return UserResponse.NotFound;
+                return RepositoryStatus.NotFound;
 
             if (!string.IsNullOrEmpty(userUpdateDTO.Name))
                 user.Name = userUpdateDTO.Name;
@@ -127,16 +158,16 @@ namespace API.Repositories
 
                 if (resetPassword.Succeeded is false)
                 {
-                    return UserResponse.FailedToResetPassword;
+                    return RepositoryStatus.FailedToResetPassword;
                 }
             }
 
             var updatedResult = await _userManager.UpdateAsync(user);
 
             if (updatedResult.Succeeded)
-                return UserResponse.Failed;
+                return RepositoryStatus.Failed;
 
-            return UserResponse.Success;
+            return RepositoryStatus.Success;
         }
     }
 }

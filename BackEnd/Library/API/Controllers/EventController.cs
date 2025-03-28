@@ -24,46 +24,89 @@ namespace API.Controllers
         [Authorize(Roles = "librarian")]
         public async Task<IActionResult> Post([FromBody] EventCreateDTO eventCreateDTO)
         {
-            var _event = await _eventRepository.AddEventAsync(eventCreateDTO);
-
-            if (_event is null)
+            if (eventCreateDTO is null)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                return BadRequest(new ApiResponse
                 {
-                    Status = "Internal Server Error",
-                    Message = "Falha ao tentar criar um evento"
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = "O evento não pode ser nulo"
                 });
             }
 
-            return CreatedAtAction(nameof(Get), new { id = _event.Id }, new ApiResponse
+            var _event = await _eventRepository.AddEventAsync(eventCreateDTO);
+
+            return _event.Status switch 
             {
-                Status = "Created",
-                Data = _event,
-                Message = "Evento criado com sucesso"
-            });
+                RepositoryStatus.Success => CreatedAtAction(nameof(Get), new { id = _event.Data!.Id}, new ApiResponse
+                {
+                    Status = "Created",
+                    Data = _event.Data,
+                    Message = "Evento criado com sucesso"
+                }),
+
+                RepositoryStatus.NullObject => BadRequest(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = "O evento não pode ser nulo"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Erro inesperado ao tentar criar um evento"
+                })
+            };
         }
 
         [HttpGet]
         [Authorize(Roles = "user,librarian,admin")]
         public async Task<IActionResult> Get([FromQuery] EventFilterDTO eventFilterDTO)
         {
-            var _events = await _eventRepository.GetEventsAsync(eventFilterDTO);
-
-            if (_events is null || !_events.Any())
+            if (eventFilterDTO is null)
             {
-                return NotFound(new ApiResponse 
+                return BadRequest(new ApiResponse
                 {
-                    Status = "Not Found",
-                    Message = "Nenhum evento foi encontrado"
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = "O evento não pode ser nulo"
                 });
             }
 
-            return Ok(new ApiResponse 
+            var _events = await _eventRepository.GetEventsAsync(eventFilterDTO);
+
+            return _events.Status switch
             {
-                Status = "Ok",
-                Data = _events,
-                Message = "Eventos encontrados com sucesso"
-            });
+                RepositoryStatus.Success => Ok(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = _events.Data,
+                    Message = "Eventos encontrados com sucesso"
+                }),
+
+                RepositoryStatus.NullObject => BadRequest(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = "O evento não pode ser nulo"
+                }),
+
+                RepositoryStatus.NotFound => NotFound(new ApiResponse 
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = "Nenhum evento foi encontrado"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Erro inesperado ao tentar buscar os eventos"
+                })
+            };
         }
 
         [HttpGet("{id}")]
@@ -97,15 +140,15 @@ namespace API.Controllers
 
             return response switch
             {
-                EventResponse.Success => NoContent(),
+                RepositoryStatus.Success => NoContent(),
 
-                EventResponse.NullObject => BadRequest(new ApiResponse
+                RepositoryStatus.NullObject => BadRequest(new ApiResponse
                 {
                     Status = "Bad Request",
                     Message = $"O evento de id '{id}' não pode ser nulo"
                 }),
 
-                EventResponse.NotFound => NotFound(new ApiResponse 
+                RepositoryStatus.NotFound => NotFound(new ApiResponse 
                 {
                     Status = "Not Found",
                     Message = $"O evento de id '{id}' não foi encontrado"
@@ -127,9 +170,9 @@ namespace API.Controllers
 
             return response switch 
             {
-                EventResponse.Success => NoContent(),
+                RepositoryStatus.Success => NoContent(),
 
-                EventResponse.NotFound => NotFound(new ApiResponse
+                RepositoryStatus.NotFound => NotFound(new ApiResponse
                 {
                     Status = "Not Found",
                     Message = $"O evento de id '{id}' não foi encontrado"
