@@ -79,6 +79,7 @@ namespace API.Controllers
             return Unauthorized(new ApiResponse
             {
                 Status = "Unauthorized",
+                Data = null,
                 Message = "Usuário não autorizado"
             });
         }
@@ -95,6 +96,7 @@ namespace API.Controllers
                 new ApiResponse
                 {
                     Status = "Conflict",
+                    Data = null,
                     Message = "Já existe um usuário com este email"
                 });
             }
@@ -104,6 +106,7 @@ namespace API.Controllers
                 return BadRequest(new ApiResponse
                 {
                     Status = "Bad Request",
+                    Data = null,
                     Message = "A quantidade de caracteres para a senha é de no mínimo 6"
                 });
             }
@@ -122,6 +125,7 @@ namespace API.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
                 {
                     Status = "Internal Server Error",
+                    Data = null,
                     Message = "Falha ao criar um usuário"
                 });
             }
@@ -137,6 +141,7 @@ namespace API.Controllers
                     return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
                     {
                         Status = "Internal Server Error",
+                        Data = null,
                         Message = "Falha ao criar a role do usuário"
                     });
                 }
@@ -149,6 +154,7 @@ namespace API.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
                 {
                     Status = "Internal Server Error",
+                    Data = null,
                     Message = "Falha ao associar um usuário à role"
                 });
             }
@@ -161,7 +167,6 @@ namespace API.Controllers
                 {
                     Name = userRegisterDTO.Name,
                     Email = userRegisterDTO.Email,
-                    PhoneNumber = userRegisterDTO.PhoneNumber,
                     UserType = UserType.User
                 },
                 Message = "Usuário criado com sucesso!"
@@ -177,6 +182,7 @@ namespace API.Controllers
                 return BadRequest(new ApiResponse
                 {
                     Status = "Bad Request",
+                    Data = null,
                     Message = "Requisição inválida do cliente"
                 });
             }
@@ -191,6 +197,7 @@ namespace API.Controllers
                 return BadRequest(new ApiResponse
                 {
                     Status = "Bad Request",
+                    Data = null,
                     Message = "Access/refresh token inválido"
                 });
             }
@@ -207,6 +214,7 @@ namespace API.Controllers
                 return BadRequest(new ApiResponse
                 {
                     Status = "Bad Request",
+                    Data = null,
                     Message = "Access/Refresh token inválido"
                 });
             }
@@ -223,6 +231,7 @@ namespace API.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
                 {
                     Status = "Internal Server Error",
+                    Data = null,
                     Message = "Falha ao atualizar um usuário"
                 });
             }
@@ -246,6 +255,7 @@ namespace API.Controllers
                 return NotFound(new ApiResponse
                 {
                     Status = "Not Found",
+                    Data = null,
                     Message = $"Usuário '{username}' não encontrado"
                 });
             }
@@ -259,6 +269,7 @@ namespace API.Controllers
                 return BadRequest(new ApiResponse
                 {
                     Status = "Bad Request",
+                    Data = null,
                     Message = "Falha ao revogar o token"
                 });
             }

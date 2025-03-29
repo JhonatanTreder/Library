@@ -41,7 +41,7 @@ namespace API.Controllers
                 {
                     Status = "Ok",
                     Data = books.Data,
-                    Message = ""
+                    Message = "Livros encontrados com sucesso"
                 }),
 
                 RepositoryStatus.NullObject => BadRequest(new ApiResponse
@@ -71,23 +71,31 @@ namespace API.Controllers
         [Authorize(Roles = "user,librarian,admin")]
         public async Task<IActionResult> Get(int id)
         {
-            var book = await _bookRepository.GetBookByIdAsync(id);
+            var response = await _bookRepository.GetBookByIdAsync(id);
 
-            if (book is null)
+            return response.Status switch 
             {
-                return NotFound(new ApiResponse
+                RepositoryStatus.Success => Ok(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = response.Data,
+                    Message = $"Livro de id '{id}' encontrado com sucesso"
+                }),
+
+                RepositoryStatus.NotFound => NotFound(new ApiResponse 
                 {
                     Status = "Not Found",
+                    Data = null,
                     Message = $"Livro de id '{id}' não encontrado"
-                });
-            }
+                }),
 
-            return Ok(new ApiResponse
-            {
-                Status = "Ok",
-                Data = book,
-                Message = $"Livro de id '{id}' localizado com sucesso"
-            });
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = $"Erro inesperado ao buscar o livro de id '{id}'"
+                })
+            };
         }
 
         [HttpGet("available")]
@@ -192,27 +200,31 @@ namespace API.Controllers
             {
                 RepositoryStatus.Success => NoContent(),
 
+                RepositoryStatus.NullObject => BadRequest(new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "O livro não pode ser nulo"
+                }),
+
                 RepositoryStatus.InvalidQuantity => BadRequest(new ApiResponse
                 {
                     Status = "Bad Request",
+                    Data = null,
                     Message = "A quantidade de livros deve ser maior que zero"
                 }),
 
                 RepositoryStatus.NotFound => NotFound(new ApiResponse
                 {
                     Status = "NotFound",
+                    Data = null,
                     Message = $"O livro de id '{id}' não foi encontrado"
-                }),
-
-                RepositoryStatus.NullObject => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
-                {
-                    Status = "Internal Server Error",
-                    Message = "O livro não pode ser nulo"
                 }),
 
                 _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
                 {
                     Status = "Internal Server Error",
+                    Data = null,
                     Message = "Erro inesperado ao atualizar o livro"
                 })
             };

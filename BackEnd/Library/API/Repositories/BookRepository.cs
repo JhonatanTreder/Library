@@ -86,20 +86,25 @@ namespace API.Repositories
 
             var query = _context.Books.AsQueryable();
 
-            if (!string.IsNullOrEmpty(bookFilterDTO.Title))
-                query = query.Where(t => t.Title.Contains(bookFilterDTO.Title));
+            if (!string.IsNullOrWhiteSpace(bookFilterDTO.Title))
+                query = query.Where(t => t.Title.ToLower()
+                .Contains(bookFilterDTO.Title.ToLower()));
 
-            if (!string.IsNullOrEmpty(bookFilterDTO.Author))
-                query = query.Where(a => a.Author.Contains(bookFilterDTO.Author));
+            if (!string.IsNullOrWhiteSpace(bookFilterDTO.Author))
+                query = query.Where(a => a.Author.ToLower()
+                .Contains(bookFilterDTO.Author.ToLower()));
 
-            if (!string.IsNullOrEmpty(bookFilterDTO.Category))
-                query = query.Where(c => c.Category.Contains(bookFilterDTO.Category));
+            if (!string.IsNullOrWhiteSpace(bookFilterDTO.Category))
+                query = query.Where(c => c.Category.ToLower()
+                .Contains(bookFilterDTO.Category.ToLower()));
 
-            if (bookFilterDTO.PublicationYear != 0)
-                query = query.Where(y => y.PublicationYear == bookFilterDTO.PublicationYear);
+            if (bookFilterDTO.PublicationYear > 0)
+                query = query.Where(y => 
+                y.PublicationYear == bookFilterDTO.PublicationYear);
 
-            if (!string.IsNullOrEmpty(bookFilterDTO.Publisher))
-                query = query.Where(p => p.Publisher.Contains(bookFilterDTO.Publisher));
+            if (!string.IsNullOrWhiteSpace(bookFilterDTO.Publisher))
+                query = query.Where(p => p.Publisher.ToLower()
+                .Contains(bookFilterDTO.Publisher.ToLower()));
 
             var books = await query.ToListAsync();
 
