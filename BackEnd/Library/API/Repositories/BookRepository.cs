@@ -118,7 +118,6 @@ namespace API.Repositories
                 return new RepositoryResponse<IEnumerable<Book>>(RepositoryStatus.NotFound);
             }
         }
-
         public async Task<RepositoryResponse<IEnumerable<Book>>> GetAvailableBooksAsync()
         {
             var books = await _context.Books

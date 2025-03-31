@@ -3,6 +3,7 @@ using API.DTO.Responses;
 using API.DTO.Token;
 using API.DTO.User;
 using API.Enum;
+using API.Enum.Responses;
 using API.Models;
 using API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -18,229 +19,174 @@ namespace API.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly ITokenService _tokenService;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IConfiguration _configuration;
+        private readonly IAuthService _authService;
 
-        public AuthController(ITokenService tokenService,
-            UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager,
-            IConfiguration configuration)
+        public AuthController(IAuthService authService)
         {
-            _tokenService = tokenService;
-            _userManager = userManager;
-            _roleManager = roleManager;
-            _configuration = configuration;
+            _authService = authService;
         }
 
         [HttpPost]
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
         {
-            var user = await _userManager.FindByEmailAsync(loginDTO.Email!);
+            var response = await _authService.Login(loginDTO);
 
-            if (user is not null && await _userManager.CheckPasswordAsync(user, loginDTO.Password!))
+            return response.Status switch
             {
-                var userRoles = await _userManager.GetRolesAsync(user);
-
-                var authClaims = new List<Claim>
+                RepositoryStatus.Success => Ok(new ApiResponse
                 {
-                    new Claim(ClaimTypes.Name, user.UserName!),
-                    new Claim(ClaimTypes.Email, user.Email!),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                    new Claim(ClaimTypes.Role, user.UserType.ToString())
-                };
+                    Status = "Ok",
+                    Data = response.Data,
+                    Message = "Usuário logado com sucesso"
+                }),
 
-                foreach (var userRole in userRoles)
+                RepositoryStatus.NullObject => BadRequest(new ApiResponse
                 {
-                    authClaims.Add(new Claim(ClaimTypes.Role, userRole));
-                }
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = "A requisição de login não pode ser nula"
+                }),
 
-                var token = _tokenService.GenerateAccessToken(authClaims);
-                var refreshToken = _tokenService.GenerateRefreshToken();
-
-                _ = int.TryParse(_configuration["JWT:TokenValidityInMinutes"], out int refreshTokenValidityInMinutes);
-
-                user.RefreshToken = refreshToken;
-                user.RefreshTokenExpiryTime = DateTime.Now.AddMinutes(refreshTokenValidityInMinutes);
-
-                await _userManager.UpdateAsync(user);
-
-                return Ok(new
+                RepositoryStatus.FailedToUpdateUser => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
                 {
-                    Token = new JwtSecurityTokenHandler().WriteToken(token),
-                    RefreshToken = refreshToken,
-                    Expiration = token.ValidTo
-                });
-            }
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Erro inesperado ao atualizar o usuário com as novas informações do Refresh Token"
+                }),
 
-            return Unauthorized(new ApiResponse
-            {
-                Status = "Unauthorized",
-                Data = null,
-                Message = "Usuário não autorizado"
-            });
+                RepositoryStatus.Unauthorized => Unauthorized(new ApiResponse
+                {
+                    Status = "Unauthorized",
+                    Data = null,
+                    Message = "Credenciais inválidas"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Erro inesperado ao tentar logar o usuário"
+                })
+            };
         }
 
         [HttpPost]
         [Route("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDTO userRegisterDTO)
+        public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
         {
-            var userExists = await _userManager.FindByEmailAsync(userRegisterDTO.Email);
+            var response = await _authService.Register(registerDTO);
 
-            if (userExists != null)
+            return response.Status switch 
             {
-                return StatusCode(StatusCodes.Status409Conflict,
-                new ApiResponse
+                RepositoryStatus.Success => Ok(new ApiResponse
                 {
-                    Status = "Conflict",
-                    Data = null,
-                    Message = "Já existe um usuário com este email"
-                });
-            }
+                    Status = "Ok",
+                    Data = response.Data,
+                    Message = "Usuário registardo com sucesso"
+                }),
 
-            if (userRegisterDTO.Password.Length < 6)
-            {
-                return BadRequest(new ApiResponse
+                RepositoryStatus.NullObject => BadRequest(new ApiResponse
                 {
                     Status = "Bad Request",
                     Data = null,
-                    Message = "A quantidade de caracteres para a senha é de no mínimo 6"
-                });
-            }
+                    Message = "A requisição de registro não pode ser nula"
+                }),
 
-            ApplicationUser user = new()
-            {
-                Email = userRegisterDTO.Email,
-                SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = userRegisterDTO.Name
+                RepositoryStatus.EmailAlreadyExists => Conflict(new ApiResponse
+                {
+                    Status = "Conflict",
+                    Data = null,
+                    Message = "O Email especificado já está sendo utilizado"
+                }),
+
+                RepositoryStatus.InvalidPassword => BadRequest(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = "A senha deve ter no mínimo 6 caracteres"
+                }),
+
+                RepositoryStatus.FailedToCreateUser => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Erro inesperado ao tentar criar um usuário"
+                }),
+
+                RepositoryStatus.FailedToCreateRole => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Erro inesperado ao tentar criar a role para o usuário"
+                }),
+
+                RepositoryStatus.InvalidRoleAssignment => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Erro inesperado ao tentar atribuir uma role para o usuário"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Erro inesperado ao registrar o usuário"
+                })
             };
-
-            var result = await _userManager.CreateAsync(user, userRegisterDTO.Password);
-
-            if (!result.Succeeded)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
-                {
-                    Status = "Internal Server Error",
-                    Data = null,
-                    Message = "Falha ao criar um usuário"
-                });
-            }
-
-            var roleName = UserType.User.ToString();
-
-            if (!await _roleManager.RoleExistsAsync(roleName))
-            {
-                var roleResult = await _roleManager.CreateAsync(new IdentityRole(roleName));
-
-                if (!roleResult.Succeeded)
-                {
-                    return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
-                    {
-                        Status = "Internal Server Error",
-                        Data = null,
-                        Message = "Falha ao criar a role do usuário"
-                    });
-                }
-            }
-
-            var roleAssignmentResult = await _userManager.AddToRoleAsync(user, roleName);
-
-            if (!roleAssignmentResult.Succeeded)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
-                {
-                    Status = "Internal Server Error",
-                    Data = null,
-                    Message = "Falha ao associar um usuário à role"
-                });
-            }
-
-            return Ok(
-            new ApiResponse
-            {
-                Status = "Ok",
-                Data = new UserDTO
-                {
-                    Name = userRegisterDTO.Name,
-                    Email = userRegisterDTO.Email,
-                    UserType = UserType.User
-                },
-                Message = "Usuário criado com sucesso!"
-            });
         }
 
         [HttpPost]
         [Route("refresh-token")]
         public async Task<IActionResult> RefreshToken(TokenDTO tokenDTO)
         {
-            if (tokenDTO is null)
+            var response = await _authService.RefreshToken(tokenDTO);
+
+            return response.Status switch
             {
-                return BadRequest(new ApiResponse
+                RepositoryStatus.Success => Ok(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = response.Data,
+                    Message = "Refresh Token criado com sucesso"
+                }),
+
+                RepositoryStatus.NullObject => BadRequest(new ApiResponse
                 {
                     Status = "Bad Request",
                     Data = null,
-                    Message = "Requisição inválida do cliente"
-                });
-            }
+                    Message = "O token não pode ser nulo"
+                }),
 
-            string? accessToken = tokenDTO.AccessToken ?? throw new ArgumentNullException(nameof(tokenDTO));
-            string? refreshToken = tokenDTO.RefreshToken ?? throw new ArgumentNullException(nameof(tokenDTO));
-
-            var principal = _tokenService.GetClaimsFromExpiredToken(accessToken!);
-
-            if (principal is null)
-            {
-                return BadRequest(new ApiResponse
+                RepositoryStatus.InvalidRefreshToken => Unauthorized(new ApiResponse
                 {
-                    Status = "Bad Request",
+                    Status = "Unauthorized",
                     Data = null,
-                    Message = "Access/refresh token inválido"
-                });
-            }
+                    Message = "Token/Refresh Token inválidos"
+                }),
 
-            string username = principal.Identity!.Name!;
-
-            var user = await _userManager.FindByNameAsync(username!);
-
-            if (user is null ||
-                string.IsNullOrEmpty(user.RefreshToken) ||
-                user.RefreshToken != refreshToken ||
-                user.RefreshTokenExpiryTime <= DateTime.UtcNow)
-            {
-                return BadRequest(new ApiResponse
+                RepositoryStatus.InvalidRefreshTokenExpiryTime => Unauthorized(new ApiResponse
                 {
-                    Status = "Bad Request",
+                    Status = "Unauthorized",
                     Data = null,
-                    Message = "Access/Refresh token inválido"
-                });
-            }
+                    Message = "O tempo de expiração do Refresh Token está inválido"
+                }),
 
-            var newAccessToken = _tokenService.GenerateAccessToken(principal.Claims.ToList());
-            var newRefreshToken = _tokenService.GenerateRefreshToken();
-
-            user.RefreshToken = newRefreshToken;
-
-            var updateResult = await _userManager.UpdateAsync(user);
-
-            if (!updateResult.Succeeded)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                RepositoryStatus.FailedToUpdateUser => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
                 {
                     Status = "Internal Server Error",
                     Data = null,
-                    Message = "Falha ao atualizar um usuário"
-                });
-            }
+                    Message = "Falha ao atualizar o usuário com o novo Refresh Token"
+                }),
 
-            return Ok(new
-            {
-                AccessToken = new JwtSecurityTokenHandler().WriteToken(newAccessToken),
-                RefeshToken = newRefreshToken
-            });
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Erro inesperado ao gerar o Refresh Token"
+                })
+            };
         }
 
         [HttpPut]
@@ -248,33 +194,33 @@ namespace API.Controllers
         [Route("revoke/{username}")]
         public async Task<IActionResult> RevokeToken(string username)
         {
-            var user = await _userManager.FindByNameAsync(username);
+            var response = await _authService.RevokeToken(username);
 
-            if (user is null)
+            return response switch
             {
-                return NotFound(new ApiResponse
+                RepositoryStatus.Success => NoContent(),
+
+                RepositoryStatus.UserNotFound => NotFound(new ApiResponse
                 {
                     Status = "Not Found",
                     Data = null,
-                    Message = $"Usuário '{username}' não encontrado"
-                });
-            }
+                    Message = $"O usuário '{username}' não foi encontrado"
+                }),
 
-            user.RefreshToken = null;
-
-            var result = await _userManager.UpdateAsync(user);
-
-            if (!result.Succeeded)
-            {
-                return BadRequest(new ApiResponse
+                RepositoryStatus.FailedToRevokeToken => Conflict(new ApiResponse
                 {
-                    Status = "Bad Request",
+                    Status = "Conflict",
                     Data = null,
-                    Message = "Falha ao revogar o token"
-                });
-            }
+                    Message = $"Falha ao revogar o token para o usuário '{username}'"
+                }),
 
-            return NoContent();
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = $"Erro inesperado ao revogar o token para o usuário '{username}'"
+                })
+            };
         }
     }
 }

@@ -11,8 +11,14 @@
         InvalidId,
         InvalidRole,
         InvalidDate,
+        InvalidClaims,
         InvalidReturnDate,
         InvalidQuantity,
+        InvalidPassword,
+        InvalidToken,
+        InvalidRefreshToken,
+        InvalidRefreshTokenExpiryTime,
+        InvalidRoleAssignment,
         CannotDelete,
         BookNotAvailable,
         BookNotFound,
@@ -20,6 +26,13 @@
         AlreadyInRole,
         RoleRemovedFailed,
         RoleUpdatedFailed,
-        FailedToResetPassword
+        FailedToCreateRole,
+        FailedToCreateUser,
+        FailedToUpdateUser,
+        FailedToRevokeToken,
+        FailedToResetPassword,
+        Unauthorized,
+        UserNotFound,
+        EmailAlreadyExists
     }
 }

@@ -244,18 +244,21 @@ namespace API.Controllers
                 RepositoryStatus.NotFound => NotFound(new ApiResponse
                 {
                     Status = "NotFound",
+                    Data = null,
                     Message = $"O livro de id '{id}' não foi encontrado"
                 }),
 
                 RepositoryStatus.CannotDelete => Conflict(new ApiResponse
                 {
                     Status = "Conlfict",
+                    Data = null,
                     Message = "Não é possível deletar um livro que está em progresso"
                 }),
 
                 _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
                 {
                     Status = "Internal Server Error",
+                    Data = null,
                     Message = "Erro inesperado ao deletar um livro"
                 })
             };

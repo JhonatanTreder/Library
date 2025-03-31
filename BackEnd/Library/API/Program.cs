@@ -61,11 +61,12 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 //------------------------------------------------------
 
 //Implementando os serviços na aplicação.
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddScoped<ILoanRepository, LoanRepository>();
-builder.Services.AddScoped<IEventRepository, EventRepository>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ILoanRepository, LoanRepository>();
+builder.Services.AddScoped<IEventRepository, EventRepository>();
 
 var secrectKey = builder.Configuration["JWT:SecretKey"] 
     ?? throw new ArgumentException("Invalid secret key!");
@@ -109,11 +110,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();

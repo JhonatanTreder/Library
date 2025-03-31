@@ -31,6 +31,7 @@ namespace API.Controllers
                 return NotFound(new ApiResponse
                 {
                     Status = "Not Found",
+                    Data = null,
                     Message = $"O empréstimo de id '{id}' não  foi encontrado"
                 });
             }
@@ -101,39 +102,45 @@ namespace API.Controllers
             {
                 RepositoryStatus.Success => NoContent(),
 
+                RepositoryStatus.NullObject => BadRequest(new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "O empréstimo não pode ser nulo"
+                }),
+
                 RepositoryStatus.NotFound => NotFound(new ApiResponse
                 {
                     Status = "Not Found",
+                    Data = null,
                     Message = $"O empréstimo de id '{id}' não foi encontrado"
                 }),
 
                 RepositoryStatus.BookNotFound => NotFound(new ApiResponse
                 {
                     Status = "Not Found",
+                    Data = null,
                     Message = $"O livro que corresponde ao empréstimo de id '{id}' não foi encontrado"
                 }),
 
                 RepositoryStatus.InvalidStatusTransition => Conflict(new ApiResponse
                 {
                     Status = "Conflict",
+                    Data = null,
                     Message = "O novo status fornecido é inválido"
                 }),
 
                 RepositoryStatus.InvalidReturnDate => Conflict(new ApiResponse
                 {
                     Status = "Conflict",
+                    Data = null,
                     Message = "A nova data fornecida é inválida"
-                }),
-
-                RepositoryStatus.NullObject => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
-                {
-                    Status = "Internal Server Error",
-                    Message = "O empréstimo não pode ser nulo"
                 }),
 
                 _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
                 {
                     Status = "Internal Server Error",
+                    Data = null,
                     Message = "Erro inesperado ao atualizar um empréstimo"
                 })
             };
@@ -147,9 +154,10 @@ namespace API.Controllers
 
             if (loan is null)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                return BadRequest(new ApiResponse
                 {
                     Status = "Internal Server Error",
+                    Data = null,
                     Message = "Erro inesperado ao tentar criar um empréstimo"
                 });
             }
@@ -175,18 +183,21 @@ namespace API.Controllers
                 RepositoryStatus.NotFound => NotFound(new ApiResponse
                 {
                     Status = "Not Found",
+                    Data = null,
                     Message = $"O empréstimo de id '{id}' não foi encontrado"
                 }),
 
                 RepositoryStatus.CannotDelete => Conflict(new ApiResponse
                 {
                     Status = "Conflict",
+                    Data = null,
                     Message = "Não é possível deletar um empréstimo com o status 'pending' ou 'in progress'"
                 }),
 
                 _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
                 {
                     Status = "Internal Server Error",
+                    Data = null,
                     Message = "Erro inesperado ao deletar um empréstimo"
                 })
             };
@@ -203,18 +214,21 @@ namespace API.Controllers
                 RepositoryStatus.Success => Ok(new ApiResponse
                 {
                     Status = "Ok",
+                    Data = null,
                     Message = $"O livro de id '{id}' está disponível para empréstimo"
                 }),
 
                 RepositoryStatus.BookNotAvailable => Conflict(new ApiResponse
                 {
                     Status = "Conflict",
+                    Data = null,
                     Message = $"O livro de id '{id}' não está disponível para empréstimo no momento."
                 }),
 
                 _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
                 {
                     Status = "Internal Server Error",
+                    Data = null,
                     Message = "Erro ao verificar a disponibilidade do livro."
                 })
             };
@@ -233,18 +247,21 @@ namespace API.Controllers
                 RepositoryStatus.NotFound => NotFound(new ApiResponse
                 {
                     Status = "Not Found",
+                    Data = null,
                     Message = $"O empréstimo de id '{id}' não foi encontrado"
                 }),
 
                 RepositoryStatus.InvalidStatus => Conflict(new ApiResponse
                 {
                     Status = "Conflict",
+                    Data = null,
                     Message = "O status do empréstimo deve estar em 'in progress' para ser registrado como 'finished'"
                 }),
 
                 _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
                 {
                     Status = "Internal Server Error",
+                    Data = null,
                     Message = "Erro inesperado ao tentar registrar a devolução do empréstimo"
                 })
             };
@@ -263,24 +280,28 @@ namespace API.Controllers
                 RepositoryStatus.NotFound => NotFound(new ApiResponse
                 {
                     Status = "Not Found",
+                    Data = null,
                     Message = $"O empréstimo de id '{id}' não foi encontrado"
                 }),
 
                 RepositoryStatus.InvalidStatus => Conflict(new ApiResponse
                 {
                     Status = "Conflict",
+                    Data = null,
                     Message = "O status do empréstimo deve estar em 'in progress' para poder extender o prazo de devolucao"
                 }),
 
                 RepositoryStatus.InvalidDate => Conflict(new ApiResponse
                 {
                     Status = "Conflict",
+                    Data = null,
                     Message = "A nova data de devolução não pode ser menor ou igual a data de devolução antiga"
                 }),
 
                 _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
                 {
                     Status = "Internal Server Error",
+                    Data = null,
                     Message = "Erro inesperado ao prolongar a devolução do empréstimo"
                 })
             };

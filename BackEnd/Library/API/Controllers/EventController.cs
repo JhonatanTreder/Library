@@ -120,6 +120,7 @@ namespace API.Controllers
                 return NotFound(new ApiResponse 
                 {
                     Status = "Not Found",
+                    Data = null,
                     Message = $"O evento de id '{id}' não foi encontrado"
                 });
             }
@@ -145,18 +146,21 @@ namespace API.Controllers
                 RepositoryStatus.NullObject => BadRequest(new ApiResponse
                 {
                     Status = "Bad Request",
+                    Data = null,
                     Message = $"O evento de id '{id}' não pode ser nulo"
                 }),
 
                 RepositoryStatus.NotFound => NotFound(new ApiResponse 
                 {
                     Status = "Not Found",
+                    Data = null,
                     Message = $"O evento de id '{id}' não foi encontrado"
                 }),
 
                 _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
                 {
                     Status = "Internal Server Error",
+                    Data = null,
                     Message = "Erro inesperado ao tentar atualizar um evento"
                 })
             };
@@ -175,12 +179,14 @@ namespace API.Controllers
                 RepositoryStatus.NotFound => NotFound(new ApiResponse
                 {
                     Status = "Not Found",
+                    Data = null,
                     Message = $"O evento de id '{id}' não foi encontrado"
                 }),
 
                 _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
                 {
                     Status = "Internal Server Error",
+                    Data = null,
                     Message = "Erro inesperado ao tentar deletar um evento"
                 })
             }; 
