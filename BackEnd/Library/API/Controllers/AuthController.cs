@@ -48,13 +48,6 @@ namespace API.Controllers
                     Message = "A requisição de login não pode ser nula"
                 }),
 
-                RepositoryStatus.FailedToUpdateUser => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
-                {
-                    Status = "Internal Server Error",
-                    Data = null,
-                    Message = "Erro inesperado ao atualizar o usuário com as novas informações do Refresh Token"
-                }),
-
                 RepositoryStatus.Unauthorized => Unauthorized(new ApiResponse
                 {
                     Status = "Unauthorized",
@@ -62,6 +55,12 @@ namespace API.Controllers
                     Message = "Credenciais inválidas"
                 }),
 
+                RepositoryStatus.FailedToUpdateUser => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Erro inesperado ao atualizar o usuário com as novas informações do Refresh Token"
+                }),
                 _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
                 {
                     Status = "Internal Server Error",
@@ -93,18 +92,18 @@ namespace API.Controllers
                     Message = "A requisição de registro não pode ser nula"
                 }),
 
-                RepositoryStatus.EmailAlreadyExists => Conflict(new ApiResponse
-                {
-                    Status = "Conflict",
-                    Data = null,
-                    Message = "O Email especificado já está sendo utilizado"
-                }),
-
                 RepositoryStatus.InvalidPassword => BadRequest(new ApiResponse
                 {
                     Status = "Bad Request",
                     Data = null,
                     Message = "A senha deve ter no mínimo 6 caracteres"
+                }),
+
+                RepositoryStatus.EmailAlreadyExists => Conflict(new ApiResponse
+                {
+                    Status = "Conflict",
+                    Data = null,
+                    Message = "O Email especificado já está sendo utilizado"
                 }),
 
                 RepositoryStatus.FailedToCreateUser => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
@@ -200,7 +199,7 @@ namespace API.Controllers
             {
                 RepositoryStatus.Success => NoContent(),
 
-                RepositoryStatus.UserNotFound => NotFound(new ApiResponse
+                RepositoryStatus.UserNotFound => NotFound(new ApiResponse 
                 {
                     Status = "Not Found",
                     Data = null,

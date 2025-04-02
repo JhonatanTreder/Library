@@ -61,7 +61,7 @@ namespace API.Repositories
 
         public async Task<RepositoryResponse<Loan>> GetLoanByIdAsync(int id)
         {
-             var loan = await _context.Loans.FindAsync(id);
+            var loan = await _context.Loans.FindAsync(id);
 
             if (loan is null)
             {
@@ -166,10 +166,10 @@ namespace API.Repositories
 
         public async Task<RepositoryStatus> UpdateLoanAsync(int id, LoanUpdateDTO loanUpdateDTO)
         {
-            var loan = await GetLoanByIdAsync(id);
-
             if (loanUpdateDTO is null)
                 return RepositoryStatus.NullObject;
+
+            var loan = await GetLoanByIdAsync(id);
 
             if (loan.Data is null)
                 return RepositoryStatus.NotFound;
@@ -191,9 +191,7 @@ namespace API.Repositories
                 var book = await _context.Books.FindAsync(loan.Data.BookId);
 
                 if (book is null)
-                {
                     return RepositoryStatus.BookNotFound;
-                }
 
                 book.Status = BookStatus.Available;
                 _context.Update(book);
