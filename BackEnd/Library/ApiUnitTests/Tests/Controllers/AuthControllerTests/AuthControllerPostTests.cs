@@ -296,5 +296,123 @@ namespace ApiUnitTests.Tests.Controllers.AuthControllerTests
             Assert.Null(response.Data);
             Assert.Equal("Erro inesperado ao tentar atribuir uma role para o usuário", response.Message);
         }
+
+        [Fact]
+        public async Task RefreshToken_ReturnOk()
+        {
+            var tokens = new TokenDTO
+            {
+                AccessToken = "valid-access-token",
+                RefreshToken = "valid-refresh-token"
+            };
+
+            var newTokens = new TokenDTO
+            {
+                AccessToken = "new-access-token",
+                RefreshToken = "new-refresh-token"
+            };
+
+            _authServiceMock.Setup(service => service.RefreshToken(tokens))
+                .ReturnsAsync(new RepositoryResponse<TokenDTO>(RepositoryStatus.Success, newTokens));
+
+            var refreshTokenResult = await _controller.RefreshToken(tokens);
+            var okSuccessResult = Assert.IsType<OkObjectResult>(refreshTokenResult);
+            var response = Assert.IsType<ApiResponse>(okSuccessResult.Value);
+
+            Assert.Equal("Ok", response.Status);
+            Assert.NotNull(response.Data);
+            Assert.Equal("Refresh Token criado com sucesso", response.Message);
+        }
+
+        [Fact]
+        public async Task RefreshToken_ReturnBadRequest_WhenTokenIsNull()
+        {
+            var tokens = new TokenDTO
+            {
+                AccessToken = "",
+                RefreshToken = ""
+            };
+
+            _authServiceMock.Setup(service => service.RefreshToken(tokens))
+                .ReturnsAsync(new RepositoryResponse<TokenDTO>(RepositoryStatus.NullObject));
+
+            var refreshTokenResult = await _controller.RefreshToken(tokens);
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(refreshTokenResult);
+            var response = Assert.IsType<ApiResponse>(badRequestResult.Value);
+
+            Assert.Equal("Bad Request", response.Status);
+            Assert.Null(response.Data);
+            Assert.Equal("O token não pode ser nulo", response.Message);
+        }
+
+        [Fact]
+        public async Task RefreshToken_ReturnUnauthorized_WhenInvalidRefreshToken()
+        {
+            var tokens = new TokenDTO
+            {
+                AccessToken = "test",
+                RefreshToken = "test"
+            };
+
+            _authServiceMock.Setup(service => service.RefreshToken(tokens))
+                .ReturnsAsync(new RepositoryResponse<TokenDTO>(RepositoryStatus.InvalidRefreshToken));
+
+            var refreshTokenResult = await _controller.RefreshToken(tokens);
+            var unauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(refreshTokenResult);
+            var response = Assert.IsType<ApiResponse>(unauthorizedResult.Value);
+
+            Assert.Equal("Unauthorized", response.Status);
+            Assert.Null(response.Data);
+            Assert.Equal("Token/Refresh Token inválidos", response.Message);
+        }
+
+        [Fact]
+        public async Task RefreshToken_ReturnUnauthorized_WhenInvalidRefreshTokenExpiryTime()
+        {
+            var tokens = new TokenDTO
+            {
+                AccessToken = "test",
+                RefreshToken = "test"
+            };
+
+            _authServiceMock.Setup(service => service.RefreshToken(tokens))
+                .ReturnsAsync(new RepositoryResponse<TokenDTO>(RepositoryStatus.InvalidRefreshTokenExpiryTime));
+
+            var refreshTokenResult = await _controller.RefreshToken(tokens);
+            var unauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(refreshTokenResult);
+            var response = Assert.IsType<ApiResponse>(unauthorizedResult.Value);
+
+            Console.WriteLine(response.Status);
+
+            Assert.Equal("Unauthorized", response.Status);
+            Assert.Null(response.Data);
+            Assert.Equal("O tempo de expiração do Refresh Token está inválido", response.Message);
+        }
+
+        [Fact]
+        public async Task RefreshToken_Return500_WhenFailedToUpdateUser()
+        {
+            var tokens = new TokenDTO
+            {
+                AccessToken = "test",
+                RefreshToken = "test"
+            };
+
+            _authServiceMock.Setup(service => service.RefreshToken(tokens))
+               .ReturnsAsync(new RepositoryResponse<TokenDTO>(RepositoryStatus.FailedToUpdateUser));
+
+            var refreshTokenResult = await _controller.RefreshToken(tokens);
+            var objectResult = Assert.IsType<ObjectResult>(refreshTokenResult);
+
+            Assert.Equal(StatusCodes.Status500InternalServerError, objectResult.StatusCode);
+
+            var response = Assert.IsType<ApiResponse>(objectResult.Value);
+
+            Assert.Equal("Internal Server Error", response.Status);
+            Assert.Null(response.Data);
+            Assert.Equal("Falha ao atualizar o usuário com o novo Refresh Token", response.Message);
+        }
+
+
     }
 }
