@@ -382,8 +382,6 @@ namespace ApiUnitTests.Tests.Controllers.AuthControllerTests
             var unauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(refreshTokenResult);
             var response = Assert.IsType<ApiResponse>(unauthorizedResult.Value);
 
-            Console.WriteLine(response.Status);
-
             Assert.Equal("Unauthorized", response.Status);
             Assert.Null(response.Data);
             Assert.Equal("O tempo de expiração do Refresh Token está inválido", response.Message);
@@ -412,7 +410,5 @@ namespace ApiUnitTests.Tests.Controllers.AuthControllerTests
             Assert.Null(response.Data);
             Assert.Equal("Falha ao atualizar o usuário com o novo Refresh Token", response.Message);
         }
-
-
     }
 }

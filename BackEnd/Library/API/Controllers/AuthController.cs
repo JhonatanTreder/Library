@@ -221,7 +221,7 @@ namespace API.Controllers
                 {
                     Status = "Bad Request",
                     Data = null,
-                    Message = $"O nome do usuário não pode ser nulo ou conter espaços vazios"
+                    Message = "O nome do usuário não pode ser nulo ou conter espaços vazios"
                 }),
 
                 RepositoryStatus.UserNotFound => NotFound(new ApiResponse 
