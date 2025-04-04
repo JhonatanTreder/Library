@@ -1,4 +1,4 @@
-﻿using ApiUnitTests.Fixtures;
+﻿using ApiUnitTests.Fixtures.Global;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace ApiUnitTests.Fixtures.Collections
 {
     [CollectionDefinition("DatabaseCollection")]
-    public class DatabaseCollection : ICollectionFixture<DataBaseFixture>
+    public class DatabaseCollection : ICollectionFixture<DatabaseFixture>
     {
 
     }

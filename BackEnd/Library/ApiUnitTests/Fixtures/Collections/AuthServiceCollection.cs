@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace ApiUnitTests.Fixtures.Collections
 {
-    [CollectionDefinition("ServiceCollection")]
-    public class ServiceCollection : ICollectionFixture<ServiceFixture>
+    [CollectionDefinition("AuthServiceCollection")]
+    public class AuthServiceCollection : ICollectionFixture<AuthServiceFixture>
     {
-
     }
 }

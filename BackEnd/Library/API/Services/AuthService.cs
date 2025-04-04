@@ -201,6 +201,11 @@ namespace API.Services
 
         public async Task<RepositoryStatus> RevokeToken(string username)
         {
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                return RepositoryStatus.NullObject;
+            }
+
             var user = await _userManager.FindByNameAsync(username);
 
             if (user is null)

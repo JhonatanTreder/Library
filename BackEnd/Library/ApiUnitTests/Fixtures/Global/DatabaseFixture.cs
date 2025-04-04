@@ -6,13 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ApiUnitTests.Fixtures
+namespace ApiUnitTests.Fixtures.Global
 {
-    class DataBaseFixture : IDisposable
+    public class DatabaseFixture : IDisposable
     {
         public AppDbContext DbContext { get; }
 
-        public DataBaseFixture()
+        public DatabaseFixture()
         {
             var options = new DbContextOptionsBuilder<AppDbContext>()
             .UseInMemoryDatabase("TestDatabase").Options;
@@ -22,7 +22,7 @@ namespace ApiUnitTests.Fixtures
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            DbContext.Dispose();
         }
     }
 }
