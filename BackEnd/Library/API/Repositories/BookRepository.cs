@@ -1,6 +1,7 @@
 ﻿using API.Context;
 using API.DTO.Book;
 using API.DTO.Responses;
+using API.DTOs.Book;
 using API.Enum;
 using API.Enum.Responses;
 using API.Models;
@@ -62,26 +63,37 @@ namespace API.Repositories
             return RepositoryStatus.Success;
         }
 
-        public async Task<RepositoryResponse<Book>> GetBookByIdAsync(int id)
+        public async Task<RepositoryResponse<BookReturnDTO>> GetBookByIdAsync(int id)
         {
-            var book = await _context.Books.FindAsync(id);
+            var dbBook = await _context.Books.FindAsync(id);
 
-            if (book is null)
+            if (dbBook is null)
             {
-                return new RepositoryResponse<Book>(RepositoryStatus.NotFound);
+                return new RepositoryResponse<BookReturnDTO>(RepositoryStatus.NotFound);
             }
 
             else
             {
-                return new RepositoryResponse<Book>(RepositoryStatus.Success, book);
+                var book = new BookReturnDTO
+                {
+                    BookId = dbBook.Id,
+                    Title = dbBook.Title,
+                    Author = dbBook.Author,
+                    Description = dbBook.Description ?? string.Empty,
+                    Publisher = dbBook.Publisher,
+                    PublicationYear = dbBook.PublicationYear,
+                    Status = dbBook.Status
+                };
+
+                return new RepositoryResponse<BookReturnDTO>(RepositoryStatus.Success, book);
             }
         }
 
-        public async Task<RepositoryResponse<IEnumerable<Book>>> GetBooksAsync(BookFilterDTO bookFilterDTO)
+        public async Task<RepositoryResponse<IEnumerable<BookReturnDTO>>> GetBooksAsync(BookFilterDTO bookFilterDTO)
         {
             if (bookFilterDTO is null)
             {
-                return new RepositoryResponse<IEnumerable<Book>>(RepositoryStatus.NullObject);
+                return new RepositoryResponse<IEnumerable<BookReturnDTO>>(RepositoryStatus.NullObject);
             }
 
             var query = _context.Books.AsQueryable();
@@ -106,49 +118,78 @@ namespace API.Repositories
                 query = query.Where(p => p.Publisher.ToLower()
                 .Contains(bookFilterDTO.Publisher.ToLower()));
 
-            var books = await query.ToListAsync();
+            var books = await query.Select(b => new BookReturnDTO
+            {
+                BookId = b.Id,
+                Title = b.Title,
+                Author = b.Author,
+                Description = b.Description ?? string.Empty,
+                Publisher = b.Publisher,
+                PublicationYear = b.PublicationYear,
+                Status = b.Status
+
+
+            }).ToListAsync();
 
             if (books.Count > 0)
             {
-                return new RepositoryResponse<IEnumerable<Book>>(RepositoryStatus.Success, books);
+                return new RepositoryResponse<IEnumerable<BookReturnDTO>>(RepositoryStatus.Success, books);
             }
 
             else
             {
-                return new RepositoryResponse<IEnumerable<Book>>(RepositoryStatus.NotFound);
+                return new RepositoryResponse<IEnumerable<BookReturnDTO>>(RepositoryStatus.NotFound);
             }
         }
-        public async Task<RepositoryResponse<IEnumerable<Book>>> GetAvailableBooksAsync()
+        public async Task<RepositoryResponse<IEnumerable<BookReturnDTO>>> GetAvailableBooksAsync()
         {
             var books = await _context.Books
-                .Where(book => book.Status == BookStatus.Available)
-                .ToListAsync();
+                .Where(book => book.Status == BookStatus.Available).Select(b => new BookReturnDTO 
+                {
+                    BookId = b.Id,
+                    Title = b.Title,
+                    Author = b.Author,
+                    Description = b.Description ?? string.Empty,
+                    Publisher = b.Publisher,
+                    PublicationYear = b.PublicationYear,
+                    Status = b.Status
+
+                }).ToListAsync();
 
             if (books.Any())
             {
-                return new RepositoryResponse<IEnumerable<Book>>(RepositoryStatus.Success, books);
+                return new RepositoryResponse<IEnumerable<BookReturnDTO>>(RepositoryStatus.Success, books);
             }
 
             else
             {
-                return new RepositoryResponse<IEnumerable<Book>>(RepositoryStatus.NotFound);
+                return new RepositoryResponse<IEnumerable<BookReturnDTO>>(RepositoryStatus.NotFound);
             }
         }
 
-        public async Task<RepositoryResponse<IEnumerable<Book>>> GetBorrowedBooksAsync()
+        public async Task<RepositoryResponse<IEnumerable<BookReturnDTO>>> GetBorrowedBooksAsync()
         {
             var books = await _context.Books
-                 .Where(book => book.Status == BookStatus.Borrowed)
-                 .ToListAsync();
+                 .Where(book => book.Status == BookStatus.Borrowed).Select(b => new BookReturnDTO 
+                 {
+                     BookId = b.Id,
+                     Title = b.Title,
+                     Author = b.Author,
+                     Description = b.Description ?? string.Empty,
+                     Publisher = b.Publisher,
+                     PublicationYear = b.PublicationYear,
+                     Status = b.Status
+
+                 }).ToListAsync();
 
             if (books.Any())
             {
-                return new RepositoryResponse<IEnumerable<Book>>(RepositoryStatus.Success, books);
+                return new RepositoryResponse<IEnumerable<BookReturnDTO>>(RepositoryStatus.Success, books);
             }
 
             else
             {
-                return new RepositoryResponse<IEnumerable<Book>>(RepositoryStatus.NotFound);
+                return new RepositoryResponse<IEnumerable<BookReturnDTO>>(RepositoryStatus.NotFound);
             }
         }
 

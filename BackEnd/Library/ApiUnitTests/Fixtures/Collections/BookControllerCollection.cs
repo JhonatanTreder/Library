@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ApiUnitTests.Fixtures.Collections
 {
-    [CollectionDefinition("AuthServiceCollection")]
-    public class AuthServiceCollection : ICollectionFixture<AuthServiceFixture>
+    [CollectionDefinition("BookControllerCollection")]
+    public class BookControllerCollection : ICollectionFixture<BookControllerFixture>
     { }
 }

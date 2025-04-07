@@ -9,7 +9,5 @@ namespace ApiUnitTests.Fixtures.Collections
 {
     [CollectionDefinition("DatabaseCollection")]
     public class DatabaseCollection : ICollectionFixture<DatabaseFixture>
-    {
-
-    }
+    { }
 }

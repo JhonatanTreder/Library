@@ -23,16 +23,6 @@ namespace API.Controllers
         [Authorize(Roles = "user,librarian,admin")]
         public async Task<IActionResult> Get([FromQuery] BookFilterDTO bookDTO)
         {
-            if (bookDTO is null)
-            {
-                return BadRequest(new ApiResponse
-                {
-                    Status = "Bad Request",
-                    Data = null,
-                    Message = "O livro não pode ser nulo"
-                });
-            }
-
             var books = await _bookRepository.GetBooksAsync(bookDTO);
 
             return books.Status switch
