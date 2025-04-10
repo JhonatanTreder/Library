@@ -3,10 +3,7 @@ using API.DTO.Responses;
 using API.Enum.Responses;
 using API.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Client;
-using System.Reflection.Metadata.Ecma335;
 
 namespace API.Controllers
 {
@@ -60,7 +57,7 @@ namespace API.Controllers
 
             var loans = await _loanRepository.GetLoansAsync(loanFilterDTO);
 
-            return loans.Status switch 
+            return loans.Status switch
             {
                 RepositoryStatus.Success => Ok(new ApiResponse
                 {

@@ -65,11 +65,16 @@ namespace API.Repositories
 
         public async Task<RepositoryResponse<BookReturnDTO>> GetBookByIdAsync(int id)
         {
+            if (id <= 0)
+            {
+                return new RepositoryResponse<BookReturnDTO>(RepositoryStatus.InvalidId);
+            }
+
             var dbBook = await _context.Books.FindAsync(id);
 
             if (dbBook is null)
             {
-                return new RepositoryResponse<BookReturnDTO>(RepositoryStatus.NotFound);
+                return new RepositoryResponse<BookReturnDTO>(RepositoryStatus.BookNotFound);
             }
 
             else
@@ -111,7 +116,7 @@ namespace API.Repositories
                 .Contains(bookFilterDTO.Category.ToLower()));
 
             if (bookFilterDTO.PublicationYear > 0)
-                query = query.Where(y => 
+                query = query.Where(y =>
                 y.PublicationYear == bookFilterDTO.PublicationYear);
 
             if (!string.IsNullOrWhiteSpace(bookFilterDTO.Publisher))
@@ -144,7 +149,7 @@ namespace API.Repositories
         public async Task<RepositoryResponse<IEnumerable<BookReturnDTO>>> GetAvailableBooksAsync()
         {
             var books = await _context.Books
-                .Where(book => book.Status == BookStatus.Available).Select(b => new BookReturnDTO 
+                .Where(book => book.Status == BookStatus.Available).Select(b => new BookReturnDTO
                 {
                     BookId = b.Id,
                     Title = b.Title,
@@ -163,14 +168,14 @@ namespace API.Repositories
 
             else
             {
-                return new RepositoryResponse<IEnumerable<BookReturnDTO>>(RepositoryStatus.NotFound);
+                return new RepositoryResponse<IEnumerable<BookReturnDTO>>(RepositoryStatus.BookNotFound);
             }
         }
 
         public async Task<RepositoryResponse<IEnumerable<BookReturnDTO>>> GetBorrowedBooksAsync()
         {
             var books = await _context.Books
-                 .Where(book => book.Status == BookStatus.Borrowed).Select(b => new BookReturnDTO 
+                 .Where(book => book.Status == BookStatus.Borrowed).Select(b => new BookReturnDTO
                  {
                      BookId = b.Id,
                      Title = b.Title,
@@ -189,7 +194,7 @@ namespace API.Repositories
 
             else
             {
-                return new RepositoryResponse<IEnumerable<BookReturnDTO>>(RepositoryStatus.NotFound);
+                return new RepositoryResponse<IEnumerable<BookReturnDTO>>(RepositoryStatus.BookNotFound);
             }
         }
 

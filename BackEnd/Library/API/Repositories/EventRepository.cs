@@ -4,9 +4,7 @@ using API.DTO.Responses;
 using API.Enum.Responses;
 using API.Models;
 using API.Repositories.Interfaces;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 
 namespace API.Repositories
 {

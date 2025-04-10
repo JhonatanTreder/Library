@@ -1,9 +1,6 @@
-﻿using API.DTO.Authentication;
-using API.DTO.Login;
-using API.DTO.Responses;
+﻿using API.DTO.Responses;
 using API.DTO.User;
 using API.Enum.Responses;
-using API.Models;
 
 namespace API.Repositories.Interfaces
 {

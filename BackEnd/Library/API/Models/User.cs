@@ -1,5 +1,4 @@
 ﻿using API.Enum;
-using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 namespace API.Models
 {

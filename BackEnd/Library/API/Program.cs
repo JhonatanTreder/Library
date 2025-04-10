@@ -1,15 +1,15 @@
 using API.Context;
-using Microsoft.IdentityModel.Tokens;
+using API.Models;
+using API.Repositories;
+using API.Repositories.Interfaces;
+using API.Services;
+using API.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Text;
-using API.Services.Interfaces;
-using API.Services;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using API.Models;
-using API.Repositories.Interfaces;
-using API.Repositories;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -68,7 +68,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ILoanRepository, LoanRepository>();
 builder.Services.AddScoped<IEventRepository, EventRepository>();
 
-var secrectKey = builder.Configuration["JWT:SecretKey"] 
+var secrectKey = builder.Configuration["JWT:SecretKey"]
     ?? throw new ArgumentException("Invalid secret key!");
 
 //Especificando o serviço de autenticação do Token.

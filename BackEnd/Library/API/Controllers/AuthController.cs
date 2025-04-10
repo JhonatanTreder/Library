@@ -1,17 +1,10 @@
 ﻿using API.DTO.Login;
 using API.DTO.Responses;
 using API.DTO.Token;
-using API.DTO.User;
-using API.Enum;
 using API.Enum.Responses;
-using API.Models;
 using API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 
 namespace API.Controllers
 {
@@ -85,7 +78,7 @@ namespace API.Controllers
         {
             var response = await _authService.Register(registerDTO);
 
-            return response.Status switch 
+            return response.Status switch
             {
                 RepositoryStatus.Success => Ok(new ApiResponse
                 {
@@ -163,7 +156,7 @@ namespace API.Controllers
                     Data = response.Data,
                     Message = "Refresh Token criado com sucesso"
                 }),
-                
+
                 RepositoryStatus.NullObject => BadRequest(new ApiResponse
                 {
                     Status = "Bad Request",
@@ -224,7 +217,7 @@ namespace API.Controllers
                     Message = "O nome do usuário não pode ser nulo ou conter espaços vazios"
                 }),
 
-                RepositoryStatus.UserNotFound => NotFound(new ApiResponse 
+                RepositoryStatus.UserNotFound => NotFound(new ApiResponse
                 {
                     Status = "Not Found",
                     Data = null,

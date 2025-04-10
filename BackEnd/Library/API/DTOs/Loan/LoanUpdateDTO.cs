@@ -1,6 +1,5 @@
 ﻿using API.Enum;
 using System.ComponentModel.DataAnnotations;
-using System.Runtime.CompilerServices;
 
 namespace API.DTO.Loan
 {

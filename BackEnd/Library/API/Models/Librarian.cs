@@ -25,6 +25,6 @@ namespace API.Models
         [Required(ErrorMessage = "O tipo de usuário é obrigatório")]
         public UserType Type { get; set; }
         public ICollection<Loan>? Loans { get; set; }
-        public ICollection<Event>? Events { get; set; } 
+        public ICollection<Event>? Events { get; set; }
     }
 }

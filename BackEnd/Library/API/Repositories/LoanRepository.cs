@@ -6,7 +6,6 @@ using API.Enum.Responses;
 using API.Models;
 using API.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Net;
 
 namespace API.Repositories
 {

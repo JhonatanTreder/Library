@@ -75,7 +75,7 @@ namespace ApiUnitTests.Tests.Controllers.AuthControllerTests
         }
 
         [Fact]
-        public async Task Loginuser_ReturnUnauthorized_WhenUserIsUnauthorized()
+        public async Task LoginUser_ReturnUnauthorized_WhenUserIsUnauthorized()
         {
             var user = new LoginDTO
             {

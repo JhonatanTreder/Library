@@ -3,9 +3,7 @@ using API.DTO.Responses;
 using API.Enum.Responses;
 using API.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Reflection.Metadata.Ecma335;
 
 namespace API.Controllers
 {
@@ -36,9 +34,9 @@ namespace API.Controllers
 
             var _event = await _eventRepository.AddEventAsync(eventCreateDTO);
 
-            return _event.Status switch 
+            return _event.Status switch
             {
-                RepositoryStatus.Success => CreatedAtAction(nameof(Get), new { id = _event.Data!.Id}, new ApiResponse
+                RepositoryStatus.Success => CreatedAtAction(nameof(Get), new { id = _event.Data!.Id }, new ApiResponse
                 {
                     Status = "Created",
                     Data = _event.Data,
@@ -93,7 +91,7 @@ namespace API.Controllers
                     Message = "O evento não pode ser nulo"
                 }),
 
-                RepositoryStatus.NotFound => NotFound(new ApiResponse 
+                RepositoryStatus.NotFound => NotFound(new ApiResponse
                 {
                     Status = "Not Found",
                     Data = null,
@@ -117,7 +115,7 @@ namespace API.Controllers
 
             if (_event is null)
             {
-                return NotFound(new ApiResponse 
+                return NotFound(new ApiResponse
                 {
                     Status = "Not Found",
                     Data = null,
@@ -125,7 +123,7 @@ namespace API.Controllers
                 });
             }
 
-            return Ok(new ApiResponse 
+            return Ok(new ApiResponse
             {
                 Status = "Ok",
                 Data = _event,
@@ -150,7 +148,7 @@ namespace API.Controllers
                     Message = $"O evento de id '{id}' não pode ser nulo"
                 }),
 
-                RepositoryStatus.NotFound => NotFound(new ApiResponse 
+                RepositoryStatus.NotFound => NotFound(new ApiResponse
                 {
                     Status = "Not Found",
                     Data = null,
@@ -172,7 +170,7 @@ namespace API.Controllers
         {
             var response = await _eventRepository.DeleteEventAsync(id);
 
-            return response switch 
+            return response switch
             {
                 RepositoryStatus.Success => NoContent(),
 
@@ -189,7 +187,7 @@ namespace API.Controllers
                     Data = null,
                     Message = "Erro inesperado ao tentar deletar um evento"
                 })
-            }; 
+            };
         }
     }
 }

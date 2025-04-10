@@ -3,7 +3,6 @@ using API.DTO.Responses;
 using API.Enum.Responses;
 using API.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -41,7 +40,7 @@ namespace API.Controllers
                     Message = "O livro não pode ser nulo"
                 }),
 
-                RepositoryStatus.NotFound => NotFound(new ApiResponse 
+                RepositoryStatus.NotFound => NotFound(new ApiResponse
                 {
                     Status = "Not Found",
                     Data = null,
@@ -63,7 +62,7 @@ namespace API.Controllers
         {
             var response = await _bookRepository.GetBookByIdAsync(id);
 
-            return response.Status switch 
+            return response.Status switch
             {
                 RepositoryStatus.Success => Ok(new ApiResponse
                 {
@@ -72,11 +71,18 @@ namespace API.Controllers
                     Message = $"Livro de id '{id}' encontrado com sucesso"
                 }),
 
-                RepositoryStatus.NotFound => NotFound(new ApiResponse 
+                RepositoryStatus.InvalidId => BadRequest(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = $"O id '{id}' não pode ser igual ou menor que 0"
+                }),
+
+                RepositoryStatus.BookNotFound => NotFound(new ApiResponse
                 {
                     Status = "Not Found",
                     Data = null,
-                    Message = $"Livro de id '{id}' não encontrado"
+                    Message = $"O livro de id '{id}' não foi encontrado"
                 }),
 
                 _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
@@ -94,7 +100,7 @@ namespace API.Controllers
         {
             var books = await _bookRepository.GetAvailableBooksAsync();
 
-            return books.Status switch 
+            return books.Status switch
             {
                 RepositoryStatus.Success => Ok(new ApiResponse
                 {
@@ -103,7 +109,7 @@ namespace API.Controllers
                     Message = "Livros disponíveis encontrados com sucesso"
                 }),
 
-                RepositoryStatus.NotFound => NotFound(new ApiResponse
+                RepositoryStatus.BookNotFound => NotFound(new ApiResponse
                 {
                     Status = "Not Found",
                     Data = null,
@@ -123,7 +129,7 @@ namespace API.Controllers
         [Authorize(Roles = "user,librarian,admin")]
         public async Task<IActionResult> GetBorrowedBooks()
         {
-            var books = await _bookRepository.GetAvailableBooksAsync();
+            var books = await _bookRepository.GetBorrowedBooksAsync();
 
             return books.Status switch
             {
@@ -134,7 +140,7 @@ namespace API.Controllers
                     Message = "Livros emprestados encontrados com sucesso"
                 }),
 
-                RepositoryStatus.NotFound => NotFound(new ApiResponse
+                RepositoryStatus.BookNotFound => NotFound(new ApiResponse
                 {
                     Status = "Not Found",
                     Data = null,
@@ -173,7 +179,7 @@ namespace API.Controllers
                         : "Erro inesperado ao tentar criar um livro."
                 }),
 
-                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse 
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
                 {
 
                 })

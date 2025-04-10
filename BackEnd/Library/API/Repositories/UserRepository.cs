@@ -1,15 +1,10 @@
-﻿using API.Context;
-using API.DTO.Authentication;
-using API.DTO.Login;
-using API.DTO.Responses;
+﻿using API.DTO.Responses;
 using API.DTO.User;
-using API.Enum;
 using API.Enum.Responses;
 using API.Models;
 using API.Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
 
 namespace API.Repositories
 {

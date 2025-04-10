@@ -190,7 +190,7 @@ namespace API.Services
                 return new RepositoryResponse<TokenDTO>(RepositoryStatus.FailedToUpdateUser);
             }
 
-            var tokenInfo = new TokenDTO 
+            var tokenInfo = new TokenDTO
             {
                 AccessToken = new JwtSecurityTokenHandler().WriteToken(newAccessToken),
                 RefreshToken = newRefreshToken

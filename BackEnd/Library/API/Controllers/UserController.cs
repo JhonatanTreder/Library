@@ -1,7 +1,6 @@
 ﻿using API.DTO.Responses;
 using API.DTO.User;
 using API.Enum.Responses;
-using API.Models;
 using API.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -35,7 +34,7 @@ namespace API.Controllers
 
             var response = await _userRepository.GetUsersAsync(userFilterDTO);
 
-            return response.Status switch 
+            return response.Status switch
             {
                 RepositoryStatus.Success => Ok(new ApiResponse
                 {
@@ -83,7 +82,7 @@ namespace API.Controllers
 
             var response = await _userRepository.GetUserByIdAsync(id);
 
-            return response.Status switch 
+            return response.Status switch
             {
                 RepositoryStatus.Success => Ok(new ApiResponse
                 {
