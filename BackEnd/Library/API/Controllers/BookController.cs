@@ -226,7 +226,6 @@ namespace API.Controllers
             };
         }
 
-
         [HttpDelete("{id}")]
         [Authorize(Roles = "librarian")]
         public async Task<IActionResult> Delete(int id)
@@ -237,18 +236,18 @@ namespace API.Controllers
             {
                 RepositoryStatus.Success => NoContent(),
 
-                RepositoryStatus.NotFound => NotFound(new ApiResponse
+                RepositoryStatus.BookNotFound => NotFound(new ApiResponse
                 {
-                    Status = "NotFound",
+                    Status = "Not Found",
                     Data = null,
                     Message = $"O livro de id '{id}' não foi encontrado"
                 }),
 
                 RepositoryStatus.CannotDelete => Conflict(new ApiResponse
                 {
-                    Status = "Conlfict",
+                    Status = "Conflict",
                     Data = null,
-                    Message = "Não é possível deletar um livro que está em progresso"
+                    Message = "Não é possível deletar um livro que o status está em progresso"
                 }),
 
                 _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
