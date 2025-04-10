@@ -8,7 +8,7 @@ namespace API.Repositories.Interfaces
 {
     public interface IBookRepository
     {
-        Task<RepositoryResponse<Book>> AddBookAsync(CreateBookDTO book);
+        Task<RepositoryResponse<BookReturnDTO>> AddBookAsync(CreateBookDTO book);
         Task<RepositoryStatus> DeleteBookAsync(int id);
         Task<RepositoryResponse<BookReturnDTO>> GetBookByIdAsync(int id);
         Task<RepositoryResponse<IEnumerable<BookReturnDTO>>> GetBooksAsync(BookFilterDTO filterBookDTO);

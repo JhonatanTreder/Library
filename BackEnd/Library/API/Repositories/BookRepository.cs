@@ -19,11 +19,11 @@ namespace API.Repositories
             _context = context;
         }
 
-        public async Task<RepositoryResponse<Book>> AddBookAsync(CreateBookDTO bookDTO)
+        public async Task<RepositoryResponse<BookReturnDTO>> AddBookAsync(CreateBookDTO bookDTO)
         {
             if (bookDTO is null)
             {
-                return new RepositoryResponse<Book>(RepositoryStatus.NullObject);
+                return new RepositoryResponse<BookReturnDTO>(RepositoryStatus.NullObject);
             }
 
             var book = new Book
@@ -41,7 +41,18 @@ namespace API.Repositories
             await _context.AddAsync(book);
             await _context.SaveChangesAsync();
 
-            return new RepositoryResponse<Book>(RepositoryStatus.Success, book);
+            var bookReturn = new BookReturnDTO
+            {
+                Title = book.Title,
+                Author = book.Author,
+                Description = book.Description ?? string.Empty,
+                PublicationYear = book.PublicationYear,
+                Publisher = book.Publisher,
+                Category = book.Category,
+                Status = BookStatus.Available
+            };
+
+            return new RepositoryResponse<BookReturnDTO>(RepositoryStatus.Success, bookReturn);
         }
 
         public async Task<RepositoryStatus> DeleteBookAsync(int id)
@@ -85,6 +96,7 @@ namespace API.Repositories
                     Title = dbBook.Title,
                     Author = dbBook.Author,
                     Description = dbBook.Description ?? string.Empty,
+                    Category = dbBook.Category,
                     Publisher = dbBook.Publisher,
                     PublicationYear = dbBook.PublicationYear,
                     Status = dbBook.Status
@@ -123,6 +135,10 @@ namespace API.Repositories
                 query = query.Where(p => p.Publisher.ToLower()
                 .Contains(bookFilterDTO.Publisher.ToLower()));
 
+            if (!string.IsNullOrWhiteSpace(bookFilterDTO.Category))
+                query = query.Where(c => c.Category.ToLower()
+                .Contains(bookFilterDTO.Category.ToLower()));
+
             var books = await query.Select(b => new BookReturnDTO
             {
                 BookId = b.Id,
@@ -131,6 +147,7 @@ namespace API.Repositories
                 Description = b.Description ?? string.Empty,
                 Publisher = b.Publisher,
                 PublicationYear = b.PublicationYear,
+                Category = b.Category,
                 Status = b.Status
 
 
@@ -157,6 +174,7 @@ namespace API.Repositories
                     Description = b.Description ?? string.Empty,
                     Publisher = b.Publisher,
                     PublicationYear = b.PublicationYear,
+                    Category = b.Category,
                     Status = b.Status
 
                 }).ToListAsync();
@@ -183,6 +201,7 @@ namespace API.Repositories
                      Description = b.Description ?? string.Empty,
                      Publisher = b.Publisher,
                      PublicationYear = b.PublicationYear,
+                     Category = b.Category,
                      Status = b.Status
 
                  }).ToListAsync();

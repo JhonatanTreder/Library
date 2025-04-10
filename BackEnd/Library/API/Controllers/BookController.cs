@@ -164,7 +164,7 @@ namespace API.Controllers
 
             return book.Status switch
             {
-                RepositoryStatus.Success => CreatedAtAction(nameof(Get), new { id = book.Data!.Id }, new ApiResponse
+                RepositoryStatus.Success => CreatedAtAction(nameof(Get), new { id = book.Data!.BookId }, new ApiResponse
                 {
                     Status = "Created",
                     Data = book.Data,
@@ -174,14 +174,15 @@ namespace API.Controllers
                 RepositoryStatus.NullObject => BadRequest(new ApiResponse
                 {
                     Status = "Bad Request",
-                    Message = book.Status == RepositoryStatus.NullObject
-                        ? "Os dados do livro são inválidos."
-                        : "Erro inesperado ao tentar criar um livro."
+                    Data = null,
+                    Message = "O livro não pode ser nulo"
                 }),
 
                 _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
                 {
-
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Erro inesperado ao tentar criar um livro"
                 })
             };
         }
