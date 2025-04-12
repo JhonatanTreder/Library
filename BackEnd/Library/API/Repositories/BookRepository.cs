@@ -225,7 +225,7 @@ namespace API.Repositories
             var book = await _context.Books.FindAsync(id);
 
             if (book is null)
-                return RepositoryStatus.NotFound;
+                return RepositoryStatus.BookNotFound;
 
             if (!string.IsNullOrWhiteSpace(updateBookDTO.Description))
                 book.Description = updateBookDTO.Description;

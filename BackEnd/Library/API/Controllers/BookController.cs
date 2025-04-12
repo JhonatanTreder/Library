@@ -199,7 +199,7 @@ namespace API.Controllers
 
                 RepositoryStatus.NullObject => BadRequest(new ApiResponse
                 {
-                    Status = "Internal Server Error",
+                    Status = "Bad Request",
                     Data = null,
                     Message = "O livro não pode ser nulo"
                 }),
@@ -208,12 +208,12 @@ namespace API.Controllers
                 {
                     Status = "Bad Request",
                     Data = null,
-                    Message = "A quantidade de livros deve ser maior que zero"
+                    Message = "A nova quantidade de livros deve ser maior que zero"
                 }),
 
-                RepositoryStatus.NotFound => NotFound(new ApiResponse
+                RepositoryStatus.BookNotFound => NotFound(new ApiResponse
                 {
-                    Status = "NotFound",
+                    Status = "Not Found",
                     Data = null,
                     Message = $"O livro de id '{id}' não foi encontrado"
                 }),

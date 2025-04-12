@@ -25,7 +25,7 @@ namespace ApiUnitTests.Tests.Controllers.BookControllerTests
         }
 
         [Fact]
-        public async Task DeleteBook_ReturnOk()
+        public async Task DeleteBook_ReturnNoContent()
         {
             int validId = 1;
 

@@ -66,7 +66,7 @@ namespace ApiUnitTests.Tests.Controllers.BookControllerTests
         }
 
         [Fact]
-        public async Task PostBook_Return_BadRequest_WhenBookIsNull()
+        public async Task PostBook_ReturnBadRequest_WhenBookIsNull()
         {
             var newBook = new CreateBookDTO
             {
@@ -78,6 +78,7 @@ namespace ApiUnitTests.Tests.Controllers.BookControllerTests
                 PublicationYear = 0,
                 Quantity = 0,
             };
+
             _bookRepositoryMock.Setup(service => service.AddBookAsync(newBook))
                 .ReturnsAsync(new RepositoryResponse<BookReturnDTO>(RepositoryStatus.NullObject));
 
