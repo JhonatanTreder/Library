@@ -88,6 +88,6 @@ git push origin minha-contribuicao
 Fique à vontade para abrir uma issue caso queira discutir algo antes de implementar!
 
 ## Contato
-**Email:** Jhonatantrede11@gmail.com <br>
+**Email:** Jhonatantreder11@gmail.com <br>
 **Linkedin:** https://www.linkedin.com/in/jhonatan-treder-40777827a/ <br>
 **Discord:** hypexsz <br>
