@@ -7,19 +7,10 @@ A parte do front-end será implementada futuramente utilizando Angular ou React.
 ### Objetivo
 O objetivo desse projeto é otimizar o processo de fluxo/gerenciamento dos recursos existentes em uma biblioteca (como gerenciamento de livros, usuários, etc),
 dando ênfase na facilidade de acesso e na otimização desses processos por se tratar de ser uma aplicação WEB.
-## Ferramentas utilizadas
 
-**- ASP.NET Core** <br>
-https://learn.microsoft.com/pt-br/aspnet/core/?view=aspnetcore-9.0 <br>
+## Ferramentas Utilizadas e Instruções de Instalação
 
-**-Entity Framework Core** <br>
-https://learn.microsoft.com/pt-br/ef/ <br>
-
-**-SQL Server** <br>
-https://learn.microsoft.com/en-us/sql/sql-server/?view=sql-server-ver16 <br>
-
-**-JWT (JSON Web Tokens)** <br>
-https://jwt.io/introduction <br>
+**API:** [Ferramentas da API](./docs/FerramentasAPI.md)
 
 **-xUnit (Para testes unitários)** <br>
 https://xunit.net/ <br>
