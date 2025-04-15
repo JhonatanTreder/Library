@@ -3,6 +3,7 @@ using API.DTO.Responses;
 using API.Enum.Responses;
 using API.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -20,6 +21,9 @@ namespace API.Controllers
 
         [HttpPost]
         [Authorize(Roles = "librarian")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Post([FromBody] EventCreateDTO eventCreateDTO)
         {
             if (eventCreateDTO is null)
@@ -61,6 +65,10 @@ namespace API.Controllers
 
         [HttpGet]
         [Authorize(Roles = "user,librarian,admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get([FromQuery] EventFilterDTO eventFilterDTO)
         {
             if (eventFilterDTO is null)
@@ -109,30 +117,44 @@ namespace API.Controllers
 
         [HttpGet("{id}")]
         [Authorize(Roles = "user,librarian,admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get(int id)
         {
-            var _event = await _eventRepository.GetEventByIdAsync(id);
+            var response = await _eventRepository.GetEventByIdAsync(id);
 
-            if (_event is null)
+            return response.Status switch
             {
-                return NotFound(new ApiResponse
+                RepositoryStatus.Success => Ok(new ApiResponse 
+                {
+                    Status = "Ok",
+                    Data = response.Data,
+                    Message = $"Evento de id '{id}' encontrado com sucesso"
+                }),
+
+                RepositoryStatus.NotFound => NotFound(new ApiResponse
                 {
                     Status = "Not Found",
                     Data = null,
                     Message = $"O evento de id '{id}' não foi encontrado"
-                });
-            }
+                }),
 
-            return Ok(new ApiResponse
-            {
-                Status = "Ok",
-                Data = _event,
-                Message = $"Evento de id '{id}' encontrado com sucesso"
-            });
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = $"Erro inesperado ao obter o evento de id '{id}'"
+                })
+            };
         }
 
         [HttpPut("{id}")]
         [Authorize(Roles = "librarian")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Put(int id, [FromBody] EventUpdateDTO eventUpdateDTO)
         {
             var response = await _eventRepository.UpdateEventAsync(id, eventUpdateDTO);
@@ -166,6 +188,9 @@ namespace API.Controllers
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "librarian")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Delete(int id)
         {
             var response = await _eventRepository.DeleteEventAsync(id);
