@@ -19,30 +19,44 @@ namespace API.Controllers
 
         [HttpGet("{id}")]
         [Authorize(Roles = "user,librarian,admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get(int id)
         {
-            var loan = await _loanRepository.GetLoanByIdAsync(id);
+            var response = await _loanRepository.GetLoanByIdAsync(id);
 
-            if (loan is null)
+            return response.Status switch
             {
-                return NotFound(new ApiResponse
+                RepositoryStatus.Success => Ok(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = response,
+                    Message = $"O empréstimo de id '{id}' foi encontrado com sucesso"
+                }),
+
+                RepositoryStatus.NotFound => NotFound(new ApiResponse
                 {
                     Status = "Not Found",
                     Data = null,
                     Message = $"O empréstimo de id '{id}' não  foi encontrado"
-                });
-            }
+                }),
 
-            return Ok(new ApiResponse
-            {
-                Status = "Ok",
-                Data = loan,
-                Message = $"O empréstimo de id '{id}' foi encontrado com sucesso"
-            });
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = $"Erro inesperado ao obter o empréstimo de id '{id}'"
+                })
+            };
         }
 
         [HttpGet]
         [Authorize(Roles = "user,librarian,admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get([FromQuery] LoanFilterDTO loanFilterDTO)
         {
             if (loanFilterDTO is null)
@@ -91,6 +105,11 @@ namespace API.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = "librarian")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Put(int id, [FromBody] LoanUpdateDTO loanUpdateDTO)
         {
             var response = await _loanRepository.UpdateLoanAsync(id, loanUpdateDTO);
@@ -145,30 +164,44 @@ namespace API.Controllers
 
         [HttpPost]
         [Authorize(Roles = "librarian")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Post([FromBody] CreateLoanDTO createLoanDTO)
         {
-            var loan = await _loanRepository.AddLoanAsync(createLoanDTO);
+            var response = await _loanRepository.AddLoanAsync(createLoanDTO);
 
-            if (loan is null)
+            return response.Status switch 
             {
-                return BadRequest(new ApiResponse
+                RepositoryStatus.Success => CreatedAtAction(nameof(Get), new { id = response.Data!.Id }, new ApiResponse
+                {
+                    Status = "Created",
+                    Data = response.Data,
+                    Message = "Empréstimo criado com sucesso"
+                }),
+
+                RepositoryStatus.NullObject => BadRequest(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = "O novo empréstimo não pode ser nulo"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
                 {
                     Status = "Internal Server Error",
                     Data = null,
                     Message = "Erro inesperado ao tentar criar um empréstimo"
-                });
-            }
-
-            return CreatedAtAction(nameof(Get), new { id = loan.Data!.Id }, new ApiResponse
-            {
-                Status = "Created",
-                Data = loan,
-                Message = "Empréstimo criado com sucesso"
-            });
+                })
+            };
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "librarian")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Delete(int id)
         {
             var response = await _loanRepository.DeleteLoanAsync(id);
@@ -202,6 +235,9 @@ namespace API.Controllers
 
         [HttpGet("{id}/availability")]
         [Authorize(Roles = "user,librarian,admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetBookAvailability(int id)
         {
             var response = await _loanRepository.IsBookAvailableAsync(id);
@@ -233,6 +269,10 @@ namespace API.Controllers
 
         [HttpPut("{id}/register-return")]
         [Authorize(Roles = "librarian")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Put(int id)
         {
             var response = await _loanRepository.RegisterReturnAsync(id);
@@ -266,6 +306,10 @@ namespace API.Controllers
 
         [HttpPut("{id}/extend-loan")]
         [Authorize(Roles = "librarian")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Put(int id, [FromBody] DateTime newDate)
         {
             var response = await _loanRepository.ExtendLoanAsync(id, newDate);

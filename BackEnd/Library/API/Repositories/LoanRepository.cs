@@ -62,14 +62,14 @@ namespace API.Repositories
         {
             var loan = await _context.Loans.FindAsync(id);
 
-            if (loan is null)
-            {
-                return new RepositoryResponse<Loan>(RepositoryStatus.NullObject);
+            if (loan is not null)
+            { 
+                return new RepositoryResponse<Loan>(RepositoryStatus.Success, loan);
             }
 
             else
-            {
-                return new RepositoryResponse<Loan>(RepositoryStatus.Success, loan);
+            {  
+                return new RepositoryResponse<Loan>(RepositoryStatus.NotFound);
             }
         }
 
