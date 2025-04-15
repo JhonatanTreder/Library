@@ -1,4 +1,4 @@
-﻿using API.DTO.Responses;
+﻿    using API.DTO.Responses;
 using API.DTO.User;
 using API.Enum.Responses;
 using API.Repositories.Interfaces;
@@ -20,6 +20,10 @@ namespace API.Controllers
 
         [HttpGet]
         [Authorize(Roles = "user,librarian,admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get([FromQuery] UserFilterDTO userFilterDTO)
         {
             if (userFilterDTO == null)
@@ -68,6 +72,10 @@ namespace API.Controllers
 
         [HttpGet("{id}")]
         [Authorize(Roles = "user,librarian,admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
@@ -109,6 +117,11 @@ namespace API.Controllers
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "admin")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Delete(string id)
         {
             var response = await _userRepository.DeleteUserAsync(id);
