@@ -20,6 +20,10 @@ namespace API.Controllers
 
         [HttpGet]
         [Authorize(Roles = "user,librarian,admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get([FromQuery] BookFilterDTO bookDTO)
         {
             var books = await _bookRepository.GetBooksAsync(bookDTO);
@@ -58,6 +62,10 @@ namespace API.Controllers
 
         [HttpGet("{id}")]
         [Authorize(Roles = "user,librarian,admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get(int id)
         {
             var response = await _bookRepository.GetBookByIdAsync(id);
@@ -96,6 +104,9 @@ namespace API.Controllers
 
         [HttpGet("available")]
         [Authorize(Roles = "user,librarian,admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAvailableBooks()
         {
             var books = await _bookRepository.GetAvailableBooksAsync();
@@ -127,6 +138,9 @@ namespace API.Controllers
 
         [HttpGet("borrowed")]
         [Authorize(Roles = "user,librarian,admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetBorrowedBooks()
         {
             var books = await _bookRepository.GetBorrowedBooksAsync();
@@ -158,6 +172,9 @@ namespace API.Controllers
 
         [HttpPost]
         [Authorize(Roles = "librarian")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Post([FromBody] CreateBookDTO bookDTO)
         {
             var book = await _bookRepository.AddBookAsync(bookDTO);
@@ -189,6 +206,10 @@ namespace API.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = "librarian")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Put(int id, [FromBody] BookUpdateDTO bookUpdateDTO)
         {
             var response = await _bookRepository.UpdateBookAsync(id, bookUpdateDTO);
@@ -229,6 +250,10 @@ namespace API.Controllers
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "librarian")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Delete(int id)
         {
             var response = await _bookRepository.DeleteBookAsync(id);
