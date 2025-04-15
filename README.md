@@ -10,22 +10,8 @@ dando ênfase na facilidade de acesso e na otimização desses processos por se 
 
 ## Ferramentas Utilizadas e Instruções de Instalação
 
-**API:** [Ferramentas da API](./docs/FerramentasAPI.md)
-
-**-xUnit (Para testes unitários)** <br>
-https://xunit.net/ <br>
-
-**-Moq (Para testes)** <br>
-https://documentation.help/Moq/ <br>
-
-**-Fluent Assertions (Para testes)** <br>
-https://fluentassertions.com/ <br>
-
-**-Swagger (Para documentação da API)** <br>
-https://swagger.io/docs/ <br>
-
-**.NET 8.0** <br>
-https://learn.microsoft.com/pt-br/dotnet/core/whats-new/dotnet-8/overview <br>
+**API:** [Ferramentas da API](./docs/FerramentasAPI.md) <br>
+**ApiUnitTests** [Ferramentas do projeto de testes](./docs/FerramentasTestAPI.md) <br>
 
 **OBS:** Para melhor compatibilidade entre as dependências, favor utilizar as versões compatíveis com o .NET 8.0 
 
