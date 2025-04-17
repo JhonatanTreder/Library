@@ -1,4 +1,4 @@
-﻿    using API.DTO.Responses;
+﻿using API.DTO.Responses;
 using API.DTO.User;
 using API.Enum.Responses;
 using API.Repositories.Interfaces;
@@ -162,6 +162,11 @@ namespace API.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = "user,librarian,admin")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Put(string id, UserUpdateDTO userUpdateDTO)
         {
             var response = await _userRepository.UpdateUserAsync(id, userUpdateDTO);
@@ -209,6 +214,11 @@ namespace API.Controllers
 
         [HttpPut("{id}/role/{newRole}")]
         [Authorize(Roles = "admin")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Put(string id, string newRole)
         {
             var response = await _userRepository.UpdateUserRoleAsync(id, newRole);
