@@ -31,40 +31,11 @@ https://www.microsoft.com/pt-br/sql-server/sql-server-downloads <br>
 -Visual Studio Code (editor de código): https://code.visualstudio.com/download <br>
 
 ## Como Contribuir
-Você pode contribuir com este projeto de diversas maneiras:
+A sessão de contribuição desse projeto está no arquivo [CONTRIBUTING.md](CONTRIBUTING.md).
+Sua contribuição será muito bem vinda para o desenvolvimento desse sistema e de análises futuras para aqueles que desejam apenas estudar!
 
-<ul>
-  <li>Sugerindo ideias ou novas funcionalidades </li>
-  <li>Reportando bugs ou problemas encontrados </li>
-  <li>Sugerindo melhorias de código, arquitetura ou desempenho </li>
-  <li>Melhorando a documentação </li>
-  <li>Criando Pull Requests com correções ou novas features </li>
-</ul>
+## Informações de Contato
 
-**Passos para contribuir:** <br>
-
-**1. Faça um fork do repositório** <br>
-
-**2. Crie uma nova branch:** 
-```bash
-git checkout -b minha-contribuicao
-```
-
-**3. Faça suas alterações e dê um commit claro:**
-```bash
-git commit -m "feat: adiciona nova funcionalidade"
-```
-
-**4. Envie para seu fork:**
-```bash
-git push origin minha-contribuicao
-```
-
-**5.Abra um Pull Request explicando o que foi feito** <br>
-
-Fique à vontade para abrir uma issue caso queira discutir algo antes de implementar!
-
-## Contato
 **Email:** Jhonatantreder11@gmail.com <br>
 **Linkedin:** https://www.linkedin.com/in/jhonatan-treder-40777827a/ <br>
 **Discord:** hypexsz <br>
