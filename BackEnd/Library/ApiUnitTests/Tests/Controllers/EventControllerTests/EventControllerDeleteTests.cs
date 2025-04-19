@@ -38,7 +38,7 @@ namespace ApiUnitTests.Tests.Controllers.EventControllerTests
         }
 
         [Fact]
-        public async Task DeleteEvent_ReturnNotFound()
+        public async Task DeleteEvent_ReturnNotFound_WhenEventNotFound()
         {
             int eventId = 1;
 
