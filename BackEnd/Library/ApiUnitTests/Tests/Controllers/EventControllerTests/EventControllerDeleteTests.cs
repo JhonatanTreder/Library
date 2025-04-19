@@ -34,7 +34,7 @@ namespace ApiUnitTests.Tests.Controllers.EventControllerTests
                 .ReturnsAsync(RepositoryStatus.Success);
 
             var deleteResult = await _controller.Delete(validId);
-            var noContentResult = Assert.IsType<NoContentResult>(deleteResult);
+            Assert.IsType<NoContentResult>(deleteResult);
         }
 
         [Fact]

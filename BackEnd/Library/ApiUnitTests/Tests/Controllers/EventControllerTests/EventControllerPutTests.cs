@@ -1,5 +1,6 @@
 ﻿using API.Controllers;
 using API.DTO.Event;
+using API.DTO.Responses;
 using API.Enum.Responses;
 using API.Repositories.Interfaces;
 using ApiUnitTests.Fixtures;
@@ -59,7 +60,12 @@ namespace ApiUnitTests.Tests.Controllers.EventControllerTests
                 .ReturnsAsync(RepositoryStatus.NullObject);
 
             var updateResult = await _controller.Put(eventId, newEvent);
-            Assert.IsType<BadRequestObjectResult>(updateResult);
+            var noContentResult = Assert.IsType<BadRequestObjectResult>(updateResult);
+            var response = Assert.IsType<ApiResponse>(noContentResult.Value);
+
+            Assert.Equal("Bad Request", response.Status);
+            Assert.Null(response.Data);
+            Assert.Equal($"O evento de id '{eventId}' não pode ser nulo", response.Message);
         }
 
         [Fact]
@@ -81,7 +87,13 @@ namespace ApiUnitTests.Tests.Controllers.EventControllerTests
                 .ReturnsAsync(RepositoryStatus.NotFound);
 
             var updateResult = await _controller.Put(eventId, newEvent);
-            Assert.IsType<NotFoundObjectResult>(updateResult);
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(updateResult);
+
+            var response = Assert.IsType<ApiResponse>(notFoundResult.Value);
+
+            Assert.Equal("Not Found", response.Status);
+            Assert.Null(response.Data);
+            Assert.Equal($"O evento de id '{eventId}' não foi encontrado", response.Message);
         }
     }
 }
