@@ -30,6 +30,16 @@ https://www.microsoft.com/pt-br/sql-server/sql-server-downloads <br>
 -Visual Studio (IDE): https://visualstudio.microsoft.com/pt-br/vs/community/ <br>
 -Visual Studio Code (editor de código): https://code.visualstudio.com/download <br>
 
+## Códigos de Status HTTP utilizados
+É de grande importância documentar de forma clara e bem escrita os Status Code usados no projeto, principalmente pensando no Front-End que consumirá os métodos HTTP da API.
+Sendo assim essa sessão está dividida em duas partes: <br>
+
+**1. Status HTTP utilizados:** [StatusCodeHTTP](./docs/status-code-http.md) <br>
+**2. Retorno de cada método nos controladores:** [MethodsReturn](./docs/controllers-return.md)<br>
+
+A primeira parte se diz respeito a todos cada Status Code utilizados no projeto, como por exemplo, Ok, NotFound, BadRequest, etc.
+A segunda parte fala de cada Status Code que os métodos podem retornar em cada controlador. 
+
 ## Como Contribuir
 A sessão de contribuição desse projeto está no arquivo [CONTRIBUTING.md](CONTRIBUTING.md).
 Sua contribuição será muito bem vinda para o desenvolvimento desse sistema e de análises futuras para aqueles que desejam apenas estudar!
