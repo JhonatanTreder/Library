@@ -65,4 +65,4 @@ Lista contendo todos os status codes utilizados no projeto e para o que cada um 
 
 <hr>
 
-Referência de documentação: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status#client_error_responses
+Referência de documentação: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status
