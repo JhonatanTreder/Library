@@ -34,7 +34,7 @@ https://www.microsoft.com/pt-br/sql-server/sql-server-downloads <br>
 É de grande importância documentar de forma clara e bem escrita os Status Code usados no projeto, principalmente pensando no Front-End que consumirá os métodos HTTP da API.
 Sendo assim essa sessão está dividida em duas partes: <br>
 
-**1. Status HTTP utilizados:** [StatusCodeHTTP](./docs/status-code-http.md) <br>
+**1. Status HTTP utilizados:** [StatusCodeHTTP](./docs/StatusCodesHTTP.md) <br>
 **2. Retorno de cada método nos controladores:** [MethodsReturn](./docs/controllers-return.md)<br>
 
 A primeira parte se diz respeito a todos cada Status Code utilizados no projeto, como por exemplo, Ok, NotFound, BadRequest, etc.
