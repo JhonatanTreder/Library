@@ -37,7 +37,7 @@ Sendo assim essa sessão está dividida em duas partes: <br>
 **1. Status HTTP utilizados:** [StatusCodeHTTP](./docs/StatusCodesHTTP.md) <br>
 **2. Retorno de cada método nos controladores:** [MethodsReturn](./docs/controllers-return.md)<br>
 
-A primeira parte se diz respeito a todos cada Status Code utilizados no projeto, como por exemplo, Ok, NotFound, BadRequest, etc.
+A primeira parte se diz respeito a cada Status Code utilizados no projeto, como por exemplo, Ok, NotFound, BadRequest, etc.
 A segunda parte fala de cada Status Code que os métodos podem retornar em cada controlador. 
 
 ## Como Contribuir
