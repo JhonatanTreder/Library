@@ -18,17 +18,16 @@ dando ênfase na facilidade de acesso e na otimização desses processos por se 
 ## Instrução de instalação
 ### Pré-requisitos
 
-**.NET 8.0 SDK** <br>
-https://dotnet.microsoft.com/pt-br/download/dotnet/8.0 <br>
+**-Ferramentas Básicas**
 
-**SQL Server** <br>
-https://www.microsoft.com/pt-br/sql-server/sql-server-downloads <br>
+[**.NET 8.0 SDK**](https://dotnet.microsoft.com/pt-br/download/dotnet/8.0) <br>
+[**SQL Server**](https://www.microsoft.com/pt-br/sql-server/sql-server-downloads)<br>
 
-**IDE/editor de código Compatível** <br>
+**-IDE/Editor de Código Compatível** <br>
 
 #### Exemplos: <br>
--Visual Studio (IDE): https://visualstudio.microsoft.com/pt-br/vs/community/ <br>
--Visual Studio Code (editor de código): https://code.visualstudio.com/download <br>
+[Visual Studio (IDE)](https://visualstudio.microsoft.com/pt-br/vs/community/) <br>
+[Visual Studio Code (editor de código)](https://code.visualstudio.com/download) <br>
 
 ## Códigos de Status HTTP utilizados
 É de grande importância documentar de forma clara e bem escrita os Status Code usados no projeto, principalmente pensando no Front-End que consumirá os métodos HTTP da API.
