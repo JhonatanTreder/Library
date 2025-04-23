@@ -26,16 +26,6 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get([FromQuery] UserFilterDTO userFilterDTO)
         {
-            if (userFilterDTO == null)
-            {
-                return BadRequest(new ApiResponse
-                {
-                    Status = "Bad Request",
-                    Data = null,
-                    Message = "Filtro de pesquisa inválido"
-                });
-            }
-
             var response = await _userRepository.GetUsersAsync(userFilterDTO);
 
             return response.Status switch
@@ -78,16 +68,6 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get(string id)
         {
-            if (string.IsNullOrWhiteSpace(id))
-            {
-                return BadRequest(new ApiResponse
-                {
-                    Status = "Bad Request",
-                    Data = null,
-                    Message = "O id do usuário não pode ser nulo ou vazio"
-                });
-            }
-
             var response = await _userRepository.GetUserByIdAsync(id);
 
             return response.Status switch
@@ -99,11 +79,18 @@ namespace API.Controllers
                     Message = $"Usuário de id '{id}' encontrado com sucesso"
                 }),
 
-                RepositoryStatus.NotFound => NotFound(new ApiResponse
+                RepositoryStatus.InvalidId => BadRequest(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = "O id do usuário não pode ser nulo ou vazio"
+                }),
+
+                RepositoryStatus.UserNotFound => NotFound(new ApiResponse
                 {
                     Status = "Not Found",
                     Data = null,
-                    Message = $"Usuário de id '{id}' não encontrado"
+                    Message = $"O usuário de id '{id}' não foi encontrado"
                 }),
 
                 _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse

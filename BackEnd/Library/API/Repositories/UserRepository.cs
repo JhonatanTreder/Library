@@ -104,13 +104,18 @@ namespace API.Repositories
             }
         }
 
-        public async Task<RepositoryResponse<UserDTO>> GetUserByIdAsync(string id)
+        public async Task<RepositoryResponse<UserDTO>> GetUserByIdAsync(string userId)
         {
-            var dbUser = await _userManager.FindByIdAsync(id);
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return new RepositoryResponse<UserDTO>(RepositoryStatus.InvalidId);
+            }
+
+            var dbUser = await _userManager.FindByIdAsync(userId);
 
             if (dbUser is null)
             {
-                return new RepositoryResponse<UserDTO>(RepositoryStatus.NotFound);
+                return new RepositoryResponse<UserDTO>(RepositoryStatus.UserNotFound);
             }
 
             var user = new UserDTO
