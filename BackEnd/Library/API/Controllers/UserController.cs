@@ -247,7 +247,7 @@ namespace API.Controllers
                 {
                     Status = "Not Found",
                     Data = null,
-                    Message = "O usuário de id '{id}' não foi encontrado"
+                    Message = $"O usuário de id '{id}' não foi encontrado"
                 }),
 
                 RepositoryStatus.RoleRemovedFailed => Conflict(new ApiResponse

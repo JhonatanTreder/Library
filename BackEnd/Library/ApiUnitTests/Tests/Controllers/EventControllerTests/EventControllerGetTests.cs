@@ -125,7 +125,7 @@ namespace ApiUnitTests.Tests.Controllers.EventControllerTests
             var response = Assert.IsType<ApiResponse>(notFoundResult.Value);
 
             Assert.Equal("Not Found", response.Status);
-            Assert.NotNull(response.Data);
+            Assert.Null(response.Data);
             Assert.Equal($"O evento de id '{eventId}' não foi encontrado", response.Message);
         }
     }
