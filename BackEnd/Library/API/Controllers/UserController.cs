@@ -124,7 +124,7 @@ namespace API.Controllers
                     Message = "O id do usuário não pode ser nulo ou conter espaços em brancos"
                 }),
 
-                RepositoryStatus.NotFound => NotFound(new ApiResponse
+                RepositoryStatus.UserNotFound => NotFound(new ApiResponse
                 {
                     Status = "Not Found",
                     Data = null,
@@ -135,7 +135,7 @@ namespace API.Controllers
                 {
                     Status = "Conflict",
                     Data = null,
-                    Message = $"Erro ao tentar deletar o usuário de id '{id}'"
+                    Message = $"Erro inesperado ao tentar deletar o usuário de id '{id}'"
                 }),
 
                 _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse

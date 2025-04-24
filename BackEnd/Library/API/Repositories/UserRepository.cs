@@ -56,7 +56,7 @@ namespace API.Repositories
             var user = await _userManager.FindByIdAsync(id);
 
             if (user is null)
-                return RepositoryStatus.NotFound;
+                return RepositoryStatus.UserNotFound;
 
             var deleted = await _userManager.DeleteAsync(user);
 
