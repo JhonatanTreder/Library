@@ -3,13 +3,13 @@ using ApiUnitTests.Fixtures.Global;
 
 namespace ApiUnitTests.Fixtures.Repositories
 {
-    class BookRepositoryFixture
+    public class BookRepositoryFixture
     {
         public BookRepository BookRepository { get; }
 
-        public BookRepositoryFixture(DatabaseFixture dataBaseFixture)
+        public BookRepositoryFixture(DatabaseFixture dbFixture)
         {
-            BookRepository = new BookRepository(dataBaseFixture.DbContext);
+            BookRepository = new BookRepository(dbFixture.DbContext);
         }
     }
 }

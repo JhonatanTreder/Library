@@ -10,7 +10,8 @@ namespace ApiUnitTests.Fixtures.Global
         public DatabaseFixture()
         {
             var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase("TestDatabase").Options;
+            .UseInMemoryDatabase(Guid.NewGuid().ToString())
+            .Options;
 
             DbContext = new AppDbContext(options);
         }
