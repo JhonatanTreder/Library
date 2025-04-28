@@ -120,7 +120,7 @@ namespace API.Controllers
 
                 RepositoryStatus.NullObject => BadRequest(new ApiResponse
                 {
-                    Status = "Internal Server Error",
+                    Status = "Bad Request",
                     Data = null,
                     Message = "O empréstimo não pode ser nulo"
                 }),
@@ -318,6 +318,13 @@ namespace API.Controllers
             {
                 RepositoryStatus.Success => NoContent(),
 
+                RepositoryStatus.InvalidDate => BadRequest(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = "A nova data de devolução não pode ser menor ou igual a data de devolução antiga"
+                }),
+
                 RepositoryStatus.NotFound => NotFound(new ApiResponse
                 {
                     Status = "Not Found",
@@ -330,13 +337,6 @@ namespace API.Controllers
                     Status = "Conflict",
                     Data = null,
                     Message = "O status do empréstimo deve estar em 'in progress' para poder extender o prazo de devolucao"
-                }),
-
-                RepositoryStatus.InvalidDate => Conflict(new ApiResponse
-                {
-                    Status = "Conflict",
-                    Data = null,
-                    Message = "A nova data de devolução não pode ser menor ou igual a data de devolução antiga"
                 }),
 
                 _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
