@@ -135,13 +135,13 @@ namespace API.Repositories
             if (loanFilterDTO.Id.HasValue)
                 query = query.Where(i => i.Id == loanFilterDTO.Id);
 
-            if (loanFilterDTO.UserId.HasValue)
+            if (!string.IsNullOrWhiteSpace(loanFilterDTO.UserId))
                 query = query.Where(i => i.UserId == loanFilterDTO.UserId);
 
             if (loanFilterDTO.BookId.HasValue)
                 query = query.Where(i => i.BookId == loanFilterDTO.BookId);
 
-            if (loanFilterDTO.LibrarianId.HasValue)
+            if (!string.IsNullOrWhiteSpace(loanFilterDTO.LibrarianId))
                 query = query.Where(i => i.LibrarianId == loanFilterDTO.LibrarianId);
 
             if (loanFilterDTO.LoanDate.HasValue)

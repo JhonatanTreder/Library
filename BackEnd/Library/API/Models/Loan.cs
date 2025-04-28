@@ -9,13 +9,13 @@ namespace API.Models
         public int Id { get; set; }
 
         [Required(ErrorMessage = "O ID do usuário é obrigatório")]
-        public int UserId { get; set; }
+        public string UserId { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "O ID do livro é obrigatório")]
         public int BookId { get; set; }
 
         [Required(ErrorMessage = "O ID do bibliotecário é obrigatório")]
-        public int LibrarianId { get; set; }
+        public string LibrarianId { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "A data de empréstimo é obrigatória")]
         [DataType(DataType.Date, ErrorMessage = "A data de empréstimo deve estar no formato válido de data")]
