@@ -59,16 +59,6 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get([FromQuery] LoanFilterDTO loanFilterDTO)
         {
-            if (loanFilterDTO is null)
-            {
-                return BadRequest(new ApiResponse
-                {
-                    Status = "Bad Request",
-                    Data = null,
-                    Message = "O empréstimo não pode ser nulo"
-                });
-            }
-
             var loans = await _loanRepository.GetLoansAsync(loanFilterDTO);
 
             return loans.Status switch
