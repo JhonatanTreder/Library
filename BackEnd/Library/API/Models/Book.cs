@@ -23,20 +23,13 @@ namespace API.Models
         [StringLength(400, MinimumLength = 1, ErrorMessage = "A descrição do livro deve conter entre 1 a 400 caracteres")]
         public string? Description { get; set; }
 
-        [Required(ErrorMessage = "O nome da editora é obrigatória")]
+        [Required(ErrorMessage = "O nome da editora é obrigatório")]
         [StringLength(40, ErrorMessage = "O nome da editora deve conter no máximo 40 caracteres")]
         public string Publisher { get; set; } = string.Empty;
-
-        [Range(1, int.MaxValue, ErrorMessage = "A quantidade deve ser pelo menos 1")]
-        public int? Quantity { get; set; }
 
         [Range(1440, 2999, ErrorMessage = "O ano de publicação deve estar entre 1440 a 2999")]
         public int PublicationYear { get; set; }
 
-        [Required(ErrorMessage = "O status do livro é obrigatório.")]
-        [EnumDataType(typeof(BookStatus), ErrorMessage = "O status do livro deve estar em um formato válido.")]
-        public BookStatus Status { get; set; }
-
-        public ICollection<Loan>? Loans { get; set; }
+        public ICollection<BookCopy> Copies { get; set; } = new List<BookCopy>();
     }
 }
