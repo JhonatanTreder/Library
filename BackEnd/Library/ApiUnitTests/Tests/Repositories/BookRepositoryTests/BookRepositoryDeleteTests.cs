@@ -1,4 +1,5 @@
-﻿using API.Enum.Responses;
+﻿using API.Enum;
+using API.Enum.Responses;
 using API.Models;
 using ApiUnitTests.Fixtures.Repositories;
 using System;
@@ -38,6 +39,43 @@ namespace ApiUnitTests.Tests.Repositories.BookRepositoryTests
 
             Assert.Equal(RepositoryStatus.Success, deleteResult);
             Assert.Equal(RepositoryStatus.BookNotFound, repositoryResponse.Status);
+        }
+
+        [Fact]
+        public async Task DeleteBook_ReturnNotFoundOperation_WhenBookNotFoundInDatabase()
+        {
+            await ClearDatabase();
+
+            var deleteResult = await _fixture.BookRepository.DeleteBookAsync(1);
+
+            Assert.Equal(RepositoryStatus.NotFound, deleteResult);
+        }
+
+        [Fact]
+        public async Task DeleteBook_ReturnCannotDeleteOperation_WhenDateIsInvalid()
+        {
+            await ClearDatabase();
+
+            var book = new Book
+            {
+                Id = 1,
+                Author = "Book Author",
+            };
+
+            var loan = new Loan
+            {
+                Id = 1,
+                BookId = book.Id,
+                Status = LoanStatus.InProgress
+            };
+
+            await _fixture.DbContext.Books.AddAsync(book);
+            await _fixture.DbContext.Loans.AddAsync(loan);
+            await _fixture.DbContext.SaveChangesAsync();
+
+            var deleteResult = await _fixture.BookRepository.DeleteBookAsync(book.Id);
+
+            Assert.Equal(RepositoryStatus.CannotDelete, deleteResult);
         }
 
         private async Task ClearDatabase()
