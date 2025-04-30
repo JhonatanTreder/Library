@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace ApiUnitTests.Tests.Repositories.BookRepositoryTests
 {
-    [Collection("DatabaseCollection")]
     public class BookRepositoryGetTests
     {
         private readonly BookRepositoryFixture _fixture;

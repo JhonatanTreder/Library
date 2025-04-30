@@ -3,7 +3,7 @@ using API.DTO.Event;
 using API.DTO.Responses;
 using API.Enum.Responses;
 using API.Repositories.Interfaces;
-using ApiUnitTests.Fixtures;
+using ApiUnitTests.Fixtures.Controllers;
 using ApiUnitTests.Fixtures.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Moq;

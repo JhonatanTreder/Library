@@ -2,7 +2,7 @@
 using API.DTO.Responses;
 using API.Enum.Responses;
 using API.Services.Interfaces;
-using ApiUnitTests.Fixtures;
+using ApiUnitTests.Fixtures.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;

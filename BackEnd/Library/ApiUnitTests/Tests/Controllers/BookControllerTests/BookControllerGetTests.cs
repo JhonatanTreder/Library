@@ -5,7 +5,7 @@ using API.DTOs.Book;
 using API.Enum;
 using API.Enum.Responses;
 using API.Repositories.Interfaces;
-using ApiUnitTests.Fixtures;
+using ApiUnitTests.Fixtures.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 

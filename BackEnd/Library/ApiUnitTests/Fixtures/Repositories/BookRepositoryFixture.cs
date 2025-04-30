@@ -1,18 +1,27 @@
 ﻿using API.Context;
 using API.Repositories;
-using ApiUnitTests.Fixtures.Global;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApiUnitTests.Fixtures.Repositories
 {
-    public class BookRepositoryFixture
+    public class BookRepositoryFixture : IDisposable
     {
         public BookRepository BookRepository { get; }
         public AppDbContext DbContext { get; }
 
-        public BookRepositoryFixture(DatabaseFixture dbFixture)
+        public BookRepositoryFixture()
         {
-            DbContext = dbFixture.DbContext;
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+           .UseInMemoryDatabase(Guid.NewGuid().ToString())
+           .Options;
+
+            DbContext = new AppDbContext(options);
             BookRepository = new BookRepository(DbContext);
+        }
+
+        public void Dispose()
+        {
+            DbContext.Dispose();
         }
     }
 }
