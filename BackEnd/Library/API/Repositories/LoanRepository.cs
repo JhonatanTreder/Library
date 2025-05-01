@@ -187,13 +187,18 @@ namespace API.Repositories
 
             if (loan.Data.Status == LoanStatus.Finished)
             {
-                var book = await _context.Books.FindAsync(loan.Data.BookId);
+                var bookCopy = await _context.BookCopies
+                                             .FirstOrDefaultAsync(bc => bc.BookId == loan.Data.BookId 
+                                             && bc.Loans != null 
+                                             && bc.Loans
+                                             .Any(l => l.Id == loan.Data.Id));
 
-                if (book is null)
+                if (bookCopy is null)
                     return RepositoryStatus.BookNotFound;
 
-                book.Status = BookStatus.Available;
-                _context.Update(book);
+                bookCopy.Status = BookStatus.Available;
+
+                _context.Update(bookCopy);
             }
 
             _context.Update(loan);

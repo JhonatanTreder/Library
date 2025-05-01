@@ -19,6 +19,41 @@ namespace API.Repositories
             _context = context;
         }
 
+        public async Task<RepositoryResponse<BookReturnDTO>> AddBookCopyAsync(int bookId)
+        {
+            var bookCategory = await _context.Books
+                .Include(b => b.Copies)
+                .FirstOrDefaultAsync(b => b.Id == bookId);
+
+            if (bookCategory is null)
+                return new RepositoryResponse<BookReturnDTO>(RepositoryStatus.BookNotFound);
+
+            var newBookCopy = new BookCopy
+            {
+                BookId = bookCategory.Id,
+                Book = bookCategory,
+                Status = BookStatus.Available,
+            };
+
+            var newBookInfo = new BookReturnDTO
+            {
+                BookId = bookCategory.Id,
+                Title = bookCategory.Title,
+                Description = bookCategory.Description ?? "Nenhuma descrição foi fornecida",
+                Author = bookCategory.Author,
+                Category = bookCategory.Category,
+                Publisher = bookCategory.Publisher,
+                PublicationYear = bookCategory.PublicationYear,
+                TotalCopies = bookCategory.Copies.Count,
+                AvailableCopies = bookCategory.Copies.Count(bc => bc.Status == BookStatus.Available)
+            };
+
+            await _context.BookCopies.AddAsync(newBookCopy);
+            await _context.SaveChangesAsync();
+
+            return new RepositoryResponse<BookReturnDTO>(RepositoryStatus.Success, newBookInfo);
+        }
+
         public async Task<RepositoryResponse<BookReturnDTO>> AddBookAsync(CreateBookDTO bookDTO)
         {
             if (bookDTO is null)
@@ -62,8 +97,6 @@ namespace API.Repositories
 
             return new RepositoryResponse<BookReturnDTO>(RepositoryStatus.Success, bookReturn);
         }
-
-
 
         public async Task<RepositoryStatus> DeleteBookAsync(int id)
         {
@@ -112,6 +145,33 @@ namespace API.Repositories
             return new RepositoryResponse<BookReturnDTO>(RepositoryStatus.Success, bookDTO);
         }
 
+        public async Task<RepositoryResponse<BookReturnDTO>> GetBookCopyByIdAsync(int copyId)
+        {
+            if (copyId <= 0)
+                return new RepositoryResponse<BookReturnDTO>(RepositoryStatus.InvalidId);
+
+            var bookCopy = await _context.BookCopies
+                .Include(bc => bc.Book)
+                .FirstOrDefaultAsync(bc => bc.Id == copyId);
+
+            if (bookCopy is null || bookCopy.Book is null)
+                return new RepositoryResponse<BookReturnDTO>(RepositoryStatus.BookNotFound);
+
+            var bookInfo = new BookReturnDTO
+            {
+                BookId = bookCopy.Book.Id,
+                Title = bookCopy.Book.Title,
+                Description = bookCopy.Book.Description ?? "Nenhuma descrição foi fornecida",
+                Author = bookCopy.Book.Author,
+                Category = bookCopy.Book.Category,
+                Publisher = bookCopy.Book.Publisher,
+                PublicationYear = bookCopy.Book.PublicationYear,
+                TotalCopies = bookCopy.Book.Copies.Count,
+                AvailableCopies = bookCopy.Book.Copies.Count(c => c.Status == BookStatus.Available)
+            };
+
+            return new RepositoryResponse<BookReturnDTO>(RepositoryStatus.Success, bookInfo);
+        }
 
         public async Task<RepositoryResponse<IEnumerable<BookReturnDTO>>> GetBooksAsync(BookFilterDTO bookFilterDTO)
         {
@@ -252,6 +312,7 @@ namespace API.Repositories
                         });
                     }
                 }
+
                 else if (newQuantity < currentCount)
                 {
                     var availableCopies = book.Copies

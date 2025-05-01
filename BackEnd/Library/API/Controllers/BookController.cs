@@ -170,6 +170,48 @@ namespace API.Controllers
             };
         }
 
+        [HttpPost("{bookId}")]
+        [Authorize(Roles = "librarian")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Post(int bookId)
+        {
+            var response = await _bookRepository.AddBookCopyAsync(bookId);
+
+            return response.Status switch
+            {
+                RepositoryStatus.Success => CreatedAtAction(nameof(Get), new { id = response.Data!.BookId }, new ApiResponse 
+                {
+                    Status = "Created",
+                    Data = response.Data,
+                    Message = $"Cópia do livro de id '{response.Data.BookId}' criada com sucesso"
+                }),
+
+                RepositoryStatus.InvalidId => BadRequest(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = $"O id '{bookId}' está em um formato inválido"
+                }),
+
+                RepositoryStatus.BookNotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = $"O livro referente ao id '{bookId}' não foi encontrado"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse 
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = $"Erro inesperado ao tentar criar uma cópia do livro de id '{bookId}'"
+                })
+            };
+        }
+
         [HttpPost]
         [Authorize(Roles = "librarian")]
         [ProducesResponseType(StatusCodes.Status201Created)]
