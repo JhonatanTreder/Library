@@ -328,6 +328,11 @@ namespace API.Controllers
         }
 
         [HttpDelete("{bookId}/copies/{copyId}")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Delete(int bookId, int copyId)
         {
             var status = await _bookRepository.DeleteBookCopyAsync(bookId, copyId);
