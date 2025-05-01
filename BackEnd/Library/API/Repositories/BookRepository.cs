@@ -117,6 +117,29 @@ namespace API.Repositories
             return RepositoryStatus.Success;
         }
 
+        public async Task<RepositoryStatus> DeleteBookCopyAsync(int bookId, int copyId)
+        {
+            if (bookId <= 0 || copyId <= 0)
+                return RepositoryStatus.InvalidId;
+
+            var book = await _context.Books.FindAsync(bookId);
+            var bookCopy = await _context.BookCopies.FindAsync(copyId);
+
+            if (book is null)
+                return RepositoryStatus.BookNotFound;
+
+            if (bookCopy is null)
+                return RepositoryStatus.BookCopyNotFound;
+
+            if (bookCopy.BookId != bookId)
+                return RepositoryStatus.BookCopyDoesNotBelongToBook;
+
+            _context.BookCopies.Remove(bookCopy);
+            await _context.SaveChangesAsync();
+
+            return RepositoryStatus.Success;
+        }
+
         public async Task<RepositoryResponse<BookReturnDTO>> GetBookByIdAsync(int id)
         {
             if (id <= 0)

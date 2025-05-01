@@ -22,6 +22,8 @@
         CannotDelete,
         BookNotAvailable,
         BookNotFound,
+        BookCopyNotFound,
+        BookCopyDoesNotBelongToBook,
         Availaible,
         AlreadyInRole,
         RoleRemovedFailed,

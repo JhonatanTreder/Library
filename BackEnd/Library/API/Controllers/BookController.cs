@@ -326,5 +326,47 @@ namespace API.Controllers
                 })
             };
         }
+
+        [HttpDelete("{bookId}/copies/{copyId}")]
+        public async Task<IActionResult> Delete(int bookId, int copyId)
+        {
+            var status = await _bookRepository.DeleteBookCopyAsync(bookId, copyId);
+
+            return status switch
+            {
+                RepositoryStatus.Success => NoContent(),
+
+                RepositoryStatus.InvalidId => BadRequest(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Message = "O id do livro ou de uma cópia estão inválidos"
+                }),
+
+                RepositoryStatus.BookNotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Message = $"O livro de id '{bookId}' não foi encontrado"
+                }),
+
+                RepositoryStatus.BookCopyNotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Message = $"A cópia de id '{copyId}' não foi encontrada"
+                }),
+
+                RepositoryStatus.BookCopyDoesNotBelongToBook => Conflict(new ApiResponse
+                {
+                    Status = "Conflict",
+                    Message = $"A cópia '{copyId}' não pertence ao livro '{bookId}'"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Message = "Erro inesperado ao deletar a cópia do livro"
+                })
+            };
+        }
+
     }
 }
