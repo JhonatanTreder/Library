@@ -15,6 +15,7 @@ namespace API.Repositories.Interfaces
         Task<RepositoryResponse<BookReturnDTO>> GetBookByIdAsync(int id);
         Task<RepositoryResponse<BookReturnDTO>> GetBookCopyByIdAsync(int bookId);
         Task<RepositoryResponse<IEnumerable<BookReturnDTO>>> GetBooksAsync(BookFilterDTO filterBookDTO);
+        Task<RepositoryResponse<IEnumerable<BookReturnDTO>>> GetBookCopiesAsync(int bookId);
         Task<RepositoryResponse<IEnumerable<BookReturnDTO>>> GetAvailableBooksAsync();
         Task<RepositoryResponse<IEnumerable<BookReturnDTO>>> GetBorrowedBooksAsync();
         Task<RepositoryStatus> UpdateBookAsync(int id, BookUpdateDTO updateBookDTO);

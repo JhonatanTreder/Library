@@ -60,12 +60,61 @@ namespace API.Controllers
             };
         }
 
+        [HttpGet("{bookId}/copies")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetBookCopies(int bookId)
+        {
+            var response = await _bookRepository.GetBookCopiesAsync(bookId);
+
+            return response.Status switch
+            {
+                RepositoryStatus.Success => Ok(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = response.Data,
+                    Message = $"As cópias do livro de id '{bookId}' foram encontradas com sucesso"
+                }),
+
+                RepositoryStatus.InvalidId => BadRequest(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = $"O id '{bookId}' está em um formato inválido"
+                }),
+
+                RepositoryStatus.BookNotFound => NotFound(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = $"O livro de id '{bookId}' não foi encontrado"
+                }),
+
+                RepositoryStatus.BookCopyNotFound => NotFound(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = $"A cópia referente ao livro de id '{bookId}' não foi encontrada"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = $"Erro inesperado ao buscar pelas cópias do livro de id '{bookId}'"
+                })
+            };
+        }
+
         [HttpGet("{id}")]
         [Authorize(Roles = "user,librarian,admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+
         public async Task<IActionResult> Get(int id)
         {
             var response = await _bookRepository.GetBookByIdAsync(id);
@@ -328,10 +377,11 @@ namespace API.Controllers
         }
 
         [HttpDelete("{bookId}/copies/{copyId}")]
+        [Authorize(Roles = "user,librarian,admin")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Delete(int bookId, int copyId)
         {
@@ -362,7 +412,7 @@ namespace API.Controllers
                 RepositoryStatus.BookCopyDoesNotBelongToBook => Conflict(new ApiResponse
                 {
                     Status = "Conflict",
-                    Message = $"A cópia '{copyId}' não pertence ao livro '{bookId}'"
+                    Message = $"A cópia de id '{copyId}' não pertence ao livro '{bookId}'"
                 }),
 
                 _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
@@ -372,6 +422,5 @@ namespace API.Controllers
                 })
             };
         }
-
     }
 }

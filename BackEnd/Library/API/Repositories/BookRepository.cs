@@ -243,6 +243,38 @@ namespace API.Repositories
             return new RepositoryResponse<IEnumerable<BookReturnDTO>>(RepositoryStatus.NotFound);
         }
 
+        public async Task<RepositoryResponse<IEnumerable<BookReturnDTO>>> GetBookCopiesAsync(int bookId)
+        {
+            if (bookId <= 0)
+                return new RepositoryResponse<IEnumerable<BookReturnDTO>>(RepositoryStatus.InvalidId);
+
+            var book = await _context.Books
+                .Include(b => b.Copies)
+                .FirstOrDefaultAsync(b => b.Id == bookId);
+
+            if (book is null)
+                return new RepositoryResponse<IEnumerable<BookReturnDTO>>(RepositoryStatus.BookNotFound);
+
+            if (book.Copies == null || book.Copies.Count == 0)
+                return new RepositoryResponse<IEnumerable<BookReturnDTO>>(RepositoryStatus.BookCopyNotFound);
+
+            var bookCopies = book.Copies.Select(copy => new BookReturnDTO
+            {
+                BookId = book.Id,
+                Title = book.Title,
+                Description = book.Description ?? "Nenhuma descrição foi fornecida",
+                Author = book.Author,
+                Category = book.Category,
+                Publisher = book.Publisher,
+                PublicationYear = book.PublicationYear,
+                TotalCopies = book.Copies.Count,
+                AvailableCopies = book.Copies.Count(c => c.Status == BookStatus.Available)
+            }).ToList();
+
+            return new RepositoryResponse<IEnumerable<BookReturnDTO>>(RepositoryStatus.Success, bookCopies);
+        }
+
+
         public async Task<RepositoryResponse<IEnumerable<BookReturnDTO>>> GetAvailableBooksAsync()
         {
             var books = await _context.Books
