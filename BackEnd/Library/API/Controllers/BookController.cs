@@ -1,5 +1,6 @@
 ﻿using API.DTO.Book;
 using API.DTO.Responses;
+using API.Enum;
 using API.Enum.Responses;
 using API.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -335,6 +336,40 @@ namespace API.Controllers
                     Status = "Internal Server Error",
                     Data = null,
                     Message = "Erro inesperado ao atualizar o livro"
+                })
+            };
+        }
+
+        [HttpPut("{copyId}/status")]
+        public async Task<IActionResult> Put(int copyId, [FromQuery] BookStatus newBookStatus)
+        {
+            var response = await _bookRepository.UpdateBookStatusAsync(copyId, newBookStatus);
+
+            return response switch
+            {
+                RepositoryStatus.Success => NoContent(),
+
+                RepositoryStatus.NoChange => NoContent(),
+
+                RepositoryStatus.BookCopyNotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = $"A cópia de id '{copyId}' não foi encontrada"
+                }),
+
+                RepositoryStatus.InvalidStatusTransition => Conflict(new ApiResponse
+                {
+                    Status = "Conflict",
+                    Data = null,
+                    Message = "Não é possível atualizar o status de um livro emprestado para 'disponível'"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = $"Erro interno ao atualizar o status da cópia de id '{copyId}'"
                 })
             };
         }

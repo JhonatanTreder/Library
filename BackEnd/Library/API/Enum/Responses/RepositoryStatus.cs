@@ -6,6 +6,7 @@
         Failed,
         NullObject,
         NotFound,
+        NoChange,
         InvalidStatus,
         InvalidStatusTransition,
         InvalidId,
