@@ -324,6 +324,13 @@ namespace API.Controllers
                     Message = "A nova quantidade de livros deve ser maior que zero"
                 }),
 
+                RepositoryStatus.InvalidCopiesQuantity => Conflict(new ApiResponse
+                {
+                    Status = "Conflict",
+                    Data = null,
+                    Message = "Não é possível atualizar a quantidade de livros quando o número de cópias disponíveis são inválidas"
+                }),
+
                 RepositoryStatus.BookNotFound => NotFound(new ApiResponse
                 {
                     Status = "Not Found",
@@ -341,6 +348,10 @@ namespace API.Controllers
         }
 
         [HttpPut("{copyId}/status")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Put(int copyId, [FromQuery] BookStatus newBookStatus)
         {
             var response = await _bookRepository.UpdateBookStatusAsync(copyId, newBookStatus);

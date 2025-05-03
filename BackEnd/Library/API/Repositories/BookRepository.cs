@@ -444,7 +444,7 @@ namespace API.Repositories
                         .ToList();
 
                     if (availableCopies.Count < (currentCount - newQuantity))
-                        return RepositoryStatus.InvalidQuantity;
+                        return RepositoryStatus.InvalidCopiesQuantity;
 
                     _context.BookCopies.RemoveRange(availableCopies);
                 }
