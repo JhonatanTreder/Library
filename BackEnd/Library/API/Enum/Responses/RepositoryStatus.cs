@@ -15,6 +15,7 @@
         InvalidClaims,
         InvalidReturnDate,
         InvalidQuantity,
+        InvalidCopiesQuantity,
         InvalidPassword,
         InvalidToken,
         InvalidRefreshToken,
