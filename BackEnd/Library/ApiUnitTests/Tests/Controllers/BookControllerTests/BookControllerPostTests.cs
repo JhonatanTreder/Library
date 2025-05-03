@@ -50,7 +50,8 @@ namespace ApiUnitTests.Tests.Controllers.BookControllerTests
                 Description = newBook.Description,
                 Publisher = newBook.Publisher,
                 PublicationYear = newBook.PublicationYear,
-                Status = BookStatus.Available
+                TotalCopies = 2,
+                AvailableCopies = 1
             };
 
             _bookRepositoryMock.Setup(service => service.AddBookAsync(newBook))

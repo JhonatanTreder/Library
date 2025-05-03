@@ -114,7 +114,8 @@ namespace ApiUnitTests.Tests.Controllers.BookControllerTests
                 Description = "description",
                 Publisher = "publisher",
                 PublicationYear = 2000,
-                Status = BookStatus.Available,
+                TotalCopies = 2,
+                AvailableCopies = 1
             };
 
             _bookRepositoryMock.Setup(service => service.GetBookByIdAsync(validId))

@@ -83,6 +83,27 @@ namespace ApiUnitTests.Tests.Controllers.BookControllerTests
         }
 
         [Fact]
+        public async Task PutBook_ReturnConflict_WhenBookCopiesQuantityIsInvalid()
+        {
+            var bookId = 1;
+            var newBookInfo = new BookUpdateDTO
+            {
+                Quantity = 1
+            };
+
+            _bookRepositoryMock.Setup(service => service.UpdateBookAsync(bookId, newBookInfo))
+                .ReturnsAsync(RepositoryStatus.InvalidCopiesQuantity);
+
+            var putResult = await _controller.Put(bookId, newBookInfo);
+            var conflictResult = Assert.IsType<ConflictObjectResult>(putResult);
+            var response = Assert.IsType<ApiResponse>(conflictResult.Value);
+
+            Assert.Equal("Conflict", response.Status);
+            Assert.Null(response.Data);
+            Assert.Equal("Não é possível atualizar a quantidade de livros quando o número de cópias disponíveis são inválidas", response.Message);
+        }
+
+        [Fact]
         public async Task PutBook_ReturnNotFound_WhenBookNotFound()
         {
             var bookId = 1;
