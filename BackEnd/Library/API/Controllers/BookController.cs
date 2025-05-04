@@ -5,6 +5,8 @@ using API.Enum.Responses;
 using API.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection;
+using System.Reflection.Metadata.Ecma335;
 
 namespace API.Controllers
 {
@@ -152,6 +154,48 @@ namespace API.Controllers
             };
         }
 
+        [HttpGet("copies/{copyId}")]
+        [Authorize(Roles = "user,librarian,admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetBookCopy(int bookId)
+        {
+            var response = await _bookRepository.GetBookCopyByIdAsync(bookId);
+
+            return response.Status switch 
+            {
+                RepositoryStatus.Success => Ok(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = response.Data,
+                    Message = $"Cópia de id '{bookId}' encontrada com sucesso"
+                }),
+
+                RepositoryStatus.InvalidId => BadRequest(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = $"O id '{bookId}' de uma cópia está inválido"
+                }),
+
+                RepositoryStatus.BookCopyNotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = $"A cópia do livro de id '{bookId}' não foi encontrada"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = $"Erro inesperado ao buscar pela cópia de id '{bookId}'"
+                })
+            };
+        }
+
         [HttpGet("available")]
         [Authorize(Roles = "user,librarian,admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -186,6 +230,54 @@ namespace API.Controllers
             };
         }
 
+        [HttpGet("copies/{bookId}/available")]
+        [Authorize(Roles = "user,librarian,admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetAvailableBookCopies(int bookId)
+        {
+            var response = await _bookRepository.GetAvailableBookCopiesAsync(bookId);
+
+            return response.Status switch 
+            {
+                RepositoryStatus.Success => Ok(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = response.Data,
+                    Message = $"Cópias disponíveis do livro de id '{bookId}' encontradas com sucesso"
+                }),
+
+                RepositoryStatus.InvalidId => BadRequest(new ApiResponse 
+                {
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = $"O id '{bookId}' de um livro está inválido"
+                }),
+
+                RepositoryStatus.BookNotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = $"O livro de id '{bookId}' não foi encontrado"
+                }),
+
+                RepositoryStatus.BookCopyNotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = $"Nenhuma cópia disponível do livro de id '{bookId}' foi encontrada"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = $"Erro inesperado ao buscar por cópias disponíveis do livro de id '{bookId}'"
+                })
+            };
+        }
+
         [HttpGet("borrowed")]
         [Authorize(Roles = "user,librarian,admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -216,6 +308,54 @@ namespace API.Controllers
                     Status = "Internal Server Error",
                     Data = null,
                     Message = "Erro inesperado ao buscar por livros emprestados"
+                })
+            };
+        }
+
+        [HttpGet("copies/{bookId}/borrowed")]
+        [Authorize(Roles = "user,librarian,admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetBorrowedBookCopies(int bookId)
+        {
+            var response = await _bookRepository.GetBorrowedBookCopiesAsync(bookId);
+
+            return response.Status switch
+            {
+                RepositoryStatus.Success => Ok(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = response.Data,
+                    Message = $"Cópias emprestadas do livro de id '{bookId}' encontradas com sucesso"
+                }),
+
+                RepositoryStatus.InvalidId => BadRequest(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = $"O id '{bookId}' de um livro está inválido"
+                }),
+
+                RepositoryStatus.BookNotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = $"O livro de id '{bookId}' não foi encontrado"
+                }),
+
+                RepositoryStatus.BookCopyNotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = $"Nenhuma cópia emprestada do livro de id '{bookId}' foi encontrada"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = $"Erro inesperado ao buscar por cópias esmprestadas do livro de id '{bookId}'"
                 })
             };
         }

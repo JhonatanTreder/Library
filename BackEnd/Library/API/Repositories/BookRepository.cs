@@ -179,7 +179,7 @@ namespace API.Repositories
                 .FirstOrDefaultAsync(bc => bc.Id == copyId);
 
             if (bookCopy is null || bookCopy.Book is null)
-                return new RepositoryResponse<BookCopyReturnDTO>(RepositoryStatus.BookNotFound);
+                return new RepositoryResponse<BookCopyReturnDTO>(RepositoryStatus.BookCopyNotFound);
 
             var bookInfo = new BookCopyReturnDTO
             {
