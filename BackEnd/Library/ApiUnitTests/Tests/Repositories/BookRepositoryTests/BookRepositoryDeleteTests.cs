@@ -81,6 +81,8 @@ namespace ApiUnitTests.Tests.Repositories.BookRepositoryTests
         private async Task ClearDatabase()
         {
             _fixture.DbContext.Books.RemoveRange(_fixture.DbContext.Books);
+            _fixture.DbContext.Loans.RemoveRange(_fixture.DbContext.Loans);
+
             await _fixture.DbContext.SaveChangesAsync();
         }
     }
