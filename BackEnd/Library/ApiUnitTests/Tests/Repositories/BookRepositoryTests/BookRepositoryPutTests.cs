@@ -3,6 +3,7 @@ using API.Enum;
 using API.Enum.Responses;
 using API.Models;
 using ApiUnitTests.Fixtures.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -132,6 +133,107 @@ namespace ApiUnitTests.Tests.Repositories.BookRepositoryTests
             var putResult = await _fixture.BookRepository.UpdateBookAsync(book.Id, newBookInfo);
 
             Assert.Equal(RepositoryStatus.InvalidCopiesQuantity, putResult);
+        }
+
+        [Fact]
+        public async Task PutBookStatus_ReturnSuccessOperation()
+        {
+            await ClearDatabase();
+
+            var book = new Book
+            {
+                Id = 1,
+            };
+
+            await _fixture.DbContext.Books.AddAsync(book);
+            await _fixture.DbContext.SaveChangesAsync();
+
+            var addCopyResult = await _fixture.BookRepository.AddBookCopyAsync(book.Id);
+
+            Assert.NotNull(addCopyResult.Data);
+
+            var putResult = await _fixture.BookRepository
+                .UpdateBookStatusAsync(addCopyResult.Data.CopyId, BookStatus.Borrowed);
+
+            var updatedCopy = await _fixture.DbContext.BookCopies
+                .FirstOrDefaultAsync(c => c.Id == addCopyResult.Data.CopyId);
+
+            Assert.NotNull(updatedCopy);
+            Assert.Equal(BookStatus.Borrowed, updatedCopy.Status);
+            Assert.Equal(RepositoryStatus.Success, putResult);
+        }
+
+        [Fact]
+        public async Task PutBookStatus_ReturnBookCopyNotFoundOperation_WhenBookCopyNotFound()
+        {
+            await ClearDatabase();
+
+            int invalidId = 2;
+
+            var putResult = await _fixture.BookRepository
+                .UpdateBookStatusAsync(invalidId, BookStatus.Borrowed);
+
+            Assert.Equal(RepositoryStatus.BookCopyNotFound, putResult);
+        }
+
+        [Fact]
+        public async Task PutBookStatus_ReturnNoChange_WhenBookStatusNoChange()
+        {
+            await ClearDatabase();
+
+            var book = new Book 
+            {
+                Id = 1,
+            };
+
+            await _fixture.DbContext.Books.AddAsync(book);
+            await _fixture.DbContext.SaveChangesAsync();
+
+            var addCopyResult = await _fixture.BookRepository.AddBookCopyAsync(book.Id);
+
+            Assert.NotNull(addCopyResult.Data);
+
+            var putResult = await _fixture.BookRepository
+                .UpdateBookStatusAsync(addCopyResult.Data.CopyId, BookStatus.Available);
+
+            Assert.Equal(RepositoryStatus.NoChange, putResult);
+        }
+
+        [Fact]
+        public async Task PutBookStatus_ReturnInvalidStatusTransitionOperation()
+        {
+            await ClearDatabase();
+
+            var book = new Book
+            {
+                Id = 1
+            };
+
+            await _fixture.DbContext.Books.AddAsync(book);
+            await _fixture.DbContext.SaveChangesAsync();
+
+            var addCopyResult = await _fixture.BookRepository.AddBookCopyAsync(book.Id);
+
+            Assert.NotNull(addCopyResult.Data);
+
+            var bookCopyId = addCopyResult.Data.CopyId;
+            var bookStatus = addCopyResult.Data.Status;
+
+            var updateBookStatusToBorrowed = await _fixture.BookRepository
+                .UpdateBookStatusAsync(bookCopyId, BookStatus.Borrowed);
+
+            Assert.Equal(RepositoryStatus.Success, updateBookStatusToBorrowed);
+
+            var borrowedCopyBook = await _fixture.DbContext.BookCopies
+                .FirstOrDefaultAsync(c => c.Id == bookCopyId);
+
+            Assert.NotNull(borrowedCopyBook);
+            Assert.Equal(BookStatus.Borrowed, borrowedCopyBook.Status);
+
+            var putResult = await _fixture.BookRepository
+                .UpdateBookStatusAsync(bookCopyId, BookStatus.Available);
+
+            Assert.Equal(RepositoryStatus.InvalidStatusTransition, putResult);
         }
 
         private async Task ClearDatabase()
