@@ -427,6 +427,13 @@ namespace API.Controllers
                     Message = "O livro não pode ser nulo"
                 }),
 
+                RepositoryStatus.InvalidQuantity => BadRequest(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = "Não foi possível criar um novo livro porque a quantidade de novas cópias está inválida"
+                }),
+
                 _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
                 {
                     Status = "Internal Server Error",

@@ -36,6 +36,9 @@ namespace API.Repositories
                 Copies = new List<BookCopy>()
             };
 
+            if (bookDTO.Quantity <= 0)
+                return new RepositoryResponse<BookReturnDTO>(RepositoryStatus.InvalidQuantity);
+
             for (int i = 0; i < bookDTO.Quantity; i++)
             {
                 book.Copies.Add(new BookCopy
@@ -63,7 +66,6 @@ namespace API.Repositories
 
             return new RepositoryResponse<BookReturnDTO>(RepositoryStatus.Success, bookReturn);
         }
-
 
         public async Task<RepositoryResponse<BookCopyReturnDTO>> AddBookCopyAsync(int bookId)
         {

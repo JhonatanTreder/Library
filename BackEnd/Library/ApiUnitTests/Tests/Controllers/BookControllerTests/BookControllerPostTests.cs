@@ -67,6 +67,32 @@ namespace ApiUnitTests.Tests.Controllers.BookControllerTests
         }
 
         [Fact]
+        public async Task PostBook_ReturnBadRequest_WhenBookQuantityIsInvalid()
+        {
+            var newBook = new CreateBookDTO
+            {
+                Title = "book-title",
+                Author = "book-author",
+                Description = "book-description",
+                Category = "Book-category",
+                Publisher = "book-publisher",
+                PublicationYear = 2000,
+                Quantity = -1
+            };
+
+            _bookRepositoryMock.Setup(service => service.AddBookAsync(newBook))
+                .ReturnsAsync(new RepositoryResponse<BookReturnDTO>(RepositoryStatus.InvalidQuantity));
+
+            var postBookResult = await _controller.Post(newBook);
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(postBookResult);
+            var response = Assert.IsType<ApiResponse>(badRequestResult.Value);
+
+            Assert.Equal("Bad Request", response.Status);
+            Assert.Null(response.Data);
+            Assert.Equal("Não foi possível criar um novo livro porque a quantidade de novas cópias está inválida", response.Message);
+        }
+
+        [Fact]
         public async Task PostBook_ReturnBadRequest_WhenBookIsNull()
         {
             var newBook = new CreateBookDTO
@@ -84,8 +110,8 @@ namespace ApiUnitTests.Tests.Controllers.BookControllerTests
                 .ReturnsAsync(new RepositoryResponse<BookReturnDTO>(RepositoryStatus.NullObject));
 
             var postBookResult = await _controller.Post(newBook);
-            var okSuccessResult = Assert.IsType<BadRequestObjectResult>(postBookResult);
-            var response = Assert.IsType<ApiResponse>(okSuccessResult.Value);
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(postBookResult);
+            var response = Assert.IsType<ApiResponse>(badRequestResult.Value);
 
             Assert.Equal("Bad Request", response.Status);
             Assert.Null(response.Data);
