@@ -13,6 +13,6 @@ namespace API.DTOs.Book
         public string Category { get; set; } = string.Empty;
         public int PublicationYear { get; set; }
 
-        public BookStatus Status { get; set; }
+        public string Status { get; set; } = string.Empty;
     }
 }

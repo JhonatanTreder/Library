@@ -19,8 +19,7 @@ namespace API.Repositories
             _context = context;
         }
 
-
-        public async Task<RepositoryResponse<BookReturnDTO>> AddBookAsync(CreateBookDTO bookDTO)
+        public async Task<RepositoryResponse<BookReturnDTO>> AddBookAsync(CreateBookDTO? bookDTO)
         {
             if (bookDTO is null)
                 return new RepositoryResponse<BookReturnDTO>(RepositoryStatus.NullObject);
@@ -193,7 +192,7 @@ namespace API.Repositories
                 Category = bookCopy.Book.Category,
                 Publisher = bookCopy.Book.Publisher,
                 PublicationYear = bookCopy.Book.PublicationYear,
-                Status = bookCopy.Status
+                Status = bookCopy.Status.ToString()
             };
 
             return new RepositoryResponse<BookCopyReturnDTO>(RepositoryStatus.Success, bookInfo);
@@ -271,7 +270,7 @@ namespace API.Repositories
                 Category = book.Category,
                 Publisher = book.Publisher,
                 PublicationYear = book.PublicationYear,
-                Status = copy.Status,
+                Status = copy.Status.ToString(),
             }).ToList();
 
             return new RepositoryResponse<IEnumerable<BookCopyReturnDTO>>(RepositoryStatus.Success, bookCopies);
@@ -333,7 +332,7 @@ namespace API.Repositories
                 Category = book.Category,
                 Publisher = book.Publisher,
                 PublicationYear = book.PublicationYear,
-                Status = BookStatus.Available
+                Status = BookStatus.Available.ToString()
             }).ToList();
 
             return new RepositoryResponse<IEnumerable<BookCopyReturnDTO>>(RepositoryStatus.Success, bookCopies);
@@ -395,7 +394,7 @@ namespace API.Repositories
                 Category = book.Category,
                 Publisher = book.Publisher,
                 PublicationYear = book.PublicationYear,
-                Status = BookStatus.Borrowed
+                Status = BookStatus.Borrowed.ToString()
             }).ToList();
 
             return new RepositoryResponse<IEnumerable<BookCopyReturnDTO>>(RepositoryStatus.Success, bookCopies);
