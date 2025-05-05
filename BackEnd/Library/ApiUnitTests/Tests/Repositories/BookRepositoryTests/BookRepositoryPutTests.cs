@@ -152,7 +152,7 @@ namespace ApiUnitTests.Tests.Repositories.BookRepositoryTests
             var newBookCopy = new CreateBookCopyDTO
             {
                 BookId = book.Id,
-                Qauntity = 1
+                Quantity = 1
             };
 
             var addCopyResult = await _fixture.BookRepository.AddBookCopiesAsync(newBookCopy);
@@ -199,7 +199,7 @@ namespace ApiUnitTests.Tests.Repositories.BookRepositoryTests
             var newBookCopy = new CreateBookCopyDTO
             {
                 BookId = book.Id,
-                Qauntity = 1
+                Quantity = 1
             };
 
             var addCopyResult = await _fixture.BookRepository.AddBookCopiesAsync(newBookCopy);
@@ -228,7 +228,7 @@ namespace ApiUnitTests.Tests.Repositories.BookRepositoryTests
             var newBookCopy = new CreateBookCopyDTO
             {
                 BookId = book.Id,
-                Qauntity = 1
+                Quantity = 1
             };
 
             var addCopyResult = await _fixture.BookRepository.AddBookCopiesAsync(newBookCopy);

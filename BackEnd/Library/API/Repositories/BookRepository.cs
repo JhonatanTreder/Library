@@ -66,7 +66,7 @@ namespace API.Repositories
             return new RepositoryResponse<BookReturnDTO>(RepositoryStatus.Success, bookReturn);
         }
 
-        public async Task<RepositoryResponse<IEnumerable<BookCopyReturnDTO>>> AddBookCopiesAsync(CreateBookCopyDTO bookCopyDTO)
+        public async Task<RepositoryResponse<IEnumerable<BookCopyReturnDTO>>> AddBookCopiesAsync(CreateBookCopyDTO? bookCopyDTO)
         {
             if (bookCopyDTO is null)
                 return new RepositoryResponse<IEnumerable<BookCopyReturnDTO>>(RepositoryStatus.NullObject);
@@ -84,7 +84,7 @@ namespace API.Repositories
             var bookCopies = new List<BookCopy>();
             var copiesInfo = new List<BookCopyReturnDTO>();
 
-            for (int i = 0; i < bookCopyDTO.Qauntity; i++)
+            for (int i = 0; i < bookCopyDTO.Quantity; i++)
             {
 
                 var newBookCopy = new BookCopy
