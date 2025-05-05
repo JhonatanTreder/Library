@@ -1,4 +1,5 @@
 ﻿using API.DTO.Book;
+using API.DTOs.Book;
 using API.Enum;
 using API.Enum.Responses;
 using API.Models;
@@ -148,15 +149,21 @@ namespace ApiUnitTests.Tests.Repositories.BookRepositoryTests
             await _fixture.DbContext.Books.AddAsync(book);
             await _fixture.DbContext.SaveChangesAsync();
 
-            var addCopyResult = await _fixture.BookRepository.AddBookCopyAsync(book.Id);
+            var newBookCopy = new CreateBookCopyDTO
+            {
+                BookId = book.Id,
+                Qauntity = 1
+            };
+
+            var addCopyResult = await _fixture.BookRepository.AddBookCopiesAsync(newBookCopy);
 
             Assert.NotNull(addCopyResult.Data);
 
             var putResult = await _fixture.BookRepository
-                .UpdateBookStatusAsync(addCopyResult.Data.CopyId, BookStatus.Borrowed);
+                .UpdateBookStatusAsync(addCopyResult.Data.First().CopyId, BookStatus.Borrowed);
 
             var updatedCopy = await _fixture.DbContext.BookCopies
-                .FirstOrDefaultAsync(c => c.Id == addCopyResult.Data.CopyId);
+                .FirstOrDefaultAsync(c => c.Id == addCopyResult.Data.First().CopyId);
 
             Assert.NotNull(updatedCopy);
             Assert.Equal(BookStatus.Borrowed, updatedCopy.Status);
@@ -189,12 +196,18 @@ namespace ApiUnitTests.Tests.Repositories.BookRepositoryTests
             await _fixture.DbContext.Books.AddAsync(book);
             await _fixture.DbContext.SaveChangesAsync();
 
-            var addCopyResult = await _fixture.BookRepository.AddBookCopyAsync(book.Id);
+            var newBookCopy = new CreateBookCopyDTO
+            {
+                BookId = book.Id,
+                Qauntity = 1
+            };
+
+            var addCopyResult = await _fixture.BookRepository.AddBookCopiesAsync(newBookCopy);
 
             Assert.NotNull(addCopyResult.Data);
 
             var putResult = await _fixture.BookRepository
-                .UpdateBookStatusAsync(addCopyResult.Data.CopyId, BookStatus.Available);
+                .UpdateBookStatusAsync(addCopyResult.Data.First().CopyId, BookStatus.Available);
 
             Assert.Equal(RepositoryStatus.NoChange, putResult);
         }
@@ -212,12 +225,18 @@ namespace ApiUnitTests.Tests.Repositories.BookRepositoryTests
             await _fixture.DbContext.Books.AddAsync(book);
             await _fixture.DbContext.SaveChangesAsync();
 
-            var addCopyResult = await _fixture.BookRepository.AddBookCopyAsync(book.Id);
+            var newBookCopy = new CreateBookCopyDTO
+            {
+                BookId = book.Id,
+                Qauntity = 1
+            };
+
+            var addCopyResult = await _fixture.BookRepository.AddBookCopiesAsync(newBookCopy);
 
             Assert.NotNull(addCopyResult.Data);
 
-            var bookCopyId = addCopyResult.Data.CopyId;
-            var bookStatus = addCopyResult.Data.Status;
+            var bookCopyId = addCopyResult.Data.First().CopyId;
+            var bookStatus = addCopyResult.Data.First().Status;
 
             var updateBookStatusToBorrowed = await _fixture.BookRepository
                 .UpdateBookStatusAsync(bookCopyId, BookStatus.Borrowed);
