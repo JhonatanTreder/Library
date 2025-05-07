@@ -48,7 +48,7 @@ namespace API.Controllers
                     Message = "O livro não pode ser nulo"
                 }),
 
-                RepositoryStatus.NotFound => NotFound(new ApiResponse
+                RepositoryStatus.BookNotFound => NotFound(new ApiResponse
                 {
                     Status = "Not Found",
                     Data = null,

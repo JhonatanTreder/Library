@@ -90,7 +90,7 @@ namespace ApiUnitTests.Tests.Controllers.BookControllerTests
             };
 
             _bookRepositoryMock.Setup(service => service.GetBooksAsync(bookFilter))
-                .ReturnsAsync(new RepositoryResponse<IEnumerable<BookReturnDTO>>(RepositoryStatus.NotFound));
+                .ReturnsAsync(new RepositoryResponse<IEnumerable<BookReturnDTO>>(RepositoryStatus.BookNotFound));
 
             var okSuccessResult = await _controller.Get(bookFilter);
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(okSuccessResult);

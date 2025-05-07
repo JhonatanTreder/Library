@@ -217,7 +217,7 @@ namespace API.Repositories
             return new RepositoryResponse<BookCopyReturnDTO>(RepositoryStatus.Success, bookInfo);
         }
 
-        public async Task<RepositoryResponse<IEnumerable<BookReturnDTO>>> GetBooksAsync(BookFilterDTO bookFilterDTO)
+        public async Task<RepositoryResponse<IEnumerable<BookReturnDTO>>> GetBooksAsync(BookFilterDTO? bookFilterDTO)
         {
             if (bookFilterDTO is null)
             {
@@ -261,7 +261,7 @@ namespace API.Repositories
                 return new RepositoryResponse<IEnumerable<BookReturnDTO>>(RepositoryStatus.Success, books);
             }
 
-            return new RepositoryResponse<IEnumerable<BookReturnDTO>>(RepositoryStatus.NotFound);
+            return new RepositoryResponse<IEnumerable<BookReturnDTO>>(RepositoryStatus.BookNotFound);
         }
 
         public async Task<RepositoryResponse<IEnumerable<BookCopyReturnDTO>>> GetBookCopiesAsync(int bookId)
