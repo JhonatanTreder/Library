@@ -1,4 +1,5 @@
-﻿using API.Enum;
+﻿using API.DTOs.Book;
+using API.Enum;
 using API.Enum.Responses;
 using API.Models;
 using ApiUnitTests.Fixtures.Repositories;
@@ -77,6 +78,166 @@ namespace ApiUnitTests.Tests.Repositories.BookRepositoryTests
 
             Assert.Equal(RepositoryStatus.CannotDelete, deleteResult);
         }
+
+        [Fact]
+        public async Task DeleteBookCopy_ReturnSuccessOperation()
+        {
+            await ClearDatabase();
+
+            var book = new Book
+            {
+                Id = 1,
+            };
+
+            var addBook = await _fixture.DbContext.AddAsync(book);
+            await _fixture.DbContext.SaveChangesAsync();
+
+            Assert.NotNull(addBook);
+
+            var newBookCopyInfo = new CreateBookCopyDTO
+            {
+                BookId = book.Id,
+                Quantity = 2
+            };
+
+            var addBookCopy = await _fixture.BookRepository
+                .AddBookCopiesAsync(newBookCopyInfo);
+
+            Assert.NotNull(addBookCopy.Data);
+
+            var deleteBookCopy = await _fixture.BookRepository
+                .DeleteBookCopyAsync(book.Id, addBookCopy.Data.First().CopyId);
+
+            Assert.Equal(RepositoryStatus.Success, deleteBookCopy);
+        }
+
+        [Fact]
+        public async Task DeleteBookCopy_ReturnInvalidIdOperation_WhenIdIsInvalid()
+        {
+            await ClearDatabase();
+
+            var book = new Book
+            {
+                Id = 1,
+            };
+
+            var addBook = await _fixture.DbContext.AddAsync(book);
+            await _fixture.DbContext.SaveChangesAsync();
+
+            Assert.NotNull(addBook);
+
+            var newBookCopyInfo = new CreateBookCopyDTO
+            {
+                BookId = -1,
+                Quantity = 2
+            };
+
+            var deleteBookCopy = await _fixture.BookRepository
+               .DeleteBookCopyAsync(book.Id, newBookCopyInfo.BookId);
+
+            Assert.Equal(RepositoryStatus.InvalidId, deleteBookCopy);
+        }
+
+        [Fact]
+        public async Task DeleetBookCopy_ReturnBookNotFoundOperation_WhenBookNotFound()
+        {
+            await ClearDatabase();
+
+            var book = new Book
+            {
+                Id = 1,
+            };
+
+            var addBook = await _fixture.DbContext.AddAsync(book);
+            await _fixture.DbContext.SaveChangesAsync();
+
+            Assert.NotNull(addBook);
+
+            var newBookCopyInfo = new CreateBookCopyDTO
+            {
+                BookId = book.Id,
+                Quantity = 2
+            };
+
+            var addBookCopy = await _fixture.BookRepository
+                .AddBookCopiesAsync(newBookCopyInfo);
+
+            Assert.NotNull(addBookCopy.Data);
+
+            var deleteBook = await _fixture.BookRepository.DeleteBookAsync(book.Id);
+
+            Assert.Equal(RepositoryStatus.Success, deleteBook);
+
+            var deleteBookCopy = await _fixture.BookRepository
+                .DeleteBookCopyAsync(book.Id, addBookCopy.Data.First().CopyId);
+
+            Assert.Equal(RepositoryStatus.BookNotFound, deleteBookCopy);
+        }
+
+        [Fact]
+        public async Task DeleteBookCopy_ReturnBookCopyNotFoundOperation_WhenBookCopyNotFound()
+        {
+            await ClearDatabase();
+
+            var book = new Book
+            {
+                Id = 1,
+            };
+
+            var addBook = await _fixture.DbContext.AddAsync(book);
+            await _fixture.DbContext.SaveChangesAsync();
+
+            Assert.NotNull(addBook);
+
+            var newBookCopyInfo = new CreateBookCopyDTO
+            {
+                BookId = book.Id,
+                Quantity = 2
+            };
+
+            var deleteBookCopy = await _fixture.BookRepository
+                .DeleteBookCopyAsync(book.Id, 2);
+
+            Assert.Equal(RepositoryStatus.BookCopyNotFound, deleteBookCopy);
+        }
+
+        [Fact]
+        public async Task DeleteBookCopy_ReturnBookCopyDoesNotBelongToBookOperation()
+        {
+            await ClearDatabase();
+
+            var book = new Book 
+            {
+                Id = 1 
+            };
+
+            var otherBook = new Book 
+            { 
+                Id = 2
+            };
+
+            await _fixture.DbContext.AddAsync(book);
+            await _fixture.DbContext.AddAsync(otherBook);
+            await _fixture.DbContext.SaveChangesAsync();
+
+            var newBookCopyInfo = new CreateBookCopyDTO
+            {
+                BookId = book.Id,
+                Quantity = 1
+            };
+
+            var addBookCopy = await _fixture.BookRepository
+                .AddBookCopiesAsync(newBookCopyInfo);
+
+            Assert.NotNull(addBookCopy.Data);
+
+            var bookCopy = addBookCopy.Data.First();
+            var deleteResult = await _fixture.BookRepository
+                .DeleteBookCopyAsync(otherBook.Id, bookCopy.CopyId);
+
+            Assert.Equal(RepositoryStatus.BookCopyDoesNotBelongToBook, deleteResult);
+        }
+
 
         private async Task ClearDatabase()
         {
