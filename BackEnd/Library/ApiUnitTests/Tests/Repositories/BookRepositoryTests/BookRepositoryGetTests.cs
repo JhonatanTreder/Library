@@ -1,4 +1,5 @@
 ﻿using API.DTO.Book;
+using API.DTOs.Book;
 using API.Enum.Responses;
 using API.Models;
 using ApiUnitTests.Fixtures.Repositories;
@@ -95,6 +96,130 @@ namespace ApiUnitTests.Tests.Repositories.BookRepositoryTests
             var getResult = await _fixture.BookRepository.GetBooksAsync(bookFilter);
 
             Assert.Equal(RepositoryStatus.BookNotFound, getResult.Status);
+        }
+
+        [Fact]
+        public async Task GetBookCopies_ReturnSuccessOperation()
+        {
+            await ClearDatabase();
+
+            var book = new Book
+            {
+                Id = 1,
+            };
+
+            var addBook = await _fixture.DbContext.Books.AddAsync(book);
+            await _fixture.DbContext.SaveChangesAsync();
+
+            Assert.NotNull(addBook);
+
+            var newCopyInfo = new CreateBookCopyDTO
+            {
+                BookId = book.Id,
+                Quantity = 1
+            };
+
+            var addBookCopy = await _fixture.BookRepository.AddBookCopiesAsync(newCopyInfo);
+
+            Assert.NotNull(addBookCopy.Data);
+            Assert.Equal(RepositoryStatus.Success, addBookCopy.Status);
+
+            var getResult = await _fixture.BookRepository.GetBookCopiesAsync(addBookCopy.Data.First().BookId);
+
+            Assert.Equal(RepositoryStatus.Success, getResult.Status);
+        }
+
+        [Fact]
+        public async Task GetBookCopies_ReturnInvalidIdOperation_WhenIdIsInvalid()
+        {
+            await ClearDatabase();
+
+            var book = new Book
+            {
+                Id = 1,
+            };
+
+            var addBook = await _fixture.DbContext.Books.AddAsync(book);
+            await _fixture.DbContext.SaveChangesAsync();
+
+            Assert.NotNull(addBook);
+
+            var newCopyInfo = new CreateBookCopyDTO
+            {
+                BookId = book.Id,
+                Quantity = 1
+            };
+
+            var addBookCopy = await _fixture.BookRepository.AddBookCopiesAsync(newCopyInfo);
+
+            Assert.NotNull(addBookCopy.Data);
+            Assert.Equal(RepositoryStatus.Success, addBookCopy.Status);
+
+            var getResult = await _fixture.BookRepository.GetBookCopiesAsync(-1);
+
+            Assert.Equal(RepositoryStatus.InvalidId, getResult.Status);
+        }
+
+        [Fact]
+        public async Task GetBookCopies_ReturnBookNotFoundOperation_WhenBookNotFound()
+        {
+            await ClearDatabase();
+
+            var book = new Book
+            {
+                Id = 1,
+            };
+
+            var addBook = await _fixture.DbContext.Books.AddAsync(book);
+            await _fixture.DbContext.SaveChangesAsync();
+
+            Assert.NotNull(addBook);
+
+            var deleteBook = _fixture.DbContext.Books.Remove(book);
+
+            Assert.NotNull(deleteBook);
+
+            await _fixture.DbContext.SaveChangesAsync();
+
+            var newCopyInfo = new CreateBookCopyDTO
+            {
+                BookId = book.Id,
+                Quantity = 1
+            };
+
+            var addBookCopy = await _fixture.BookRepository.AddBookCopiesAsync(newCopyInfo);
+
+            Assert.Null(addBookCopy.Data);
+
+            var getResult = await _fixture.BookRepository.GetBookCopiesAsync(1);
+
+            Assert.Equal(RepositoryStatus.BookNotFound, getResult.Status);
+        }
+
+        [Fact]
+        public async Task GetBookCopies_ReturnBookCopyNotFoundOperation_WhenCopyNotFound()
+        {
+            await ClearDatabase();
+
+            var book = new Book
+            {
+                Id = 1,
+            };
+
+            var addBook = await _fixture.DbContext.Books.AddAsync(book);
+            await _fixture.DbContext.SaveChangesAsync();
+
+            Assert.NotNull(addBook);
+
+            var newCopyInfo = new CreateBookCopyDTO
+            {
+                BookId = book.Id,
+                Quantity = 1
+            };
+
+            var getResult = await _fixture.BookRepository.GetBookCopiesAsync(book.Id);
+
+            Assert.Equal(RepositoryStatus.BookCopyNotFound, getResult.Status);
         }
 
         private async Task ClearDatabase()
