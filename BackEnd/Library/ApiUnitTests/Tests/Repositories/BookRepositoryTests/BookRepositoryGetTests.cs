@@ -222,6 +222,49 @@ namespace ApiUnitTests.Tests.Repositories.BookRepositoryTests
             Assert.Equal(RepositoryStatus.BookCopyNotFound, getResult.Status);
         }
 
+        [Fact]
+        public async Task GetAvailableBooks_ReturnSuccessOperation()
+        {
+            await ClearDatabase();
+
+            var book = new Book();
+            var addBook = await _fixture.DbContext.AddAsync(book);
+            await _fixture.DbContext.SaveChangesAsync();
+
+            Assert.NotNull(addBook);
+
+
+            var bookCopiesInfo = new CreateBookCopyDTO
+            {
+                BookId = book.Id,
+                Quantity = 1
+            };
+
+            var addBookCopy = await _fixture.BookRepository.AddBookCopiesAsync(bookCopiesInfo);
+
+            Assert.Equal(RepositoryStatus.Success, addBookCopy.Status);
+
+            var getResult = await _fixture.BookRepository.GetAvailableBooksAsync();
+
+            Assert.Equal(RepositoryStatus.Success, getResult.Status);
+        }
+
+        [Fact]
+        public async Task GetAvailableBooks_ReturnBookNotFoundOperation_WhenAvailableBooksNotFound()
+        {
+            await ClearDatabase();
+
+            var book = new Book();
+            var addBook = await _fixture.DbContext.AddAsync(book);
+            await _fixture.DbContext.SaveChangesAsync();
+
+            Assert.NotNull(addBook);
+
+            var getResult = await _fixture.BookRepository.GetAvailableBooksAsync();
+
+            Assert.Equal(RepositoryStatus.BookNotFound, getResult.Status);
+        }
+
         private async Task ClearDatabase()
         {
             _fixture.DbContext.Books.RemoveRange(_fixture.DbContext.Books);
