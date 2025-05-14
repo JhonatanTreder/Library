@@ -265,6 +265,69 @@ namespace ApiUnitTests.Tests.Repositories.BookRepositoryTests
             Assert.Equal(RepositoryStatus.BookNotFound, getResult.Status);
         }
 
+        [Fact]
+        public async Task GetAvailableBookCopies_ReturnSuccessOperation()
+        {
+            await ClearDatabase();
+
+            var book = new Book
+            {
+                Id = 1
+            };
+
+            var addBook = await _fixture.DbContext.Books.AddAsync(book);
+            await _fixture.DbContext.SaveChangesAsync();
+
+            Assert.NotNull(addBook);
+
+            var bookCopy = new CreateBookCopyDTO
+            {
+                BookId = book.Id,
+                Quantity = 1
+            };
+
+            var addBookCopy = await _fixture.BookRepository.AddBookCopiesAsync(bookCopy);
+
+            Assert.NotNull(addBookCopy);
+            Assert.Equal(RepositoryStatus.Success, addBookCopy.Status);
+
+            var getResult = await _fixture.BookRepository.GetAvailableBookCopiesAsync(book.Id);
+
+            Assert.NotNull(getResult);
+            Assert.Equal(RepositoryStatus.Success, getResult.Status);
+        }
+
+        [Fact]
+        public async Task GetAvailableBookCopies_ReturnBookNotFoundOperation_WhenBookNotFound()
+        {
+            await ClearDatabase();
+
+            var getResult = await _fixture.BookRepository.GetAvailableBookCopiesAsync(1);
+
+            Assert.NotNull(getResult);
+            Assert.Equal(RepositoryStatus.BookNotFound, getResult.Status);
+        }
+
+        [Fact]
+        public async Task GetAvailableBookCopies_ReturnBookCopyNotFound_WhenCopyNotFound()
+        {
+            await ClearDatabase();
+
+            var book = new Book
+            {
+                Id = 1
+            };
+
+            var addBook = await _fixture.DbContext.Books.AddAsync(book);
+            await _fixture.DbContext.SaveChangesAsync();
+
+            Assert.NotNull(addBook);
+
+            var getResult = await _fixture.BookRepository.GetAvailableBookCopiesAsync(book.Id);
+
+            Assert.NotNull(getResult);
+            Assert.Equal(RepositoryStatus.BookCopyNotFound, getResult.Status);
+        }
         private async Task ClearDatabase()
         {
             _fixture.DbContext.Books.RemoveRange(_fixture.DbContext.Books);
