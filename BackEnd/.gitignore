@@ -1,5 +1,9 @@
-# Pasta de cache e configurações locais do Visual Studio
+# Pasta de cache e configurações locais do Projeto
 .vs/
+FrontEnd/.idea/
+FrontEnd/.vscode
+FrontEnd/src/.idea/
+FrontEnd/src/.vs/
 
 # Configurações do usuário
 *.csproj.user
