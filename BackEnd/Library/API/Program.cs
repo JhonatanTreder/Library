@@ -16,8 +16,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+builder.Configuration.AddJsonFile("utilities.json", optional: true, reloadOnChange: true);
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
@@ -95,10 +95,23 @@ builder.Services.AddAuthentication(options =>
 });
 
 //---------------------------------------------------------------------
-builder.Services.AddScoped<IBookRepository, BookRepository>();
 
 var connectionString = builder.Configuration.GetConnectionString("LocalConnection");
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
+
+//Configura o CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("LocalHostPolicy", policy =>
+    {
+        policy
+            .SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
 
 var app = builder.Build();
 
@@ -110,6 +123,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("LocalHostPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
