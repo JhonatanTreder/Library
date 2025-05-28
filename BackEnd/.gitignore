@@ -16,6 +16,9 @@ obj/
 # Pacotes do NuGet
 packages/
 *.nupkg
+
+# Arquivos .json
+BackEnd/Library/API/utilities.json
 project.lock.json
 project.assets.json
 
