@@ -1,6 +1,6 @@
 ﻿using API.Enum;
 
-namespace API.DTO.User
+namespace API.DTOs.User
 {
     public class UserFilterDTO
     {

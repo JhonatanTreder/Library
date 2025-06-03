@@ -1,4 +1,4 @@
-﻿using API.DTO.Book;
+﻿using API.DTOs.Book;
 using API.DTOs.Book;
 using API.Enum;
 using API.Enum.Responses;
@@ -328,6 +328,39 @@ namespace ApiUnitTests.Tests.Repositories.BookRepositoryTests
 
             Assert.NotNull(getResult);
             Assert.Equal(RepositoryStatus.BookCopyNotFound, getResult.Status);
+        }
+
+        [Fact]
+        public async Task GetBorrowedBooks_ReturnSuccessOperation()
+        {
+            await ClearDatabase();
+
+            var book = new Book
+            {
+                Id = 1
+            };
+
+            var addBook = await _fixture.DbContext.Books.AddAsync(book);
+            await _fixture.DbContext.SaveChangesAsync();
+
+            Assert.NotNull(addBook);
+
+            var bookCopiesInfo = new CreateBookCopyDTO
+            {
+                BookId = book.Id,
+                Quantity = 2
+            };
+
+            var addBookCopy = await _fixture.BookRepository.AddBookCopiesAsync(bookCopiesInfo);
+
+            Assert.Equal(RepositoryStatus.Success, addBookCopy.Status);
+            Assert.NotNull(addBookCopy.Data);
+
+            var updateCopyStatus = await _fixture.BookRepository.UpdateBookStatusAsync(addBookCopy.Data.First().CopyId, BookStatus.Borrowed);
+            Assert.Equal(RepositoryStatus.Success, updateCopyStatus);
+
+            var getResult = await _fixture.BookRepository.GetBorrowedBooksAsync();
+            Assert.Equal(RepositoryStatus.Success, getResult.Status);
         }
 
         [Fact]

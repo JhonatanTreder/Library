@@ -1,6 +1,6 @@
-﻿using API.DTO.Login;
-using API.DTO.Responses;
-using API.DTO.Token;
+﻿using API.DTOs.Authentication;
+using API.DTOs.Responses;
+using API.DTOs.Token;
 using API.Enum.Responses;
 using API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -94,6 +94,13 @@ namespace API.Controllers
                     Message = "A requisição de registro não pode ser nula"
                 }),
 
+                RepositoryStatus.InvalidDomain => BadRequest(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = $"O domínio do email '{registerDTO.Email}' do usuário é inválido"
+                }),
+
                 RepositoryStatus.InvalidPassword => BadRequest(new ApiResponse
                 {
                     Status = "Bad Request",
@@ -134,6 +141,89 @@ namespace API.Controllers
                     Status = "Internal Server Error",
                     Data = null,
                     Message = "Erro inesperado ao registrar o usuário"
+                })
+            };
+        }
+
+        [HttpPost]
+        [Route("email-confirmation")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ConfirmEmail([FromBody] string email)
+        {
+            var response = await _authService.SendEmailConfirmationAsync(email);
+
+            return response switch 
+            {
+                RepositoryStatus.Success => Ok(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = null,
+                    Message = "Email enviado com sucesso"
+                }),
+
+                RepositoryStatus.UserNotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = $"O usuário de email '{email}' não foi encontrado"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Erro inesperado ao tentar enviar a confirmação de email para o usuário"
+                })
+            };
+        }
+
+        [HttpPost]
+        [Route("verify-email")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailCodeDTO verifyEmailDTO)
+        {
+            var response = await _authService.VerifyEmailCodeAsync(verifyEmailDTO);
+
+            return response switch 
+            {
+                RepositoryStatus.Success => Ok(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = null,
+                    Message  = "Código verificado com sucesso"
+                }),
+
+                RepositoryStatus.InvalidConfirmationCode => BadRequest(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = "O código de confirmação do usuário está inválido"
+                }),
+
+                RepositoryStatus.FailedToUpdateUser => Conflict(new ApiResponse
+                {
+                    Status = "Conflict",
+                    Data = null,
+                    Message = "Ocorreu um erro inesperado ao atualizar o usuário com as novas informações do email"
+                }),
+
+                RepositoryStatus.UserNotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = "O usuário não foi encontrado"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Erro inesperado ao verificar o código de confirmação do usuário"
                 })
             };
         }

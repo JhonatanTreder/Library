@@ -1,7 +1,7 @@
-﻿using API.DTO.Login;
-using API.DTO.Responses;
-using API.DTO.Token;
-using API.DTO.User;
+﻿using API.DTOs.Authentication;
+using API.DTOs.Responses;
+using API.DTOs.Token;
+using API.DTOs.User;
 using API.Enum.Responses;
 
 namespace API.Services.Interfaces
@@ -10,6 +10,8 @@ namespace API.Services.Interfaces
     {
         Task<RepositoryResponse<TokenReturnDTO>> Login(LoginDTO loginDTO);
         Task<RepositoryResponse<UserDTO>> Register(RegisterDTO registerDTO);
+        Task<RepositoryStatus> SendEmailConfirmationAsync(string email);
+        Task<RepositoryStatus> VerifyEmailCodeAsync(VerifyEmailCodeDTO verifyEmailDTO);
         Task<RepositoryResponse<TokenDTO>> RefreshToken(TokenDTO tokenDTO);
         Task<RepositoryStatus> RevokeToken(string username);
     }

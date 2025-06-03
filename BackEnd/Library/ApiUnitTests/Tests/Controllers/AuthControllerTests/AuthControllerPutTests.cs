@@ -1,5 +1,5 @@
 ﻿using API.Controllers;
-using API.DTO.Responses;
+using API.DTOs.Responses;
 using API.Enum.Responses;
 using API.Services.Interfaces;
 using ApiUnitTests.Fixtures.Services;

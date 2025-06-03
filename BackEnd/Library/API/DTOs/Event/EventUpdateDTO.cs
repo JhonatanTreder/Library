@@ -1,4 +1,4 @@
-﻿namespace API.DTO.Event
+﻿namespace API.DTOs.Event
 {
     public class EventUpdateDTO
     {

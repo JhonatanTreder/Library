@@ -1,4 +1,4 @@
-﻿namespace API.DTO.Token
+﻿namespace API.DTOs.Token
 {
     public class TokenReturnDTO
     {

@@ -13,6 +13,9 @@ namespace API.Models
         [Required(ErrorMessage = "O tipo de usuário é obrigatório")]
         public UserType UserType { get; set; }
 
+        public string? EmailConfirmationCode { get; set; }
+        public DateTime EmailConfirmationCodeExpiryTime { get; set; }
+
         public string? RefreshToken { get; set; }
         public DateTime RefreshTokenExpiryTime { get; set; }
 

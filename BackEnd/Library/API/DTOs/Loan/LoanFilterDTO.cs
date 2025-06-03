@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace API.DTO.Loan
+namespace API.DTOs.Loan
 {
     public class LoanFilterDTO
     {

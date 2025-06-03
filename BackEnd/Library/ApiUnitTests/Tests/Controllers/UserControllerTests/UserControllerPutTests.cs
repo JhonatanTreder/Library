@@ -1,6 +1,6 @@
 ﻿using API.Controllers;
-using API.DTO.Responses;
-using API.DTO.User;
+using API.DTOs.Responses;
+using API.DTOs.User;
 using API.Enum.Responses;
 using API.Repositories.Interfaces;
 using ApiUnitTests.Fixtures.Controllers;

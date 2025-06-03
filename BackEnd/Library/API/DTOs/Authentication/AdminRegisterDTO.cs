@@ -1,7 +1,7 @@
 ﻿using API.Enum;
 using System.ComponentModel.DataAnnotations;
 
-namespace API.DTO.Authentication
+namespace API.DTOs.Authentication
 {
     public class AdminRegisterDTO
     {

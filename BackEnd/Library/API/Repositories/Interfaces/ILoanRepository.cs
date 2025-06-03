@@ -1,5 +1,5 @@
-﻿using API.DTO.Loan;
-using API.DTO.Responses;
+﻿using API.DTOs.Loan;
+using API.DTOs.Responses;
 using API.Enum.Responses;
 using API.Models;
 

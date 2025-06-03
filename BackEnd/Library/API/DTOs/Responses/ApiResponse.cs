@@ -1,4 +1,4 @@
-﻿namespace API.DTO.Responses
+﻿namespace API.DTOs.Responses
 {
     public class ApiResponse
     {

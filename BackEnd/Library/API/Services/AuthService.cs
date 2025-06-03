@@ -1,14 +1,19 @@
-﻿using API.DTO.Login;
-using API.DTO.Responses;
-using API.DTO.Token;
-using API.DTO.User;
+﻿using API.DTOs.Authentication;
+using API.DTOs.Responses;
+using API.DTOs.Token;
+using API.DTOs.User;
 using API.Enum;
 using API.Enum.Responses;
 using API.Models;
 using API.Services.Interfaces;
+using DnsClient;
 using Microsoft.AspNetCore.Identity;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
+using System.Net.Mail;
 using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace API.Services
 {
@@ -90,6 +95,17 @@ namespace API.Services
             if (registerDTO is null)
             {
                 return new RepositoryResponse<UserDTO>(RepositoryStatus.NullObject);
+            }
+
+            string[] emailParts = registerDTO.Email.Split('@');
+            var domain = emailParts[1];
+
+            var validDomain = await IsValidDomain(domain);
+
+            if (validDomain is false)
+            {
+                Console.WriteLine(validDomain);
+                return new RepositoryResponse<UserDTO>(RepositoryStatus.InvalidDomain);
             }
 
             var userExists = await _userManager.FindByEmailAsync(registerDTO.Email);
@@ -223,6 +239,105 @@ namespace API.Services
             }
 
             return RepositoryStatus.Success; ;
+        }
+
+        public async Task<RepositoryStatus> SendEmailConfirmationAsync(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user is null)
+                return RepositoryStatus.UserNotFound;
+
+            var tokenGenerator = new Random();
+
+            var confirmationCode = tokenGenerator.Next(100000, 999999);
+
+            user.EmailConfirmationCode = confirmationCode.ToString();
+            user.EmailConfirmationCodeExpiryTime = DateTime.UtcNow.AddMinutes(5);
+
+            var updateResult = await _userManager.UpdateAsync(user);
+
+            if (!updateResult.Succeeded)
+                return RepositoryStatus.FailedToUpdateUser;
+
+            string message = $"Seu código de confirmação: {confirmationCode}";
+            string subject = "Confirmação de Email";
+
+            await SendEmail(email, subject, message);
+
+            return RepositoryStatus.Success;
+        }
+
+        private async Task<RepositoryStatus> SendEmail(string email, string subject, string body)
+        {
+            string mail = _configuration["SMTP:UserName"] ?? string.Empty;
+            string name = _configuration["SMTP:Name"] ?? string.Empty;
+            string password = _configuration["SMTP:Password"] ?? string.Empty;
+            string host = _configuration["SMTP:Host"] ?? string.Empty;
+            int port = Convert.ToInt32(_configuration["SMTP:Port"] ?? "587");
+
+            MailMessage emailService = new()
+            {
+                From = new MailAddress(mail, name),
+            };
+
+            emailService.To.Add(email);
+            emailService.Subject = subject;
+            emailService.Body = body;
+            emailService.IsBodyHtml = true;
+            emailService.HeadersEncoding = Encoding.UTF8;
+            emailService.BodyEncoding = Encoding.UTF8;
+            emailService.Priority = MailPriority.High;
+
+            using (SmtpClient smtpClient = new SmtpClient(host, port))
+            {
+                smtpClient.Credentials = new NetworkCredential(mail, password);
+                smtpClient.EnableSsl = true;
+
+                await smtpClient.SendMailAsync(emailService);
+
+                return RepositoryStatus.Success;
+            }
+        }
+
+        public async Task<RepositoryStatus> VerifyEmailCodeAsync(VerifyEmailCodeDTO verifyEmailDTO)
+        {
+            var user = await _userManager.FindByEmailAsync(verifyEmailDTO.Email);
+
+            if (user is null)
+                return RepositoryStatus.UserNotFound;
+
+            if (user.EmailConfirmationCode != verifyEmailDTO.EmailCode)
+                return RepositoryStatus.InvalidConfirmationCode;
+
+            user.EmailConfirmed = true;
+
+            var updateUser = await _userManager.UpdateAsync(user);
+
+            if (updateUser.Succeeded is false)
+            {
+                user.EmailConfirmationCode = null;
+                user.EmailConfirmationCodeExpiryTime = DateTime.UtcNow;
+
+                var resetUser = await _userManager.UpdateAsync(user);
+
+                if (resetUser.Succeeded is false)
+                    return RepositoryStatus.FailedToUpdateUser;
+
+                return RepositoryStatus.FailedToUpdateUser;
+            }
+
+            return RepositoryStatus.Success;
+        }
+
+        private async Task<bool> IsValidDomain(string domain)
+        {
+            var lookup = new LookupClient();
+            var result = await lookup.QueryAsync(domain, QueryType.MX);
+
+            Console.WriteLine(result.Answers.MxRecords().Any());
+
+            return result.Answers.MxRecords().Any();
         }
     }
 }

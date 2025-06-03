@@ -1,5 +1,5 @@
-﻿using API.DTO.Book;
-using API.DTO.Responses;
+﻿using API.DTOs.Book;
+using API.DTOs.Responses;
 using API.DTOs.Book;
 using API.Enum;
 using API.Enum.Responses;

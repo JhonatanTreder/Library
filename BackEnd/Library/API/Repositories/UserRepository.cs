@@ -1,5 +1,5 @@
-﻿using API.DTO.Responses;
-using API.DTO.User;
+﻿using API.DTOs.Responses;
+using API.DTOs.User;
 using API.Enum.Responses;
 using API.Models;
 using API.Repositories.Interfaces;

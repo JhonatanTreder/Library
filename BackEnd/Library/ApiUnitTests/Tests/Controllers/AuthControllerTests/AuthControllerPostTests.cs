@@ -1,8 +1,8 @@
 ﻿using API.Controllers;
-using API.DTO.Login;
-using API.DTO.Responses;
-using API.DTO.Token;
-using API.DTO.User;
+using API.DTOs.Authentication;
+using API.DTOs.Responses;
+using API.DTOs.Token;
+using API.DTOs.User;
 using API.Enum;
 using API.Enum.Responses;
 using API.Services.Interfaces;

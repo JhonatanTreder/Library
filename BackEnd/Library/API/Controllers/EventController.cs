@@ -1,5 +1,5 @@
-﻿using API.DTO.Event;
-using API.DTO.Responses;
+﻿using API.DTOs.Event;
+using API.DTOs.Responses;
 using API.Enum.Responses;
 using API.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
