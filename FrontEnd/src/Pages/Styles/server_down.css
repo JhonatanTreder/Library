@@ -1,0 +1,25 @@
+body {
+    font-family: apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: lavender;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+#content {
+    text-align: center;
+}
+
+#server-disable-icon {
+    font-size: 120px;
+    color: slateblue;
+}
+
+#content-information {
+    font-size: 25px;
+    font-weight: 400;
+    color: slateblue;
+}

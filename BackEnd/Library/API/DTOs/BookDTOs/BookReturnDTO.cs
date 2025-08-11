@@ -1,6 +1,6 @@
 ﻿using API.Enum;
 
-namespace API.DTOs.Book
+namespace API.DTOs.BookDTOs
 {
     public class BookReturnDTO
     {

@@ -1,4 +1,4 @@
-﻿namespace API.DTOs.Event
+﻿namespace API.DTOs.EventDTOs
 {
     public class EventFilterDTO
     {

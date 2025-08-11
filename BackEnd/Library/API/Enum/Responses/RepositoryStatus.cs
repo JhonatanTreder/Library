@@ -24,6 +24,7 @@
         InvalidConfirmationCode,
         InvalidRoleAssignment,
         CannotDelete,
+        ConfirmationCodeExpired,
         BookNotAvailable,
         BookNotFound,
         BookCopyNotFound,

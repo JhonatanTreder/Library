@@ -1,6 +1,7 @@
 body {
     background: linear-gradient(to bottom left, blue, darkslateblue);
     margin: 0;
+    display: none;
 }
 
 #container {

@@ -8,7 +8,9 @@ namespace API.Repositories.Interfaces
     {
         Task<RepositoryStatus> UpdateUserRoleAsync(string id, string newRole);
         Task<RepositoryResponse<IEnumerable<UserFilterDTO>>> GetUsersAsync(UserFilterDTO userDTO);
+        Task<RepositoryResponse<UserDashboardDTO>> GetGeneralUserInfoAsync(string userId);
         Task<RepositoryResponse<UserDTO>> GetUserByIdAsync(string id);
+        Task<RepositoryResponse<UserDTO>> GetUserByEmailAsync(string email);
         Task<RepositoryStatus> UpdateUserAsync(string id, UserUpdateDTO userUpdateDTO);
         Task<RepositoryStatus> DeleteUserAsync(string id);
     }

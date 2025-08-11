@@ -13,6 +13,7 @@ namespace API.Context
         public DbSet<Event> Events { get; set; }
         public DbSet<Book> Books { get; set; }
         public DbSet<BookCopy> BookCopies { get; set; }
+        public DbSet<FavoriteBook> FavoriteBooks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

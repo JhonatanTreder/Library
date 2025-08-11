@@ -14,13 +14,13 @@ async function callAPI(event) {
 
     const isValidUser = await userIsValid(newUser)
 
-    console.log(isValidUser)
+    alert('O usuário é válido? ' + isValidUser)
 
     if (!isValidUser) return;
 
     try {
 
-        const response = await fetch(url, {
+        const registerRequest = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -28,47 +28,46 @@ async function callAPI(event) {
             body: JSON.stringify(newUser)
         });
 
-        console.log('Status:', response.status);
+        const registerResponse = await registerRequest.json();
 
-        if (response.status === 500) {
-            alert('Nome de usuário indisponível!')
+        if (registerRequest.status !== 200) {
+
+            alert(registerResponse.status);
+            alert(registerResponse.message);
             clearInputs()
 
-            const error = await response.json();
-            console.log(error)
-            
             return;
         }
 
-        if (response.ok) {
-            const data = await response.json();
-            console.log('Usuário criado com sucesso:', data);
+        alert(registerResponse.status);
+        alert(registerResponse.message);
 
-            clearInputs()
+        clearInputs()
 
-            const emailResponse = await fetch(emailConfirmationUrl,{
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(newUser.email)
-            })
+        const sendEmailRequest = await fetch(emailConfirmationUrl,{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newUser.email)
+        })
 
-            const sendEmailResponse = await emailResponse.json();
+        const sendEmailResponse = await sendEmailRequest.json();
 
-            console.log(sendEmailResponse.status)
-            console.log(sendEmailResponse.data)
-            console.log(sendEmailResponse.message)
+        if (sendEmailRequest.status !== 200) {
 
-            window.location.href = `confirm_email.html?email=${encodeURIComponent(newUser.email)}`;
+            alert(sendEmailResponse.status);
+            alert(sendEmailResponse.message);
         }
 
-        else {
-
-            const errorData = await response.json();
-
-            console.error('Erro ao registrar o usuário:', errorData.message);
+        const loginCredentials = {
+            email: newUser.email,
+            password: newUser.password,
         }
+
+        localStorage.setItem('userEmail', loginCredentials.email);
+        localStorage.setItem('userPassword', loginCredentials.password)
+        window.location.href = `confirm_email.html?email=${encodeURIComponent(newUser.email)}`;
 
     } catch (error) {
 
@@ -137,7 +136,6 @@ async function userIsValid(newUser){
 
     return errorList.length === 0;
 }
-
 
 function clearInputs(){
     document.getElementById('name').value = '';

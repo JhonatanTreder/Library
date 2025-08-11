@@ -19,20 +19,26 @@ namespace API.Services
 {
     public class AuthService : IAuthService
     {
-        private readonly ITokenService _tokenService;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
+        private readonly ITokenService _tokenService;
+        private readonly IEmailService _emailService;
+        private readonly ISmsService _smsServcie;
 
         public AuthService(ITokenService tokenService,
             UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IEmailService emailService,
+            ISmsService smsService)
         {
             _tokenService = tokenService;
             _userManager = userManager;
             _roleManager = roleManager;
             _configuration = configuration;
+            _emailService = emailService;
+            _smsServcie = smsService;
         }
 
         public async Task<RepositoryResponse<TokenReturnDTO>> Login(LoginDTO loginDTO)
@@ -104,7 +110,6 @@ namespace API.Services
 
             if (validDomain is false)
             {
-                Console.WriteLine(validDomain);
                 return new RepositoryResponse<UserDTO>(RepositoryStatus.InvalidDomain);
             }
 
@@ -124,7 +129,8 @@ namespace API.Services
             {
                 Email = registerDTO.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
-                UserName = registerDTO.Name
+                UserName = registerDTO.Name,
+                CreatedAt = DateOnly.FromDateTime(DateTime.Today)
             };
 
             var result = await _userManager.CreateAsync(user, registerDTO.Password);
@@ -157,7 +163,7 @@ namespace API.Services
             {
                 Name = registerDTO.Name,
                 Email = registerDTO.Email,
-                UserType = UserType.User
+                UserType = UserType.User.ToString()
             };
 
             return new RepositoryResponse<UserDTO>(RepositoryStatus.Success, userInfo);
@@ -243,99 +249,28 @@ namespace API.Services
 
         public async Task<RepositoryStatus> SendEmailConfirmationAsync(string email)
         {
-            var user = await _userManager.FindByEmailAsync(email);
-
-            if (user is null)
-                return RepositoryStatus.UserNotFound;
-
-            var tokenGenerator = new Random();
-
-            var confirmationCode = tokenGenerator.Next(100000, 999999);
-
-            user.EmailConfirmationCode = confirmationCode.ToString();
-            user.EmailConfirmationCodeExpiryTime = DateTime.UtcNow.AddMinutes(5);
-
-            var updateResult = await _userManager.UpdateAsync(user);
-
-            if (!updateResult.Succeeded)
-                return RepositoryStatus.FailedToUpdateUser;
-
-            string message = $"Seu código de confirmação: {confirmationCode}";
-            string subject = "Confirmação de Email";
-
-            await SendEmail(email, subject, message);
-
-            return RepositoryStatus.Success;
+            return await _emailService.SendAsync(email);
         }
 
-        private async Task<RepositoryStatus> SendEmail(string email, string subject, string body)
+        public async Task<RepositoryStatus> SendPhoneConfirmationAsync(string email)
         {
-            string mail = _configuration["SMTP:UserName"] ?? string.Empty;
-            string name = _configuration["SMTP:Name"] ?? string.Empty;
-            string password = _configuration["SMTP:Password"] ?? string.Empty;
-            string host = _configuration["SMTP:Host"] ?? string.Empty;
-            int port = Convert.ToInt32(_configuration["SMTP:Port"] ?? "587");
-
-            MailMessage emailService = new()
-            {
-                From = new MailAddress(mail, name),
-            };
-
-            emailService.To.Add(email);
-            emailService.Subject = subject;
-            emailService.Body = body;
-            emailService.IsBodyHtml = true;
-            emailService.HeadersEncoding = Encoding.UTF8;
-            emailService.BodyEncoding = Encoding.UTF8;
-            emailService.Priority = MailPriority.High;
-
-            using (SmtpClient smtpClient = new SmtpClient(host, port))
-            {
-                smtpClient.Credentials = new NetworkCredential(mail, password);
-                smtpClient.EnableSsl = true;
-
-                await smtpClient.SendMailAsync(emailService);
-
-                return RepositoryStatus.Success;
-            }
+            return await _smsServcie.SendAsync(email);
         }
 
         public async Task<RepositoryStatus> VerifyEmailCodeAsync(VerifyEmailCodeDTO verifyEmailDTO)
         {
-            var user = await _userManager.FindByEmailAsync(verifyEmailDTO.Email);
+            return await _emailService.VerifyAsync(verifyEmailDTO);
+        }
 
-            if (user is null)
-                return RepositoryStatus.UserNotFound;
-
-            if (user.EmailConfirmationCode != verifyEmailDTO.EmailCode)
-                return RepositoryStatus.InvalidConfirmationCode;
-
-            user.EmailConfirmed = true;
-
-            var updateUser = await _userManager.UpdateAsync(user);
-
-            if (updateUser.Succeeded is false)
-            {
-                user.EmailConfirmationCode = null;
-                user.EmailConfirmationCodeExpiryTime = DateTime.UtcNow;
-
-                var resetUser = await _userManager.UpdateAsync(user);
-
-                if (resetUser.Succeeded is false)
-                    return RepositoryStatus.FailedToUpdateUser;
-
-                return RepositoryStatus.FailedToUpdateUser;
-            }
-
-            return RepositoryStatus.Success;
+        public async Task<RepositoryStatus> VerifyPhoneCodeAsync(VerifyPhoneCodeDTO verifyPhoneDTO)
+        {
+            return await _smsServcie.VerifyAsync(verifyPhoneDTO);
         }
 
         private async Task<bool> IsValidDomain(string domain)
         {
             var lookup = new LookupClient();
             var result = await lookup.QueryAsync(domain, QueryType.MX);
-
-            Console.WriteLine(result.Answers.MxRecords().Any());
 
             return result.Answers.MxRecords().Any();
         }

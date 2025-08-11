@@ -1,0 +1,265 @@
+body {
+    display: none;
+}
+
+#content {
+    margin-left: 240px;
+    padding-left: 0;
+    font-size: 20px;
+}
+
+#title {
+    text-align: center;
+}
+
+#page-title {
+    font-weight: bold;
+}
+
+#user-resume {
+    background: lavender;
+    box-shadow: 0 2px 6px rgb(145, 145, 145);
+    width: 90%;
+    height: auto;
+    border-radius: 15px;
+    padding-bottom: 30px;
+    margin: auto;
+}
+
+#resume-content {
+    margin: 70px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#resume-title {
+    text-align: center;
+    margin-top: 60px;
+    margin-bottom: 30px;
+    font-size: 24px;
+}
+
+#resume-items {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 20px;
+    row-gap: 60px;
+    justify-content: center;
+}
+
+.resume-details {
+    text-align: right;
+    margin-top: 20px;
+    margin-right: 5%;
+}
+
+.resume-details a {
+    color: slateblue;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.resume-details a:hover {
+    color: darkslateblue;
+}
+
+.book-section {
+    text-align: center;
+    padding: 20px 0;
+    width: 90%;
+    margin: auto;
+}
+
+.book-carousel {
+    background: lavender;
+    box-shadow: 0 2px 6px rgb(145, 145, 145);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    height: 300px;
+    overflow: hidden;
+}
+
+.book-list-wrapper {
+    overflow-x: hidden;
+    flex-grow: 1;
+    max-width: 100%;
+}
+
+
+.book-list {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+    scroll-behavior: smooth;
+}
+
+.book-card {
+    min-width: 200px;
+    height: 250px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    font-weight: bold;
+    font-size: 18px;
+    transition: transform 0.2s ease;
+}
+
+.book-card:hover {
+    transform: translateY(-5px);
+}
+
+.book-button {
+    padding: 8px 16px;
+    background-color: slateblue;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.book-button:hover {
+    background-color: darkslateblue;
+}
+
+.arrow {
+    font-size: 40px;
+    color: slateblue;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s ease;
+}
+
+.arrow:hover {
+    color: darkslateblue;
+}
+
+.item {
+    flex: 1 1 250px;
+    max-width: 300px;
+    height: 120px;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: transform 0.2s ease;
+}
+
+.item:hover{
+    transform: translateY(-5px);
+}
+
+.item-title {
+    margin-bottom: 15px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.item-content {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    text-align: left;
+    background-color: #f0f0f0;
+    color: black;
+    padding: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+}
+
+#events-section {
+    text-align: center;
+    padding: 20px 0;
+    width: 90%;
+    margin: auto;
+}
+
+#events-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.event {
+    display: flex;
+    justify-content: start;
+    width: 100%;
+    border-radius: 15px;
+    background-color: lavender;
+    box-shadow: 0 2px 6px rgb(145, 145, 145);
+    color: slateblue;
+    padding: 20px;
+}
+
+.event-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.event-title {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.event-information {
+    border-radius: 15px;
+    background-color: white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    max-width: 97%;
+    text-align: left;
+    margin-left: 20px;
+    margin-bottom: 50px;
+    transition: transform 0.2s ease;
+}
+
+.event-information:hover {
+    transform: translateY(-5px);
+}
+
+.event-box {
+    margin-left: 40px;
+}
+
+.event-box-first-item {
+    margin-left: 40px;
+    margin-top: 40px;
+}
+
+.event-details {
+    margin-right: 5%;
+    text-align: right;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.event-details a {
+    color: slateblue;
+    transition: color 0.3s ease;
+}
+
+.event-details a:hover {
+    cursor: pointer;
+    color: darkslateblue;
+}
+
+.event-box {
+    margin-bottom: 10px;
+    font-size: 18px;
+}

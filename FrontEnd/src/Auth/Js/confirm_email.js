@@ -21,20 +21,59 @@ confirmForm.addEventListener('submit', async function(event) {
 });
 
 async function verifyEmail(user) {
-    console.log(user.email);
-    console.log(user.emailCode);
-
-    const response = await fetch(url, {
+    const verifyEmailRequest = await fetch(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(user)  // Não precisa { user }, já está como objeto.
+        body: JSON.stringify(user)
     });
 
-    const data = await response.json();
+    const verifyEmailResponse = await verifyEmailRequest.json();
 
-    console.log(data);
-    console.log(data.data);
-    console.log(response.statusText);
+    if (verifyEmailRequest.status !== 200) {
+        console.log(verifyEmailResponse.status)
+        console.log(verifyEmailResponse.message);
+        return;
+    }
+
+    console.log('Successo!!');
+    console.log(verifyEmailResponse.status);
+    console.log(verifyEmailResponse.message)
+
+    const userIsLogged = await logUser()
+
+    if (userIsLogged === true) {
+        localStorage.removeItem('userEmail');
+        localStorage.removeItem('userPassword');
+        window.location.href = '/src/Pages/index.html';
+    }
 }
+
+async function logUser(){
+    const loginURL = 'https://localhost:7221/Auth/login'
+
+    const email = localStorage.getItem('userEmail');
+    const password = localStorage.getItem('userPassword');
+
+    const loginRequest = await fetch(loginURL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({email, password}),
+    });
+
+    const loginResponse = await loginRequest.json();
+
+    const userTokens = {
+        token: loginResponse.data.token,
+        refreshToken: loginResponse.data.refreshToken
+    };
+
+    localStorage.setItem('token', userTokens.token);
+    localStorage.setItem('refreshToken', userTokens.refreshToken);
+
+    return loginRequest.status === 200;
+}
+

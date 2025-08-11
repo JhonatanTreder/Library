@@ -3,7 +3,9 @@ using API.Models;
 using API.Repositories;
 using API.Repositories.Interfaces;
 using API.Services;
+using API.Services.Email;
 using API.Services.Interfaces;
+using API.Services.SMS;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -68,6 +70,9 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ILoanRepository, LoanRepository>();
 builder.Services.AddScoped<IEventRepository, EventRepository>();
 
+builder.Services.AddTransient<IEmailService, SmtpEmailService>();
+builder.Services.AddTransient<ISmsService, TwilioSmsService>();
+
 var secrectKey = builder.Configuration["JWT:SecretKey"]
     ?? throw new ArgumentException("Invalid secret key!");
 
@@ -121,6 +126,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+
+//TESTE - REMOVER DEPOIS
+Console.WriteLine("Account Sid: " + Environment.GetEnvironmentVariable("TWILIO_ACCOUNT_SID"));
+Console.WriteLine("Twilio Auth Token: " + Environment.GetEnvironmentVariable("TWILIO_AUTH_TOKEN"));
+Console.WriteLine("Twilio Phone Number: " + Environment.GetEnvironmentVariable("TWILIO_PHONE_NUMBER"));
 
 app.UseHttpsRedirection();
 app.UseCors("LocalHostPolicy");

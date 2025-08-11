@@ -170,6 +170,13 @@ namespace API.Controllers
                     Message = $"O usuário de email '{email}' não foi encontrado"
                 }),
 
+                RepositoryStatus.FailedToUpdateUser => Conflict(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = null,
+                    Message = "Erro inesperado ao tentar atualizar o usuário"
+                }),
+
                 _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
                 {
                     Status = "Internal Server Error",
@@ -178,6 +185,54 @@ namespace API.Controllers
                 })
             };
         }
+
+        [HttpPost]
+        [Route("phone-confirmation")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ConfirmPhone([FromForm] string email)
+        {
+            var response = await _authService.SendPhoneConfirmationAsync(email);
+
+            return response switch
+            {
+                RepositoryStatus.Success => Ok(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = null,
+                    Message = "Código de confirmação de telefone enviado com sucesso"
+                }),
+
+                RepositoryStatus.UserNotFound => NotFound(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = null,
+                    Message = $"O usuário com o email '{email}' não foi encontrado"
+                }),
+
+                RepositoryStatus.NotFound => NotFound(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = null,
+                    Message = "O número de telefone do usuário não foi encontrado"
+                }),
+
+                RepositoryStatus.FailedToUpdateUser => Conflict(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = null,
+                    Message = "Erro inesperado ao tentar atualizar o usuário"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Erro inesperado ao tentar processar o código de confirmação do telefone"
+                })
+            };
+        } 
 
         [HttpPost]
         [Route("verify-email")]

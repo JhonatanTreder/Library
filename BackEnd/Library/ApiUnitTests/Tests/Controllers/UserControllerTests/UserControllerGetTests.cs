@@ -37,7 +37,7 @@ namespace ApiUnitTests.Tests.Controllers.UserControllerTests
                 Name = "valid-name",
                 Email = "valid-email",
                 PhoneNumber = "123456789",
-                UserType = UserType.User
+                UserType = UserType.User.ToString
             };
 
             _userRepositoryMock.Setup(service => service.GetUserByIdAsync(validId))

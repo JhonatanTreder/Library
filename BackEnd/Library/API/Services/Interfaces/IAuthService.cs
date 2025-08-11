@@ -11,7 +11,9 @@ namespace API.Services.Interfaces
         Task<RepositoryResponse<TokenReturnDTO>> Login(LoginDTO loginDTO);
         Task<RepositoryResponse<UserDTO>> Register(RegisterDTO registerDTO);
         Task<RepositoryStatus> SendEmailConfirmationAsync(string email);
+        Task<RepositoryStatus> SendPhoneConfirmationAsync(string email);
         Task<RepositoryStatus> VerifyEmailCodeAsync(VerifyEmailCodeDTO verifyEmailDTO);
+        Task<RepositoryStatus> VerifyPhoneCodeAsync(VerifyPhoneCodeDTO verifyPhoneDTO);
         Task<RepositoryResponse<TokenDTO>> RefreshToken(TokenDTO tokenDTO);
         Task<RepositoryStatus> RevokeToken(string username);
     }

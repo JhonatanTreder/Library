@@ -10,26 +10,32 @@ document.addEventListener('DOMContentLoaded', () => {
         const password = document.getElementById('password').value;
 
         try {
-            const response = await fetch(url, {
+            const loginRequest = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({email, password}),
             });
 
-            if (!response.ok) {
+            const loginResponse = await loginRequest.json();
 
-                const errorData = await response.json();
-                alert('Erro no login: ' + (errorData.message || response.statusText));
+            if (loginRequest.status !== 200) {
+                console.log("Erro:");
+                console.log(loginResponse.status);
+                console.log(loginResponse.message);
                 return;
             }
 
-            const data = await response.json();
-            const { token, refreshToken } = data.data;
+            const userTokens = {
+                token: loginResponse.data.token,
+                refreshToken: loginResponse.data.refreshToken
+            };
 
-            console.log(token);
-            console.log(refreshToken);
+            localStorage.setItem('token', userTokens.token);
+            localStorage.setItem('refreshToken', userTokens.refreshToken);
+
+            window.location.href = '/src/Pages/index.html'
 
         } catch (error) {
             alert('Erro ao conectar com a API: ' + error.message);

@@ -2,6 +2,7 @@ body {
     background: linear-gradient(to bottom left, blue, darkslateblue);
     margin: 0;
     font-size: 18px; /* Aumenta o tamanho padrão */
+    display: none;
 }
 
 #container {

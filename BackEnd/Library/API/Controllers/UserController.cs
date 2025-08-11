@@ -102,6 +102,82 @@ namespace API.Controllers
             };
         }
 
+        [HttpGet("email/{email}")]
+        [Authorize(Roles = "user,librarian,admin")]
+        public async Task<IActionResult> GetUserByEmail(string email)
+        {
+            var response = await _userRepository.GetUserByEmailAsync(email);
+
+            return response.Status switch
+            {
+                RepositoryStatus.Success => Ok(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = response.Data,
+                    Message = "Usuário encontrado com sucesso"
+                }),
+
+                RepositoryStatus.NotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = "O usuário não foi encontrado"
+                }),
+
+                RepositoryStatus.NullObject => BadRequest(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = "O email do usuário não pode ser nulo"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Erro inesperado ao buscar o usuário pelo email"
+                })
+            };
+        }
+
+        [HttpGet("{userId}/user-dashboard")]
+        [Authorize(Roles = "user,librarian,admin")]
+        public async Task<IActionResult> GetUserDashboard(string userId)
+        {
+            var response = await _userRepository.GetGeneralUserInfoAsync(userId);
+
+            return response.Status switch 
+            {
+                RepositoryStatus.Success => Ok(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = response.Data,
+                    Message = "Informações gerais do usuário encontradas com sucesso"
+                }),
+
+                RepositoryStatus.InvalidId => BadRequest(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = null,
+                    Message = "O id do usuário não pode ser nulo ou onter espaços em branco"
+                }),
+
+                RepositoryStatus.UserNotFound => NotFound(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = null,
+                    Message = "O usuário não foi encontrado"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Erro inesperado ao tentar buscar pelas informações do dashboard do usuário"
+                })
+,            };
+        }
+
         [HttpDelete("{id}")]
         [Authorize(Roles = "admin")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

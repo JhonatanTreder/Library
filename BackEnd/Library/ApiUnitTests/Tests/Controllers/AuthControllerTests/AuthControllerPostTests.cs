@@ -133,7 +133,7 @@ namespace ApiUnitTests.Tests.Controllers.AuthControllerTests
             {
                 Email = "test",
                 Name = "test",
-                UserType = UserType.User
+                UserType = UserType.User.ToString()
             };
 
             _authServiceMock.Setup(service => service.Register(registerUser))
@@ -148,7 +148,7 @@ namespace ApiUnitTests.Tests.Controllers.AuthControllerTests
             Assert.Equal("Ok", response.Status);
             Assert.NotNull(response.Data);
             Assert.Equal("Usuário registrado com sucesso", response.Message);
-            Assert.Equal(registeredUser.UserType, userResponse.UserType);
+            Assert.Equal(registeredUser.UserType.ToString(), userResponse.UserType.ToString());
         }
 
         [Fact]

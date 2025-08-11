@@ -16,10 +16,16 @@ namespace API.Models
         public string? EmailConfirmationCode { get; set; }
         public DateTime EmailConfirmationCodeExpiryTime { get; set; }
 
+        public string? PhoneConfirmationCode { get; set; }
+        public DateTime PhoneConfirmationCodeExpiryTime { get; set; }
+
         public string? RefreshToken { get; set; }
         public DateTime RefreshTokenExpiryTime { get; set; }
 
         public ICollection<Loan>? Loans { get; set; }
         public ICollection<Event>? Events { get; set; }
+
+        public DateOnly CreatedAt { get; set; } = DateOnly.FromDateTime(DateTime.Today);
+        public ICollection<FavoriteBook>? FavoritedByUsers { get; set; }
     }
 }

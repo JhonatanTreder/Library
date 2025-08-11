@@ -34,6 +34,9 @@ namespace API.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateOnly>("CreatedAt")
+                        .HasColumnType("date");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -68,6 +71,12 @@ namespace API.Migrations
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneConfirmationCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("PhoneConfirmationCodeExpiryTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
@@ -209,6 +218,33 @@ namespace API.Migrations
                     b.HasIndex("ApplicationUserId");
 
                     b.ToTable("Events");
+                });
+
+            modelBuilder.Entity("API.Models.FavoriteBook", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AddedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("BookId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("FavoriteBooks");
                 });
 
             modelBuilder.Entity("API.Models.Loan", b =>
@@ -405,6 +441,25 @@ namespace API.Migrations
                         .HasForeignKey("ApplicationUserId");
                 });
 
+            modelBuilder.Entity("API.Models.FavoriteBook", b =>
+                {
+                    b.HasOne("API.Models.Book", "Book")
+                        .WithMany("FavoritedBooks")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("API.Models.ApplicationUser", "User")
+                        .WithMany("FavoritedByUsers")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Book");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("API.Models.Loan", b =>
                 {
                     b.HasOne("API.Models.ApplicationUser", null)
@@ -471,12 +526,16 @@ namespace API.Migrations
                 {
                     b.Navigation("Events");
 
+                    b.Navigation("FavoritedByUsers");
+
                     b.Navigation("Loans");
                 });
 
             modelBuilder.Entity("API.Models.Book", b =>
                 {
                     b.Navigation("Copies");
+
+                    b.Navigation("FavoritedBooks");
                 });
 
             modelBuilder.Entity("API.Models.BookCopy", b =>

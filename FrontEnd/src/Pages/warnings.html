@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <title>Avisos</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0">
+    <link rel="stylesheet" href="Styles/events.css">
+    <link rel="stylesheet" href="../Utils/search_bar.css">
+    <link rel="stylesheet" href="../Utils/sidebar.css">
+  </head>
+  <body>
+    <div id="container">
+      <aside id="sidebar">
+        <nav>
+          <button onclick="window.location.href='profile.html'"><span><i class="material-symbols-outlined">Person</i><span> Perfil</span></span></button>
+          <button onclick="window.location.href='index.html'"><span><i class="material-symbols-outlined">Home</i><span> Início</span></span></button>
+          <button onclick="window.location.href='events.html'"><span><i class="material-symbols-outlined">Event</i><span> Eventos</span></span></button>
+          <button onclick="window.location.href='loans.html'"><span><i class="material-symbols-outlined">auto_stories</i><span> Meus Empréstimos</span></span></button>
+          <button onclick="window.location.href='favorites.html'"><span><i class="material-symbols-outlined">Star</i><span> Favoritos</span></span></button>
+          <button onclick="window.location.href='catalog.html'"><span><i class="material-symbols-outlined">Newsstand</i><span> Catálogo</span></span></button>
+          <button onclick="window.location.href='warnings.html'"><span><i class="material-symbols-outlined">Notifications</i><span> Avisos</span></span></button>
+          <button><span><i class="material-symbols-outlined">Logout</i><span> Sair</span></span></button>
+        </nav>
+      </aside>
+    </div>
+
+    <main id="content">
+
+      <section id="search-section">
+        <div id="search-box">
+          <label for="text-box"></label>
+          <span class="material-symbols-outlined">search</span>
+          <input type="text" id="text-box" class="search-input"
+                 placeholder="Pesquisar avisos"/>
+        </div>
+      </section>
+
+      <section id="loans-container">
+
+        <div id="filters">
+          <div class="loan-tabs">
+            <button class="loan-tab active">Todos</button>
+            <button class="loan-tab">Multas</button>
+            <button class="loan-tab">Livros</button>
+            <button class="loan-tab">Eventos</button>
+            <button class="loan-tab">Empréstimos</button>
+            <button class="loan-tab">Sistema</button>
+          </div>
+
+          <div id="update-section">
+            <button id="update-button">Atualizar</button>
+          </div>
+        </div>
+
+        <section id="events-section">
+          <div id="events-content">
+
+            <div id="events-list">
+              <div class="event">
+                <div class="event-container">
+                  <h1 class="event-title">Evento de livros gerais</h1>
+                  <div class="event-information">
+                    <p class="event-box-first-item"> <strong> Data de início: </strong> 10/07/2025 16:00</p>
+                    <p class="event-box"> <strong> Data de término: </strong> 10/07/2025 18:00</p>
+                    <p class="event-box"> <strong> Local: </strong> Biblioteca da escola</p>
+                    <p class="event-box"> <strong> Público alvo: </strong> todos</p>
+                    <div class="event-details">
+                      <a href="">Visualizar</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="event">
+                <div class="event-container">
+                  <h1 class="event-title">Evento de livros gerais</h1>
+                  <div class="event-information">
+                    <p class="event-box-first-item"> <strong> Data de início: </strong> 10/07/2025 16:00</p>
+                    <p class="event-box"> <strong> Data de término: </strong> 10/07/2025 18:00</p>
+                    <p class="event-box"> <strong> Local: </strong> Biblioteca da escola</p>
+                    <p class="event-box"> <strong> Público alvo: </strong> todos</p>
+                    <div class="event-details">
+                      <a href="">Visualizar</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="event">
+                <div class="event-container">
+                  <h1 class="event-title">Evento de livros gerais</h1>
+                  <div class="event-information">
+                    <p class="event-box-first-item"> <strong> Data de início: </strong> 10/07/2025 16:00</p>
+                    <p class="event-box"> <strong> Data de término: </strong> 10/07/2025 18:00</p>
+                    <p class="event-box"> <strong> Local: </strong> Biblioteca da escola</p>
+                    <p class="event-box"> <strong> Público alvo: </strong> todos</p>
+                    <div class="event-details">
+                      <a href="">Visualizar</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+    <script src="../../src/Utils/Scripts/verify_server_status.js"></script>
+  </body>
+</html>

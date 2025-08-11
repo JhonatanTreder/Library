@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Catálogo de Livros</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0">
+    <link rel="stylesheet" href="../Utils/sidebar.css">
+    <link rel="stylesheet" href="Styles/catalog.css">
+</head>
+<body>
+<div id="container">
+    <aside id="sidebar">
+        <nav>
+            <button onclick="window.location.href='profile.html'"><span><i class="material-symbols-outlined">Person</i><span> Perfil</span></span></button>
+            <button onclick="window.location.href='index.html'"><span><i class="material-symbols-outlined">Home</i><span> Início</span></span></button>
+            <button onclick="window.location.href='events.html'"><span><i class="material-symbols-outlined">Event</i><span> Eventos</span></span></button>
+            <button onclick="window.location.href='loans.html'"><span><i class="material-symbols-outlined">auto_stories</i><span> Meus Empréstimos</span></span></button>
+            <button onclick="window.location.href='favorites.html'"><span><i class="material-symbols-outlined">Star</i><span> Favoritos</span></span></button>
+            <button onclick="window.location.href='catalog.html'"><span><i class="material-symbols-outlined">Newsstand</i><span> Catálogo</span></span></button>
+            <button onclick="window.location.href='warnings.html'"><span><i class="material-symbols-outlined">Notifications</i><span> Avisos</span></span></button>
+            <button><span><i class="material-symbols-outlined">Logout</i><span> Sair</span></span></button>
+        </nav>
+    </aside>
+
+    <main id="content">
+        <h1 id="catalog-title">Bem vindo ao catálogo de livros</h1>
+        <p class="catalog-description">Escolha uma categoria para visualizar os livros disponíveis.</p>
+
+        <section id="category-section">
+            <div class="category-card-active">Todos</div>
+            <div class="category-card">Drama</div>
+            <div class="category-card">Fantasia</div>
+            <div class="category-card">Terror</div>
+            <div class="category-card">Romance</div>
+            <div class="category-card">Ficção Científica</div>
+            <div class="category-card">História</div>
+            <div class="category-card">Aventura</div>
+            <div class="category-card">Suspense</div>
+        </section>
+
+        <!-- Futuramente, exibição de livros da categoria -->
+        <!-- <section id="books-list"> ... </section> -->
+    </main>
+</div>
+<script src="../../src/Utils/Scripts/verify_server_status.js"></script>
+</body>
+</html>

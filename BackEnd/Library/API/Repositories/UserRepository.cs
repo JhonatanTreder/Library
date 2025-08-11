@@ -1,5 +1,6 @@
 ﻿using API.DTOs.Responses;
 using API.DTOs.User;
+using API.Enum;
 using API.Enum.Responses;
 using API.Models;
 using API.Repositories.Interfaces;
@@ -103,6 +104,39 @@ namespace API.Repositories
                 return new RepositoryResponse<IEnumerable<UserFilterDTO>>(RepositoryStatus.Success, users);
             }
         }
+        public async Task<RepositoryResponse<UserDashboardDTO>> GetGeneralUserInfoAsync(string userId)
+        {
+            if (string.IsNullOrWhiteSpace(userId))
+                return new RepositoryResponse<UserDashboardDTO>(RepositoryStatus.InvalidId);
+
+            var dbUser = await _userManager.Users
+                .Include(u => u.FavoritedByUsers!)
+                .ThenInclude(fb => fb.Book)
+                .Include(u => u.Loans)
+                .Include(u => u.Events)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (dbUser is null)
+                return new RepositoryResponse<UserDashboardDTO>(RepositoryStatus.UserNotFound);
+
+            decimal totalFines = 0;
+
+            if (dbUser.Loans != null)
+            {
+                totalFines = dbUser.Loans.Count(l => l.Status == LoanStatus.Overdue) * 2.00m;
+            }
+
+            var dashboard = new UserDashboardDTO
+            {
+                TotalLoans = dbUser.Loans?.Count ?? 0,
+                EventsHeld = dbUser.Events?.ToList() ?? new List<Event>(),
+                FavoriteBooks = dbUser.FavoritedByUsers?.ToList() ?? new List<FavoriteBook>(),
+                TotalFines = totalFines,
+                EntryDate = dbUser.CreatedAt
+            };
+
+            return new RepositoryResponse<UserDashboardDTO>(RepositoryStatus.Success, dashboard);
+        }
 
         public async Task<RepositoryResponse<UserDTO>> GetUserByIdAsync(string userId)
         {
@@ -123,7 +157,28 @@ namespace API.Repositories
                 Name = dbUser.Name,
                 Email = dbUser.Email,
                 PhoneNumber = dbUser.PhoneNumber,
-                UserType = dbUser.UserType
+                UserType = dbUser.UserType.ToString()
+            };
+
+            return new RepositoryResponse<UserDTO>(RepositoryStatus.Success, user);
+        }
+
+        public async Task<RepositoryResponse<UserDTO>> GetUserByEmailAsync(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return new RepositoryResponse<UserDTO>(RepositoryStatus.NullObject);
+
+            var dbUser = await _userManager.FindByEmailAsync(email);
+
+            if (dbUser is null)
+                return new RepositoryResponse<UserDTO>(RepositoryStatus.NotFound);
+
+            var user = new UserDTO
+            {
+                Name = dbUser.UserName,
+                Email = dbUser.Email,
+                PhoneNumber = dbUser.PhoneNumber ?? "Sem número de telefone",
+                UserType = dbUser.UserType.ToString()
             };
 
             return new RepositoryResponse<UserDTO>(RepositoryStatus.Success, user);
@@ -164,7 +219,7 @@ namespace API.Repositories
 
             var updatedResult = await _userManager.UpdateAsync(user);
 
-            if (updatedResult.Succeeded)
+            if (!updatedResult.Succeeded)
                 return RepositoryStatus.Failed;
 
             return RepositoryStatus.Success;

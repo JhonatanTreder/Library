@@ -1,0 +1,121 @@
+body{
+    background-color: lavender;
+    display: none;
+}
+
+#books-container {
+    margin-left: 300px;
+    padding: 20px;
+    border-radius: 15px;
+}
+
+.book-tabs {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.book-tab {
+    padding: 10px 20px;
+    border: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    color: slateblue;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.book-tab:hover,
+.book-tab.active {
+    background-color: slateblue;
+    color: white;
+}
+
+#books-section {
+    text-align: center;
+    justify-content: center;
+    padding: 20px 0;
+    width: 100%;
+    margin: auto;
+}
+
+#book-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.book {
+    display: flex;
+    justify-content: start;
+    width: 95%;
+    border-radius: 15px;
+    background-color: lavender;
+    box-shadow: 0 2px 6px rgb(145, 145, 145);
+    color: slateblue;
+    padding: 20px;
+}
+
+.book-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.book-title {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.book-information {
+    border-radius: 15px;
+    background-color: white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    max-width: 97%;
+    text-align: left;
+    margin-left: 20px;
+    margin-bottom: 50px;
+    transition: transform 0.2s ease;
+}
+
+.book-information:hover {
+    transform: translateY(-5px);
+}
+
+.book-box {
+    margin-left: 40px;
+}
+
+.book-box-first-item {
+    margin-left: 40px;
+    margin-top: 40px;
+}
+
+.book-details {
+    margin-right: 5%;
+    text-align: right;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.book-details a {
+    color: slateblue;
+    transition: color 0.3s ease;
+}
+
+.book-details a:hover {
+    cursor: pointer;
+    color: darkslateblue;
+}
+
+.book-box {
+    margin-bottom: 10px;
+    font-size: 18px;
+}

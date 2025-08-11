@@ -31,5 +31,6 @@ namespace API.Models
         public int PublicationYear { get; set; }
 
         public ICollection<BookCopy> Copies { get; set; } = new List<BookCopy>();
+        public ICollection<FavoriteBook>? FavoritedBooks { get; set; }
     }
 }
