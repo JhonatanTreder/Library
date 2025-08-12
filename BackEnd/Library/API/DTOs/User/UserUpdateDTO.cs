@@ -13,7 +13,6 @@ namespace API.DTOs.User
         [StringLength(20, MinimumLength = 3, ErrorMessage = "A senha deve conter de 3 a 20 caracteres")]
         public string? Password { get; set; }
 
-        [RegularExpression(@"^\+55\d{10,11}$", ErrorMessage = "O número deve estar no formato E.164. Ex: +5521912345678")]
         public string? PhoneNumber { get; set; }
     }
 }

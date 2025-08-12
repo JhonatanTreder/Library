@@ -2,6 +2,7 @@
 using API.Enum.Responses;
 using API.Models;
 using API.Services.Interfaces;
+using API.Utils.Validators;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Cryptography;
 using Twilio;
@@ -25,6 +26,9 @@ namespace API.Services.SMS
             if (user is null) return RepositoryStatus.UserNotFound;
             if (user.PhoneNumber is null) return RepositoryStatus.NotFound;
 
+            if (PhoneNumberValidator.ValidateE164Format(user.PhoneNumber) is false)
+                return RepositoryStatus.InvalidPhoneFormat;
+
             var code = RandomNumberGenerator.GetInt32(100_000, 999_999).ToString();
             var expiry = DateTime.UtcNow.AddMinutes(5);
 
@@ -40,7 +44,6 @@ namespace API.Services.SMS
             var from = Environment.GetEnvironmentVariable("TWILIO_PHONE_NUMBER");
 
             TwilioClient.Init(sid, token);
-            Console.WriteLine(user.PhoneNumber);
 
             await MessageResource.CreateAsync(
                 to: user.PhoneNumber,
@@ -57,6 +60,9 @@ namespace API.Services.SMS
             if (user is null) return RepositoryStatus.UserNotFound;
             if (user.PhoneNumber is null) return RepositoryStatus.NotFound;
 
+            if (PhoneNumberValidator.ValidateE164Format(user.PhoneNumber) is false)
+                return RepositoryStatus.InvalidPhoneFormat;
+
             if (user.PhoneConfirmationCodeExpiryTime < DateTime.UtcNow)
                 return RepositoryStatus.ConfirmationCodeExpired;
 
@@ -68,6 +74,7 @@ namespace API.Services.SMS
             user.PhoneConfirmationCodeExpiryTime = DateTime.UtcNow;
 
             var updateUser = await _userManager.UpdateAsync(user);
+
             if (!updateUser.Succeeded) return RepositoryStatus.FailedToUpdateUser;
 
             return RepositoryStatus.Success;

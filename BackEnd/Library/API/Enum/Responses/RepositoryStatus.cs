@@ -18,6 +18,7 @@
         InvalidQuantity,
         InvalidCopiesQuantity,
         InvalidPassword,
+        InvalidPhoneFormat,
         InvalidToken,
         InvalidRefreshToken,
         InvalidRefreshTokenExpiryTime,

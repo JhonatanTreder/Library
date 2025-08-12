@@ -252,6 +252,13 @@ namespace API.Controllers
                     Message = "O usuário não pode ser nulo"
                 }),
 
+                RepositoryStatus.InvalidPhoneFormat => BadRequest(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = "O número de telefone do usuário deve estar em um formato válido (formato E.164)"
+                }),
+
                 RepositoryStatus.FailedToResetPassword => Conflict(new ApiResponse
                 {
                     Status = "Conflict",

@@ -4,6 +4,7 @@ using API.Enum;
 using API.Enum.Responses;
 using API.Models;
 using API.Repositories.Interfaces;
+using API.Utils.Validators;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -198,7 +199,12 @@ namespace API.Repositories
                 user.Name = userUpdateDTO.Name;
 
             if (!string.IsNullOrEmpty(userUpdateDTO.PhoneNumber))
+            {
+                if (PhoneNumberValidator.ValidateE164Format(userUpdateDTO.PhoneNumber) is false)
+                    return RepositoryStatus.InvalidPhoneFormat;
+
                 user.PhoneNumber = userUpdateDTO.PhoneNumber;
+            }
 
             if (!string.IsNullOrEmpty(userUpdateDTO.Email) && user.Email != userUpdateDTO.Email)
             {
