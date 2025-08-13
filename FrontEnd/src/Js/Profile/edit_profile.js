@@ -11,10 +11,8 @@ buttons.forEach((button) => {
         if (!editing) {
             editing = true;
 
-            // Guarda o valor original para restaurar caso clique em "Cancelar"
             const originalText = contentSpan.textContent;
 
-            // Desativa outros botões
             buttons.forEach((btn) => {
                 if (btn !== button) {
                     btn.disabled = true;
@@ -23,51 +21,42 @@ buttons.forEach((button) => {
                 }
             });
 
-            // Cria o input e define valor
             const input = document.createElement('input');
             input.type = 'text';
             input.value = originalText;
             input.classList.add('info-input');
 
-            // Substitui o span pelo input
             contentSpan.replaceWith(input);
             input.focus();
 
-            // Altera o botão para "Salvar"
             button.textContent = 'Salvar';
 
-            // Cria o botão "Cancelar"
             const cancelButton = document.createElement('button');
             cancelButton.textContent = 'Cancelar';
             cancelButton.classList.add('cancel-button');
             infoItem.appendChild(cancelButton);
 
-            // Evento do botão "Cancelar"
             cancelButton.addEventListener('click', () => {
                 editing = false;
 
-                // Reativa os outros botões
                 buttons.forEach((btn) => {
                     btn.disabled = false;
                     btn.classList.remove('box-button-unavailable');
                     btn.classList.add('box-button');
                 });
 
-                // Cria de volta o span com o texto original
                 const restoredSpan = document.createElement('span');
                 restoredSpan.classList.add('info-content');
                 restoredSpan.textContent = originalText;
 
-                // Substitui o input pelo span original
                 input.replaceWith(restoredSpan);
 
-                // Restaura o botão
                 button.textContent = 'Editar';
                 cancelButton.remove();
             });
 
         } else {
-            // Se clicou em "Salvar"
+
             const input = infoItem.querySelector('input');
             const newSpan = document.createElement('span');
             newSpan.classList.add('info-content');

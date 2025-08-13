@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmação de Telefone</title>
+    <link rel="stylesheet" href="Style/body_style.css"/>
+    <link rel="stylesheet" type="text/css" href="Style/confirm_phone.css">
+</head>
+<body>
+<div id="container">
+    <div id="confirm-phone">
+        <form id="confirm-phone-form">
+            <h2 id="title">Confirmação de Telefone</h2>
+            <p id="phone-message">Enviamos um código de confirmação para o número <strong id="user-phone"></strong>. Coloque ele logo abaixo:</p>
+
+            <div class="form-group">
+                <label for="phone-code"></label>
+                <input type="text" id="phone-code" required placeholder="Código de telefone" />
+            </div>
+
+            <div class="form-group">
+                <button type="submit" id="confirm-button">Confirmar</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="resend-phone-code">
+        <form id="resend-phone-form">
+            <p>Não recebeu o código?</p>
+            <button type="submit" id="resend">Reenviar</button>
+        </form>
+    </div>
+    <script src="../../src/Utils/Scripts/verify_server_status.js"></script>
+    <script src="Js/confirm_phone.js"></script>
+</div>
+</body>
+</html>
