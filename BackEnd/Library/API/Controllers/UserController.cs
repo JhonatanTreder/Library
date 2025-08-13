@@ -186,7 +186,7 @@ namespace API.Controllers
             };
         }
 
-        [HttpGet]
+        [HttpGet("{userId}/pending-validations")]
         [Authorize(Roles = "user,librarin,admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
