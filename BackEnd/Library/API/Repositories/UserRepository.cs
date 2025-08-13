@@ -185,6 +185,24 @@ namespace API.Repositories
             return new RepositoryResponse<UserDTO>(RepositoryStatus.Success, user);
         }
 
+        public async Task<RepositoryResponse<UserPendingValidationsDTO>> GetPendingValidations(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user is null)
+                return new RepositoryResponse<UserPendingValidationsDTO>(RepositoryStatus.UserNotFound);
+
+            var pendingValidations = new UserPendingValidationsDTO();
+
+            if (user.EmailConfirmed is false)
+                pendingValidations.Email = user.Email;
+
+            if (user.PhoneNumberConfirmed is false)
+                pendingValidations.PhoneNumber = user.PhoneNumber;
+
+            return new RepositoryResponse<UserPendingValidationsDTO>(RepositoryStatus.Success, pendingValidations);
+        }
+
         public async Task<RepositoryStatus> UpdateUserAsync(string id, UserUpdateDTO userUpdateDTO)
         {
             if (userUpdateDTO is null)

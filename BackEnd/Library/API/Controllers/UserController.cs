@@ -104,6 +104,10 @@ namespace API.Controllers
 
         [HttpGet("email/{email}")]
         [Authorize(Roles = "user,librarian,admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetUserByEmail(string email)
         {
             var response = await _userRepository.GetUserByEmailAsync(email);
@@ -117,13 +121,6 @@ namespace API.Controllers
                     Message = "Usuário encontrado com sucesso"
                 }),
 
-                RepositoryStatus.NotFound => NotFound(new ApiResponse
-                {
-                    Status = "Not Found",
-                    Data = null,
-                    Message = "O usuário não foi encontrado"
-                }),
-
                 RepositoryStatus.NullObject => BadRequest(new ApiResponse
                 {
                     Status = "Bad Request",
@@ -131,6 +128,12 @@ namespace API.Controllers
                     Message = "O email do usuário não pode ser nulo"
                 }),
 
+                RepositoryStatus.NotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = "O usuário não foi encontrado"
+                }),
                 _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
                 {
                     Status = "Internal Server Error",
@@ -142,11 +145,15 @@ namespace API.Controllers
 
         [HttpGet("{userId}/user-dashboard")]
         [Authorize(Roles = "user,librarian,admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetUserDashboard(string userId)
         {
             var response = await _userRepository.GetGeneralUserInfoAsync(userId);
 
-            return response.Status switch 
+            return response.Status switch
             {
                 RepositoryStatus.Success => Ok(new ApiResponse
                 {
@@ -175,7 +182,42 @@ namespace API.Controllers
                     Data = null,
                     Message = "Erro inesperado ao tentar buscar pelas informações do dashboard do usuário"
                 })
-,            };
+,
+            };
+        }
+
+        [HttpGet]
+        [Authorize(Roles = "user,librarin,admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetPendingValidations(string userId)
+        {
+            var response = await _userRepository.GetPendingValidations(userId);
+
+            return response.Status switch
+            {
+                RepositoryStatus.Success => Ok(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = response.Data,
+                    Message = "Validações pendentes encontradas com sucesso"
+                }),
+
+                RepositoryStatus.UserNotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = "O usuário não foi encontrado"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Erro inesperado ao buscar pelas validações pendentes do usuário"
+                })
+            };
         }
 
         [HttpDelete("{id}")]

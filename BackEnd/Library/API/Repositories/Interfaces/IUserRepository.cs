@@ -11,6 +11,7 @@ namespace API.Repositories.Interfaces
         Task<RepositoryResponse<UserDashboardDTO>> GetGeneralUserInfoAsync(string userId);
         Task<RepositoryResponse<UserDTO>> GetUserByIdAsync(string id);
         Task<RepositoryResponse<UserDTO>> GetUserByEmailAsync(string email);
+        Task<RepositoryResponse<UserPendingValidationsDTO>> GetPendingValidations(string userId);
         Task<RepositoryStatus> UpdateUserAsync(string id, UserUpdateDTO userUpdateDTO);
         Task<RepositoryStatus> DeleteUserAsync(string id);
     }
