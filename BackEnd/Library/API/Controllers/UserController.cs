@@ -272,7 +272,7 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Put(string id, UserUpdateDTO userUpdateDTO)
+        public async Task<IActionResult> Put(string id, [FromBody] UserUpdateDTO userUpdateDTO)
         {
             var response = await _userRepository.UpdateUserAsync(id, userUpdateDTO);
 

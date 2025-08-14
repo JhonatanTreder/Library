@@ -214,7 +214,10 @@ namespace API.Repositories
                 return RepositoryStatus.NotFound;
 
             if (!string.IsNullOrEmpty(userUpdateDTO.Name))
+            {
                 user.Name = userUpdateDTO.Name;
+                user.UserName = userUpdateDTO.Name;
+            }
 
             if (!string.IsNullOrEmpty(userUpdateDTO.PhoneNumber))
             {
