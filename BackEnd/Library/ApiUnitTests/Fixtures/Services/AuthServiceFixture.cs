@@ -13,9 +13,11 @@ namespace ApiUnitTests.Fixtures.Services
     {
         public Mock<ITokenService> MockTokenService { get; }
         public Mock<IConfiguration> MockConfiguration { get; }
+        public Mock<IAuthService> MockAuthService { get; }
+        public Mock<IEmailService> MockEmailService { get; }
+        public Mock<ISmsService> MockSmsService { get; }
         public Mock<RoleManager<IdentityRole>> MockRoleManager { get; }
         public Mock<UserManager<ApplicationUser>> MockUserManager { get; }
-        public Mock<IAuthService> MockAuthService { get; }
         public AuthService AuthService { get; }
         public AuthController AuthController { get; }
 
@@ -41,12 +43,16 @@ namespace ApiUnitTests.Fixtures.Services
             );
 
             MockTokenService = new Mock<ITokenService>();
+            MockEmailService = new Mock<IEmailService>();
+            MockSmsService = new Mock<ISmsService>();
 
             AuthService = new AuthService(
                 MockTokenService.Object,
                 MockUserManager.Object,
                 MockRoleManager.Object,
-                MockConfiguration.Object
+                MockConfiguration.Object,
+                MockEmailService.Object,
+                MockSmsService.Object
             );
 
             MockAuthService = new Mock<IAuthService>();

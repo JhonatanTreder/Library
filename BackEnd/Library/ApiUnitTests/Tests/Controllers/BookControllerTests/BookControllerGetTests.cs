@@ -1,7 +1,6 @@
 ﻿using API.Controllers;
-using API.DTOs.Book;
 using API.DTOs.Responses;
-using API.DTOs.Book;
+using API.DTOs.BookDTOs;
 using API.Enum;
 using API.Enum.Responses;
 using API.Repositories.Interfaces;

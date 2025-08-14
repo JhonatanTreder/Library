@@ -37,7 +37,7 @@ namespace ApiUnitTests.Tests.Controllers.UserControllerTests
                 Name = "valid-name",
                 Email = "valid-email",
                 PhoneNumber = "123456789",
-                UserType = UserType.User.ToString
+                UserType = UserType.User.ToString()
             };
 
             _userRepositoryMock.Setup(service => service.GetUserByIdAsync(validId))
@@ -147,6 +147,45 @@ namespace ApiUnitTests.Tests.Controllers.UserControllerTests
             Assert.Equal("Not Found", response.Status);
             Assert.Null(response.Data);
             Assert.Equal("Nenhum usuário foi encontrado", response.Message);
+        }
+
+        [Fact]
+        public async Task GetPendingvalidations_ReturnOk()
+        {
+            var validId = "";
+            var pendingValidations = new UserPendingValidationsDTO
+            {
+                Email = "email@example.com",
+                PhoneNumber = "+55111234-5678"
+            };
+
+            _userRepositoryMock.Setup(service => service.GetPendingValidations(validId))
+                .ReturnsAsync(new RepositoryResponse<UserPendingValidationsDTO>(RepositoryStatus.Success, pendingValidations));
+
+            var getResult = await _controller.GetPendingValidations(validId);
+            var OkSuccessResult = Assert.IsType<OkObjectResult>(getResult);
+            var response = Assert.IsType<ApiResponse>(OkSuccessResult.Value);
+
+            Assert.Equal("Ok", response.Status);
+            Assert.NotNull(response.Data);
+            Assert.Equal("Validações pendentes encontradas com sucesso", response.Message);
+        }
+
+        [Fact]
+        public async Task GetPendingValidations_ReturnNotFound_WhenUserNotFound()
+        {
+            var invaliId = "";
+
+            _userRepositoryMock.Setup(service => service.GetPendingValidations(invaliId))
+                .ReturnsAsync(new RepositoryResponse<UserPendingValidationsDTO>(RepositoryStatus.UserNotFound));
+
+            var getResult = await _controller.GetPendingValidations(invaliId);
+            var NotFoundResult = Assert.IsType<NotFoundObjectResult>(getResult);
+            var response = Assert.IsType<ApiResponse>(NotFoundResult.Value);
+
+            Assert.Equal("Not Found", response.Status);
+            Assert.Null(response.Data);
+            Assert.Equal("O usuário não foi encontrado", response.Message);
         }
     }
 }

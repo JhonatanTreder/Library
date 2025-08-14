@@ -1,5 +1,4 @@
-﻿using API.DTOs.Book;
-using API.DTOs.Book;
+﻿using API.DTOs.BookDTOs;
 using API.Enum.Responses;
 using API.Models;
 using ApiUnitTests.Fixtures.Repositories;

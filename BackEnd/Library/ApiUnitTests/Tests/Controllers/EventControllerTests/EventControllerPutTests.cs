@@ -1,5 +1,5 @@
 ﻿using API.Controllers;
-using API.DTOs.Event;
+using API.DTOs.EventDTOs;
 using API.DTOs.Responses;
 using API.Enum.Responses;
 using API.Repositories.Interfaces;
