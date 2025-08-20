@@ -1,0 +1,9 @@
+{
+  "SMTP": {
+    "UserName": "library.application.net@gmail.com",
+    "Name": "Library Application",
+    "Password": "ckln xzwr efxl mzcb",
+    "Host": "smtp.gmail.com",
+    "Port": 587
+  }
+}
