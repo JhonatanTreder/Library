@@ -5,7 +5,7 @@ const userEmail = document.getElementById('user-email');
 
 userEmail.innerText = email;
 
-const confirmForm = document.getElementById('confirm-email-form');
+const confirmForm = document.getElementById('confirm-item-form');
 
 confirmForm.addEventListener('submit', async function(event) {
     event.preventDefault();
