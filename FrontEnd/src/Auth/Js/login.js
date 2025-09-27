@@ -36,7 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('refreshToken', userTokens.refreshToken);
 
             window.location.href = '/src/Pages/index.html'
-
         } catch (error) {
             alert('Erro ao conectar com a API: ' + error.message);
         }

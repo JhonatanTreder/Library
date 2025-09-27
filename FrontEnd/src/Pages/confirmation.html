@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmação de</title>
+    <link rel="stylesheet" type="text/css" href="Styles/confirmation.css">
+</head>
+<body>
+<div id="container">
+    <div id="confirm-item">
+        <form id="confirm-item-form">
+            <h2 id="title">Confirmação de </h2>
+            <p id="item-message">Enviamos um código de confirmação para <strong id="user-item"></strong>. Coloque ele logo abaixo:</p>
+
+            <div class="form-group">
+                <label for="item-code"></label>
+                <input type="text" id="item-code" required placeholder="Código de" />
+            </div>
+
+            <div class="form-group">
+                <button type="submit" id="confirm-button">Confirmar</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="resend-item-code">
+        <form id="resend-item-form">
+            <p>Não recebeu o código?</p>
+            <button type="submit" id="resend">Reenviar</button>
+        </form>
+    </div>
+    
+    <script src="../../src/Utils/Scripts/verify_server_status.js"></script>
+    <script src="Js/confirmation.js"></script>
+</div>
+</body>
+</html>

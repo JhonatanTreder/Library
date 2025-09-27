@@ -3,7 +3,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         const token = localStorage.getItem('token');
 
         if (!token) {
-            return window.location.href = '/src/Auth/login.html';
+            setTimeout(() => {
+                alert('dfs')
+                window.location.href = '/src/Auth/login.html';
+            }, 2000);
+            return;
         }
 
         const getUserResponse = await getUserRequest(token);
@@ -29,7 +33,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             const saveButton = document.getElementById('save-button');
 
-            saveButton.addEventListener('click', async() => {
+            saveButton.addEventListener('click', async () => {
 
                 await updateUserRequest(token);
             })
@@ -87,7 +91,7 @@ async function updateUserRequest(token) {
 
     const spans = document.querySelectorAll('.info-content');
 
-    const userName= spans[0].innerText;
+    const userName = spans[0].innerText;
     const userEmail = spans[1].innerText;
     const userPassword = spans[2].innerText;
     const userPhoneNumber = spans[3].innerText;
@@ -98,7 +102,7 @@ async function updateUserRequest(token) {
         phoneNumber: userPhoneNumber
     }
 
-    const passwordRegex =  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).{6,}$/
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).{6,}$/
 
     if (passwordRegex.test(userPassword) === true) {
         userUpdateDTO.password = userPassword;
@@ -148,39 +152,82 @@ async function getPendingValidations(token) {
 
     await showPendingValidations(pendingValidations);
 }
+
 async function showPendingValidations(pendingValidations) {
-    const verifications = document.getElementById('pending-verifications')
+    const verifications = document.getElementById('pending-verifications');
 
-    if (pendingValidations !== null) {
-        if (pendingValidations.email != null) {
+    if (!pendingValidations || (pendingValidations.email == null && pendingValidations.phoneNumber == null)) {
+        verifications.style.display = 'none';
+        return;
+    }
 
-            const emailContent = document.createElement('div');
+    verifications.style.display = '';
 
-            emailContent.classList.add('verify-item');
-            emailContent.innerHTML = `<i class="material-symbols-outlined">Email</i>
-                    <h5 class="info-title">Email:</h5>
-                    <span class="info-content">${pendingValidations.email}</span>
-                    <button class="verify-button">Verificar</button>`
+    if (pendingValidations.email != null) {
+        const emailContent = document.createElement('div');
 
-            verifications.appendChild(emailContent)
-        }
+        emailContent.id = 'email-content';
+        emailContent.classList.add('verify-item');
+        emailContent.innerHTML = `
 
-        if (pendingValidations.phoneNumber != null) {
+            <i class="material-symbols-outlined">Email</i>
+            <h5 class="info-title">Email:</h5>
+            <span class="info-content">${pendingValidations.email}</span>
+            <button class="verify-button">Verificar</button>
+        `;
 
-            const phoneContent = document.createElement('div');
+        verifications.appendChild(emailContent);
+    }
 
-            phoneContent.classList.add('verify-item');
-            phoneContent.innerHTML = `<i class="material-symbols-outlined">Phone</i>
-                    <h5 class="info-title">Número de telefone:</h5>
-                    <span class="info-content">${pendingValidations.phoneNumber}</span>
-                    <button class="verify-button">Verificar</button>`
+    if (pendingValidations.phoneNumber != null) {
+        const phoneContent = document.createElement('div');
 
-            verifications.appendChild(phoneContent)
-        }
+        phoneContent.id = 'phone-content';
+        phoneContent.classList.add('verify-item');
+        phoneContent.innerHTML = `
 
-        console.log(verifications)
+            <i class="material-symbols-outlined">Phone</i>
+            <h5 class="info-title">Número de telefone:</h5>
+            <span class="info-content">${pendingValidations.phoneNumber}</span>
+            <button class="verify-button">Verificar</button>
+        `;
+
+        verifications.appendChild(phoneContent);
+
+        await delegateVerificationType()
     }
 }
+
+async function delegateVerificationType() {
+    const verifyItems = document.getElementsByClassName('verify-item');
+
+    Array.from(verifyItems).forEach((item) => {
+        const verifyButton = item.querySelector('.verify-button');
+        const infoContent = item.querySelector('.info-content').innerText;
+
+        verifyButton.addEventListener('click', () => {
+
+            switch (item.id){
+                case 'phone-content':
+                    const email = document.getElementById('email-section').innerText;
+                    localStorage.setItem('user-phone', infoContent);
+                    localStorage.setItem('user-email', email);
+                    break;
+
+
+                case 'email-content':
+                    localStorage.setItem('info-content', infoContent);
+                    break;
+            }
+
+            localStorage.setItem('confirmation-item', item.id);
+            window.location.href = '/src/Pages/confirmation.html';
+        })
+    })
+
+    console.log(verifyItems)
+}
+
 async function getUserDashBoard(token) {
 
     const payload = await parseJWT(token);
