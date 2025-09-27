@@ -191,7 +191,7 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> ConfirmPhone([FromForm] string email)
+        public async Task<IActionResult> ConfirmPhone([FromBody] string email)
         {
             var response = await _authService.SendPhoneConfirmationAsync(email);
 

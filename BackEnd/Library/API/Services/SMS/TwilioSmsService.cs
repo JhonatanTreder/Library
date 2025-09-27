@@ -45,10 +45,16 @@ namespace API.Services.SMS
 
             TwilioClient.Init(sid, token);
 
-            await MessageResource.CreateAsync(
+            var result = await MessageResource.CreateAsync(
                 to: user.PhoneNumber,
                 from: from,
                 body: $"O seu código de verificação é: {code}");
+
+            Console.WriteLine(result);
+            Console.WriteLine(result.Status);
+            Console.WriteLine(result.ErrorCode);
+            Console.WriteLine(result.ErrorMessage);
+            Console.WriteLine(result.Body);
 
             return RepositoryStatus.Success;
         }
