@@ -1,0 +1,149 @@
+.registerContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    min-height: 100vh;
+    height: auto;
+    background-color: #1E3A8A;
+}
+
+.registerForm{
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: monospace;
+    background: linear-gradient(to top, rgb(212, 212, 212), white);
+    color: #3B82F6;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 30%;
+    height: 60%;
+    border: 2px solid #8592B8;
+    border-radius: 0.5rem;
+}
+
+.registerTitle{
+    margin-top: 1rem;
+    margin-bottom: 0;
+}
+
+.registerSubTitle{
+    width: 50%;
+}
+
+.divisionLine{
+    width: 100%;
+    background-color: #8592B8;
+    height: 0.1px;
+    box-shadow: 0px 0px 2px #8592B8;
+}
+
+.inputArea{
+    display: flex;
+    flex-direction: column;
+    text-align: start;
+    width: 70%;
+}
+
+.inputText{
+    margin: 0;
+}
+
+.inputBox{
+    padding: 0 10px 0 10px;
+    margin-top: 0.8rem;
+    margin-bottom: 1rem;
+    border: 1px solid #8592B8;
+    border-radius: 5px;
+    box-sizing: border-box;
+    height: 1.5rem;
+    outline: none;
+    background-color: transparent;
+    color: #3B82F6;
+}
+
+.inputBox::placeholder{
+    color: #8592B8;
+}
+
+.inputBox:focus{
+    border: 2px solid #1E3A8A;
+}
+
+.registerButton{
+    padding: 0;
+    background-color: #3B82F6;
+    color: white;
+    width: 30%;
+    height: 2rem;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    box-shadow: 0px 5px 5px #8592B8;
+
+    transition: all 0.3s ease;
+}
+
+.registerButton:hover{
+    background-color: #1E3A8A;
+    transform: translateY(-0.5rem);
+}
+
+.authTypesText{
+    padding: 0;
+    margin: 0 0 1rem 0;
+}
+
+.authTypes{
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.authSvgIcon{
+    padding: 0.5rem;
+    border: 1px solid #8592B8;
+    border-radius: 0.5rem;
+    cursor: pointer;
+
+    box-shadow: 0px 5px 5px #8592B8;
+
+    transition: all 0.2s ease;
+}
+
+.authSvgIcon:hover{
+    transform: translateY(-0.4rem);
+    background-color: #1E3A8A;
+    border-color: #1E3A8A;
+}
+
+.loginRef{
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.loginRefTitle{
+    margin: 0;
+}
+
+.loginRefLink{
+    text-decoration: underline;
+    cursor: pointer;
+
+    transition: all 0.3s ease;
+}
+
+.loginRefLink:hover{
+    transform: translateY(-0.4rem);
+    color: #1E3A8A;
+}
