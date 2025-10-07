@@ -51,12 +51,8 @@ export default function RegisterForm(){
             
             <form className={formStyles.registerForm}>
                 <h1 className={formStyles.registerTitle}>
-                    Bem-Vindo!!
+                    Registre-se
                 </h1>
-
-                <p className={formStyles.registerSubTitle}>
-                    Por favor, realize o registro logo abaixo.
-                </p>
 
                 <p className={formStyles.divisionLine}></p>
 
@@ -78,6 +74,11 @@ export default function RegisterForm(){
                 <section className={formStyles.inputArea}>
                     <p className={formStyles.inputText}>Confirmar Senha</p>
                     <input className={formStyles.inputBox} required type='password' placeholder='Confirmar senha'></input>
+                </section>
+
+                <section className={formStyles.inputArea}>
+                    <p className={formStyles.inputText}>Número de Matrícula</p>
+                    <input className={formStyles.inputBox} required type='text' placeholder='Matrícula'></input>
                 </section>
 
                 <button className={formStyles.registerButton}>Criar conta</button>
