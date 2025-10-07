@@ -1,14 +1,18 @@
 .registerContainer{
     display: flex;
-    flex-direction: column;
-    justify-content: end;
+    flex-direction: row;
+    justify-content: space-between;
     align-items: center;
     padding: 0;
     margin: 0;
     width: 100%;
-    min-height: 100vh;
-    height: auto;
-    background-color: #1E3A8A;
+    height: 100vh;
+}
+
+.leftContent{
+    margin: 0;
+    padding: 0;
+    height: 100%;
 }
 
 .registerForm{
@@ -19,12 +23,14 @@
     color: #3B82F6;
     text-align: center;
     display: flex;
+    justify-content: space-around;
     flex-direction: column;
     align-items: center;
     width: 30%;
-    height: 60%;
+    height: 100%;
+    max-height: 100vh;
     border: 2px solid #8592B8;
-    border-radius: 0.5rem;
+    box-sizing: border-box;
 }
 
 .registerTitle{
@@ -72,14 +78,14 @@
 }
 
 .inputBox:focus{
-    border: 2px solid #1E3A8A;
+    border: 2px solid #8592B8;
 }
 
 .registerButton{
     padding: 0;
     background-color: #3B82F6;
     color: white;
-    width: 30%;
+    width: 70%;
     height: 2rem;
     cursor: pointer;
     border: none;
@@ -93,7 +99,7 @@
 
 .registerButton:hover{
     background-color: #1E3A8A;
-    transform: translateY(-0.5rem);
+    transform: translateY(-0.35rem);
 }
 
 .authTypesText{
@@ -137,13 +143,9 @@
 }
 
 .loginRefLink{
-    text-decoration: underline;
     cursor: pointer;
-
-    transition: all 0.3s ease;
 }
 
 .loginRefLink:hover{
-    transform: translateY(-0.4rem);
-    color: #1E3A8A;
+    text-decoration: underline;
 }
