@@ -31,6 +31,7 @@
     max-height: 100vh;
     border: 2px solid #8592B8;
     box-sizing: border-box;
+    gap: 0rem;
 }
 
 .registerTitle{
@@ -96,35 +97,6 @@
 .registerButton:hover{
     background-color: #1E3A8A;
     transform: translateY(-0.35rem);
-}
-
-.authTypesText{
-    padding: 0;
-    margin: 0 0 1rem 0;
-}
-
-.authTypes{
-    display: flex;
-    flex-direction: row;
-    gap: 1rem;
-    margin-bottom: 1rem;
-}
-
-.authSvgIcon{
-    padding: 0.5rem;
-    border: 1px solid #8592B8;
-    border-radius: 0.5rem;
-    cursor: pointer;
-
-    box-shadow: 0px 5px 5px #8592B8;
-
-    transition: all 0.2s ease;
-}
-
-.authSvgIcon:hover{
-    transform: translateY(-0.4rem);
-    background-color: #1E3A8A;
-    border-color: #1E3A8A;
 }
 
 .loginRef{

@@ -83,36 +83,6 @@ export default function RegisterForm(){
 
                 <button className={formStyles.registerButton}>Criar conta</button>
 
-                <p className={formStyles.authTypesText}>Ou, se registrar com:</p>
-
-                <section className={formStyles.authTypes}>
-
-                    <Image 
-                        className={`material-icons ${formStyles.authSvgIcon}`}
-                        alt='Google Icon'
-                        src={googleIcon}
-                        width='24'
-                        height='24'>
-                    </Image>
-
-                    <Image 
-                        className={`material-icons ${formStyles.authSvgIcon}`}
-                        alt='Facebook Icon'
-                        src={facebookIcon}
-                        width='24'
-                        height='24'>
-                    </Image>
-
-                    <Image 
-                        className={`material-icons ${formStyles.authSvgIcon}`}
-                        alt='Microsoft Icon'
-                        src={microsoftIcon}
-                        width='24'
-                        height='24'>
-                    </Image>
-
-                </section>
-
                 <section className={formStyles.loginRef}>
                     <p className={formStyles.loginRefTitle}>Já possui uma conta?</p>
                     <a className={formStyles.loginRefLink}>Entrar</a>

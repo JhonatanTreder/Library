@@ -126,13 +126,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-
-//TESTE - REMOVER DEPOIS
-Console.WriteLine("Account Sid: " + Environment.GetEnvironmentVariable("TWILIO_ACCOUNT_SID"));
-Console.WriteLine("Twilio Auth Token: " + Environment.GetEnvironmentVariable("TWILIO_AUTH_TOKEN"));
-Console.WriteLine("Twilio Phone Number: " + Environment.GetEnvironmentVariable("TWILIO_PHONE_NUMBER"));
-
 app.UseHttpsRedirection();
 app.UseCors("LocalHostPolicy");
 app.UseAuthentication();
