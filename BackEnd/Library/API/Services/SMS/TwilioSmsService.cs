@@ -26,7 +26,7 @@ namespace API.Services.SMS
             if (user is null) return RepositoryStatus.UserNotFound;
             if (user.PhoneNumber is null) return RepositoryStatus.NotFound;
 
-            if (PhoneNumberValidator.ValidateE164Format(user.PhoneNumber) is false)
+            if (FormatValidator.ValidateE164Format(user.PhoneNumber) is false)
                 return RepositoryStatus.InvalidPhoneFormat;
 
             var code = RandomNumberGenerator.GetInt32(100_000, 999_999).ToString();
@@ -66,7 +66,7 @@ namespace API.Services.SMS
             if (user is null) return RepositoryStatus.UserNotFound;
             if (user.PhoneNumber is null) return RepositoryStatus.NotFound;
 
-            if (PhoneNumberValidator.ValidateE164Format(user.PhoneNumber) is false)
+            if (FormatValidator.ValidateE164Format(user.PhoneNumber) is false)
                 return RepositoryStatus.InvalidPhoneFormat;
 
             if (user.PhoneConfirmationCodeExpiryTime < DateTime.UtcNow)

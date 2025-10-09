@@ -7,6 +7,7 @@
         NullObject,
         NotFound,
         NoChange,
+        Availaible,
         InvalidStatus,
         InvalidStatusTransition,
         InvalidId,
@@ -19,6 +20,7 @@
         InvalidCopiesQuantity,
         InvalidPassword,
         InvalidPhoneFormat,
+        InvalidMatriculatesFormat,
         InvalidToken,
         InvalidRefreshToken,
         InvalidRefreshTokenExpiryTime,
@@ -30,7 +32,6 @@
         BookNotFound,
         BookCopyNotFound,
         BookCopyDoesNotBelongToBook,
-        Availaible,
         AlreadyInRole,
         RoleRemovedFailed,
         RoleUpdatedFailed,
@@ -42,5 +43,6 @@
         Unauthorized,
         UserNotFound,
         EmailAlreadyExists,
+        MatriculatesAlreadyExists,
     }
 }

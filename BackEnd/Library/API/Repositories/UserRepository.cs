@@ -221,7 +221,7 @@ namespace API.Repositories
 
             if (!string.IsNullOrEmpty(userUpdateDTO.PhoneNumber))
             {
-                if (PhoneNumberValidator.ValidateE164Format(userUpdateDTO.PhoneNumber) is false)
+                if (FormatValidator.ValidateE164Format(userUpdateDTO.PhoneNumber) is false)
                     return RepositoryStatus.InvalidPhoneFormat;
 
                 user.PhoneNumber = userUpdateDTO.PhoneNumber;

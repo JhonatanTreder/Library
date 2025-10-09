@@ -2,7 +2,7 @@
 
 namespace API.Utils.Validators
 {
-    public static class PhoneNumberValidator
+    public static class FormatValidator
     {
         public static bool ValidateE164Format(string phoneNumber)
         {
@@ -17,10 +17,17 @@ namespace API.Utils.Validators
                              "(9[0-9]{8}|[2-9][0-9]{7})$";
 
             var regex = new Regex(pattern);
-
             var validationResult = regex.IsMatch(phoneNumber);
 
-            Console.WriteLine(validationResult);
+            return validationResult;
+        }
+
+        public static bool ValidateMatriculatesFormat(string matriculates)
+        {
+            var pattern = @"^[0-9]{15}$";
+
+            var regex = new Regex(pattern);
+            var validationResult = regex.IsMatch(matriculates);
 
             return validationResult;
         }

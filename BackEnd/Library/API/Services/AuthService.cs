@@ -6,14 +6,12 @@ using API.Enum;
 using API.Enum.Responses;
 using API.Models;
 using API.Services.Interfaces;
+using API.Utils.Validators;
 using DnsClient;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net;
-using System.Net.Mail;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace API.Services
 {
@@ -99,37 +97,39 @@ namespace API.Services
         public async Task<RepositoryResponse<UserDTO>> Register(RegisterDTO registerDTO)
         {
             if (registerDTO is null)
-            {
                 return new RepositoryResponse<UserDTO>(RepositoryStatus.NullObject);
-            }
 
             string[] emailParts = registerDTO.Email.Split('@');
-            var domain = emailParts[1];
 
+            var domain = emailParts[1];
             var validDomain = await IsValidDomain(domain);
 
             if (validDomain is false)
-            {
                 return new RepositoryResponse<UserDTO>(RepositoryStatus.InvalidDomain);
-            }
 
             var userExists = await _userManager.FindByEmailAsync(registerDTO.Email);
 
             if (userExists != null)
-            {
                 return new RepositoryResponse<UserDTO>(RepositoryStatus.EmailAlreadyExists);
-            }
 
             if (registerDTO.Password.Length < 6)
-            {
                 return new RepositoryResponse<UserDTO>(RepositoryStatus.InvalidPassword);
-            }
+
+            if (FormatValidator.ValidateMatriculatesFormat(registerDTO.Matriculates) is false)
+                return new RepositoryResponse<UserDTO>(RepositoryStatus.InvalidMatriculatesFormat);
+
+            var userWithMatriculates = await _userManager.Users
+                .FirstAsync(u => u.Matriculates == registerDTO.Matriculates);
+
+            if (userWithMatriculates != null)
+                return new RepositoryResponse<UserDTO>(RepositoryStatus.MatriculatesAlreadyExists);
 
             ApplicationUser user = new()
             {
-                Email = registerDTO.Email,
-                SecurityStamp = Guid.NewGuid().ToString(),
                 UserName = registerDTO.Name,
+                Email = registerDTO.Email,
+                Matriculates = registerDTO.Matriculates,
+                SecurityStamp = Guid.NewGuid().ToString(),
                 CreatedAt = DateOnly.FromDateTime(DateTime.Today)
             };
 

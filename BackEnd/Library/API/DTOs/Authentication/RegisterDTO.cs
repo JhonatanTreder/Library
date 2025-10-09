@@ -15,5 +15,8 @@ namespace API.DTOs.Authentication
         [Required(ErrorMessage = "A senha é obrigatória.")]
         [StringLength(20, MinimumLength = 3, ErrorMessage = "A senha deve conter de 3 a 12 caracteres")]
         public string Password { get; set; } = string.Empty;
+
+        //Matrícula válida: 202017840506405 (4 casas: 2020 17 84 0506405)
+        public string Matriculates { get; set; } = string.Empty;
     }
 }

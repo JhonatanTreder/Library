@@ -108,11 +108,25 @@ namespace API.Controllers
                     Message = "A senha deve ter no mínimo 6 caracteres"
                 }),
 
+                RepositoryStatus.InvalidMatriculatesFormat => BadRequest(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = "O número de matrícula está em um formato inválido"
+                }),
+
                 RepositoryStatus.EmailAlreadyExists => Conflict(new ApiResponse
                 {
                     Status = "Conflict",
                     Data = null,
                     Message = "O Email especificado já está sendo utilizado"
+                }),
+
+                RepositoryStatus.MatriculatesAlreadyExists => Conflict(new ApiResponse
+                {
+                    Status = "Conflict",
+                    Data = null,
+                    Message = "A matrícula especificada já está sendo utilizada"
                 }),
 
                 RepositoryStatus.FailedToCreateUser => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
