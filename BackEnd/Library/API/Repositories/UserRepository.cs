@@ -216,7 +216,6 @@ namespace API.Repositories
             if (!string.IsNullOrEmpty(userUpdateDTO.Name))
             {
                 user.Name = userUpdateDTO.Name;
-                user.UserName = userUpdateDTO.Name;
             }
 
             if (!string.IsNullOrEmpty(userUpdateDTO.PhoneNumber))
@@ -227,9 +226,24 @@ namespace API.Repositories
                 user.PhoneNumber = userUpdateDTO.PhoneNumber;
             }
 
+            if (!string.IsNullOrEmpty(userUpdateDTO.UserMatriculates))
+            {
+                if (FormatValidator.ValidateMatriculatesFormat(userUpdateDTO.UserMatriculates))
+                    return RepositoryStatus.InvalidMatriculatesFormat;
+            }
+
+            var userWithMatriculates = await _userManager.Users
+                .FirstOrDefaultAsync(m => m.Matriculates == userUpdateDTO.UserMatriculates);
+
+            if (userWithMatriculates != null)
+            {
+                return RepositoryStatus.MatriculatesAlreadyExists;
+            }
+
             if (!string.IsNullOrEmpty(userUpdateDTO.Email) && user.Email != userUpdateDTO.Email)
             {
                 user.Email = userUpdateDTO.Email;
+                user.UserName = userUpdateDTO.Email;
                 user.NormalizedEmail = userUpdateDTO.Email.ToUpper();
             }
 

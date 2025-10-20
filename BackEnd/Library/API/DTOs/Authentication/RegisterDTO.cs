@@ -16,7 +16,7 @@ namespace API.DTOs.Authentication
         [StringLength(20, MinimumLength = 3, ErrorMessage = "A senha deve conter de 3 a 12 caracteres")]
         public string Password { get; set; } = string.Empty;
 
-        //Matrícula válida: 202017840506405 (4 casas: 2020 17 84 0506405)
+        [StringLength(15, MinimumLength = 15, ErrorMessage = "A matrícula deve conter 15 caracteres")]
         public string Matriculates { get; set; } = string.Empty;
     }
 }

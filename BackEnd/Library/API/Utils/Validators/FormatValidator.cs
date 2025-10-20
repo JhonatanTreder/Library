@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using DnsClient;
+using System.Text.RegularExpressions;
 
 namespace API.Utils.Validators
 {
@@ -21,7 +22,6 @@ namespace API.Utils.Validators
 
             return validationResult;
         }
-
         public static bool ValidateMatriculatesFormat(string matriculates)
         {
             var pattern = @"^[0-9]{15}$";
@@ -30,6 +30,13 @@ namespace API.Utils.Validators
             var validationResult = regex.IsMatch(matriculates);
 
             return validationResult;
+        }
+        public static async Task<bool> ValidateDomainFormat(string domain)
+        {
+            var lookup = new LookupClient();
+            var result = await lookup.QueryAsync(domain, QueryType.MX);
+
+            return result.Answers.MxRecords().Any();
         }
     }
 }

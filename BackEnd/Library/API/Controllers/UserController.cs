@@ -301,6 +301,20 @@ namespace API.Controllers
                     Message = "O número de telefone do usuário deve estar em um formato válido (formato E.164)"
                 }),
 
+                RepositoryStatus.InvalidMatriculatesFormat => BadRequest(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = "A matrícula está em um formato inválido"
+                }),
+
+                RepositoryStatus.MatriculatesAlreadyExists => Conflict(new ApiResponse
+                {
+                    Status = "Conflict",
+                    Data = null,
+                    Message = "Já existe um usuário com essa matrícula"
+                }),
+
                 RepositoryStatus.FailedToResetPassword => Conflict(new ApiResponse
                 {
                     Status = "Conflict",

@@ -23,7 +23,7 @@
     color: #3B82F6;
     text-align: center;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-evenly;
     flex-direction: column;
     align-items: center;
     width: 30%;
@@ -32,6 +32,15 @@
     border: 2px solid #8592B8;
     box-sizing: border-box;
     gap: 0rem;
+}
+
+.inputsSection{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.8rem;
+    width: 100%;
 }
 
 .registerTitle{
@@ -88,7 +97,6 @@
     border: none;
     outline: none;
     border-radius: 0.5rem;
-    margin-bottom: 1rem;
     box-shadow: 0px 5px 5px #8592B8;
 
     transition: all 0.3s ease;
@@ -103,6 +111,7 @@
     display: flex;
     align-items: center;
     gap: 1rem;
+    margin-top: 1rem;
     margin-bottom: 1rem;
 }
 

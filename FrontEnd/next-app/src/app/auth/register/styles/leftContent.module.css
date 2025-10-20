@@ -21,6 +21,10 @@
     gap: 0rem;
 }
 
+.imgWrapper{
+    height: 200;
+}
+
 .citationImg{
     border-radius: 0.5rem;
     cursor: pointer;

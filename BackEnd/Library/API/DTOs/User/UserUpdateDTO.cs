@@ -13,6 +13,8 @@ namespace API.DTOs.User
         [StringLength(20, MinimumLength = 3, ErrorMessage = "A senha deve conter de 3 a 20 caracteres")]
         public string? Password { get; set; }
 
+        [StringLength(15, MinimumLength = 15, ErrorMessage = "A matrícula deve conter 15 caracteres")]
+        public string? UserMatriculates { get; set; }
         public string? PhoneNumber { get; set; }
     }
 }

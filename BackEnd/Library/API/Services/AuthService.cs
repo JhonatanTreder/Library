@@ -102,7 +102,7 @@ namespace API.Services
             string[] emailParts = registerDTO.Email.Split('@');
 
             var domain = emailParts[1];
-            var validDomain = await IsValidDomain(domain);
+            var validDomain = await FormatValidator.ValidateDomainFormat(domain);
 
             if (validDomain is false)
                 return new RepositoryResponse<UserDTO>(RepositoryStatus.InvalidDomain);
@@ -119,14 +119,15 @@ namespace API.Services
                 return new RepositoryResponse<UserDTO>(RepositoryStatus.InvalidMatriculatesFormat);
 
             var userWithMatriculates = await _userManager.Users
-                .FirstAsync(u => u.Matriculates == registerDTO.Matriculates);
+                .FirstOrDefaultAsync(u => u.Matriculates == registerDTO.Matriculates);
 
             if (userWithMatriculates != null)
                 return new RepositoryResponse<UserDTO>(RepositoryStatus.MatriculatesAlreadyExists);
 
             ApplicationUser user = new()
             {
-                UserName = registerDTO.Name,
+                UserName = registerDTO.Email,
+                Name = registerDTO.Name,
                 Email = registerDTO.Email,
                 Matriculates = registerDTO.Matriculates,
                 SecurityStamp = Guid.NewGuid().ToString(),
@@ -137,6 +138,15 @@ namespace API.Services
 
             if (!result.Succeeded)
             {
+                foreach (var error in result.Errors)
+                {
+                    Console.WriteLine(registerDTO.Name);
+                    Console.WriteLine(user.Name);
+                    Console.WriteLine(error.Code);
+                    Console.WriteLine(error.Description);
+                    Console.WriteLine("--------------------------------------------------");
+                }
+
                 return new RepositoryResponse<UserDTO>(RepositoryStatus.FailedToCreateUser);
             }
 
@@ -265,14 +275,6 @@ namespace API.Services
         public async Task<RepositoryStatus> VerifyPhoneCodeAsync(VerifyPhoneCodeDTO verifyPhoneDTO)
         {
             return await _smsServcie.VerifyAsync(verifyPhoneDTO);
-        }
-
-        private async Task<bool> IsValidDomain(string domain)
-        {
-            var lookup = new LookupClient();
-            var result = await lookup.QueryAsync(domain, QueryType.MX);
-
-            return result.Answers.MxRecords().Any();
         }
     }
 }
