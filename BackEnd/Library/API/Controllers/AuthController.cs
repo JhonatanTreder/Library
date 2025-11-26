@@ -167,6 +167,7 @@ namespace API.Controllers
         public async Task<IActionResult> ConfirmEmail([FromBody] string email)
         {
             var response = await _authService.SendEmailConfirmationAsync(email);
+            Console.WriteLine(response);
 
             return response switch 
             {

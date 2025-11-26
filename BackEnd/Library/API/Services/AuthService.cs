@@ -138,13 +138,24 @@ namespace API.Services
 
             if (!result.Succeeded)
             {
-                foreach (var error in result.Errors)
+                if (result.Errors.Any())
                 {
-                    Console.WriteLine(registerDTO.Name);
-                    Console.WriteLine(user.Name);
-                    Console.WriteLine(error.Code);
-                    Console.WriteLine(error.Description);
-                    Console.WriteLine("--------------------------------------------------");
+                    foreach (var error in result.Errors)
+                    {
+                        Console.WriteLine("--------------------------------------------------");
+                        Console.WriteLine(registerDTO.Name);
+                        Console.WriteLine(user.Name);
+                        Console.WriteLine(error.Code);
+                        Console.WriteLine(error.Description);
+                        Console.WriteLine("--------------------------------------------------");
+                    }
+
+                    var errorDTO = new UserDTO
+                    {
+                        UserErrors = result
+                    };
+
+                    return new RepositoryResponse<UserDTO>(RepositoryStatus.FailedToCreateUser, errorDTO);
                 }
 
                 return new RepositoryResponse<UserDTO>(RepositoryStatus.FailedToCreateUser);

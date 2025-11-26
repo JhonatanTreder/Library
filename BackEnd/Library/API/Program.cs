@@ -102,7 +102,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ILoanRepository, LoanRepository>();
 builder.Services.AddScoped<IEventRepository, EventRepository>();
 
-builder.Services.AddTransient<IEmailService, SmtpEmailService>();
+builder.Services.AddTransient<IEmailService, SendGridEmailService>();
 builder.Services.AddTransient<ISmsService, TwilioSmsService>();
 
 var secrectKey = builder.Configuration["JWT:SecretKey"]

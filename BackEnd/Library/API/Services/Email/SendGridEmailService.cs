@@ -6,15 +6,17 @@ using Microsoft.AspNetCore.Identity;
 using System.Net.Mail;
 using System.Net;
 using System.Text;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 
 namespace API.Services.Email
 {
-    public class SmtpEmailService : IEmailService
+    public class SendGridEmailService : IEmailService
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
 
-        public SmtpEmailService(UserManager<ApplicationUser> userManager, IConfiguration configuration)
+        public SendGridEmailService(UserManager<ApplicationUser> userManager, IConfiguration configuration)
         {
             _userManager = userManager;
             _configuration = configuration;
@@ -28,7 +30,6 @@ namespace API.Services.Email
                 return RepositoryStatus.UserNotFound;
 
             var tokenGenerator = new Random();
-
             var confirmationCode = tokenGenerator.Next(100000, 999999);
 
             user.EmailConfirmationCode = confirmationCode.ToString();
@@ -39,12 +40,12 @@ namespace API.Services.Email
             if (!updateResult.Succeeded)
                 return RepositoryStatus.FailedToUpdateUser;
 
-            string message = $"Seu código de confirmação: {confirmationCode}";
             string subject = "Confirmação de Email";
+            string message = $"Seu código de confirmação: {confirmationCode}";
 
-            await SendEmail(email, subject, message);
+            var sendResult = await SendEmail(email, subject, message);
 
-            return RepositoryStatus.Success;
+            return sendResult;
         }
 
         public async Task<RepositoryStatus> VerifyAsync(VerifyEmailCodeDTO verifyEmailDTO)
@@ -77,35 +78,38 @@ namespace API.Services.Email
             return RepositoryStatus.Success;
         }
 
-        private async Task<RepositoryStatus> SendEmail(string email, string subject, string body)
+        private async Task<RepositoryStatus> SendEmail(string recipient, string subject, string body)
         {
-            string mail = _configuration["SMTP:UserName"] ?? string.Empty;
-            string name = _configuration["SMTP:Name"] ?? string.Empty;
-            string password = _configuration["SMTP:Password"] ?? string.Empty;
-            string host = _configuration["SMTP:Host"] ?? string.Empty;
-            int port = Convert.ToInt32(_configuration["SMTP:Port"] ?? "587");
+            var apiKey = _configuration["SendGrid:ApiKey"] ?? string.Empty;
+            var senderEmail = _configuration["SendGrid:SenderEmail"] ?? string.Empty;
+            var senderName = _configuration["SendGrid:SenderName"] ?? string.Empty;
 
-            MailMessage emailService = new()
+            var client = new SendGridClient(apiKey);
+
+            var from = new EmailAddress(senderEmail, senderName);
+            var to = new EmailAddress(recipient);
+
+            var message = MailHelper.CreateSingleEmail(from, to, subject, body, body);
+
+            try
             {
-                From = new MailAddress(mail, name),
-            };
+                var sendEmailResponse = await client.SendEmailAsync(message);
 
-            emailService.To.Add(email);
-            emailService.Subject = subject;
-            emailService.Body = body;
-            emailService.IsBodyHtml = true;
-            emailService.HeadersEncoding = Encoding.UTF8;
-            emailService.BodyEncoding = Encoding.UTF8;
-            emailService.Priority = MailPriority.High;
-
-            using (SmtpClient smtpClient = new SmtpClient(host, port))
-            {
-                smtpClient.Credentials = new NetworkCredential(mail, password);
-                smtpClient.EnableSsl = true;
-
-                await smtpClient.SendMailAsync(emailService);
+                if (!sendEmailResponse.IsSuccessStatusCode)
+                {
+                    Console.WriteLine($"Erro do SendGrid: {sendEmailResponse.StatusCode}");
+                    Console.WriteLine($"Response: {sendEmailResponse}");
+                    Console.WriteLine($"Body do SendGrid: {sendEmailResponse.Body}");
+                    Console.WriteLine($"Headers: {sendEmailResponse.Headers}");
+                    return RepositoryStatus.Failed;
+                }
 
                 return RepositoryStatus.Success;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao enviar email viaSendGrid: {ex.Message}");
+                return RepositoryStatus.Failed;
             }
         }
     }
