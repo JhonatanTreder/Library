@@ -1,18 +1,29 @@
+.invalidInput {
+    border: 2px solid #ca4040 !important;
+}
+
+.invalidText {
+    color: #ca4040 !important;
+}
+
+.validInput {
+    border: 2px solid #40ca40 !important
+}
+
+.validText {
+    color: #40ca40  !important;
+}
+
 .registerContainer{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: center;
+    align-items: stretch;
     padding: 0;
     margin: 0;
     width: 100%;
-    height: 100vh;
-}
-
-.leftContent{
-    margin: 0;
-    padding: 0;
-    height: 100%;
+    min-height: 100vh;
+    height: auto;
 }
 
 .registerForm{
@@ -26,9 +37,8 @@
     justify-content: space-evenly;
     flex-direction: column;
     align-items: center;
-    width: 30%;
-    height: 100%;
-    max-height: 100vh;
+    width: 50%;
+    height: auto;
     border: 2px solid #8592B8;
     box-sizing: border-box;
     gap: 0rem;
@@ -60,6 +70,7 @@
     flex-direction: column;
     text-align: start;
     width: 70%;
+    margin-bottom: 1rem;
 }
 
 .inputText{
@@ -68,8 +79,7 @@
 
 .inputBox{
     padding: 0 10px 0 10px;
-    margin-top: 0.8rem;
-    margin-bottom: 1rem;
+    margin-top: 0.5rem;
     border: 1px solid #8592B8;
     border-radius: 5px;
     box-sizing: border-box;
@@ -85,6 +95,12 @@
 
 .inputBox:focus{
     border: 2px solid #8592B8;
+}
+
+.inputDescription{
+    color: #8592B8;
+    margin: 0.3rem 0 0 0;
+    font-size: 0.8rem;
 }
 
 .registerButton{
@@ -125,4 +141,33 @@
 
 .loginRefLink:hover{
     text-decoration: underline;
+}
+
+@media(max-width: 1282px){
+    .registerForm{
+        min-width: 35%;
+    }
+}
+
+@media(max-width: 1048px){
+    .registerForm{
+        width: 60%;
+    }
+}
+
+@media(max-width: 854px){
+    .registerForm{
+        min-width: 37%;
+    }
+}
+
+@media(max-width: 760px){
+
+    .registerContainer{
+        flex-direction: column;
+    }
+
+    .registerForm{
+        width: 100%;
+    }
 }

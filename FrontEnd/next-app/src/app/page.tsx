@@ -1,6 +1,4 @@
-import RegisterForm, { LeftContent } from '@/app/auth/register/page';
-import Register from '@/app/auth/register/page'
-import indexStyles from '@/app/index.module.css'
+import RegisterForm from '@/app/auth/register/page';
 
 export default function Home() {
   return (

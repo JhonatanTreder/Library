@@ -22,7 +22,6 @@ export function userRegister(){
         setSuccess(false)
 
         try{
-
             const registerUrl = `https://localhost:7221/Auth/register`
 
             const registerRequest = await fetch(registerUrl, {
@@ -33,29 +32,38 @@ export function userRegister(){
                 body: JSON.stringify(formData)
             })
 
-            if (!registerRequest.ok){
-                console.log(registerRequest)
-                const data = await registerRequest.json().catch(() => null);
-                console.error('Erro HTTP', registerRequest.status, data);
-                return;
-            }
-
-            console.log(registerRequest)
             var response = await registerRequest.json();
+            var responseMessage = response['message']
 
             if (response['status'] !== 'Ok'){
-                console.log('Server Response:')
-                console.log(response)
-                console.log('-----------------------------------------------------------')
-
-                var responseMessage = response['message']
 
                 setError(responseMessage)
-                console.log(response['status'])
+                console.log(response)
                 console.log(responseMessage)
             }
 
-            setSuccess(true)
+            else{
+                setSuccess(true)
+                console.log(response['status'])
+                console.log(responseMessage)
+
+                const sendEmailConfirmationURl = `https://localhost:7221/Auth/email-confirmation`
+
+                console.log(formData.email)
+
+                const emailConfirmationRequest = await fetch(sendEmailConfirmationURl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData.email)
+                })
+
+                console.log(emailConfirmationRequest)
+
+                const emailConfirmationResponse = await emailConfirmationRequest.json()
+                console.log(emailConfirmationResponse)
+            }
 
             return response
         }
