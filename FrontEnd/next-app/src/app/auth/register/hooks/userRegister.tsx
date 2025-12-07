@@ -1,13 +1,15 @@
-"user client"
+"use client"
 
-import { stringify } from "querystring"
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 
-export function userRegister(){
+export function useUserRegister(){
 
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [success, setSuccess] = useState(false)
+
+    const router = useRouter()
 
     async function registerUser(formData:{
 
@@ -43,7 +45,6 @@ export function userRegister(){
             }
 
             else{
-                setSuccess(true)
                 console.log(response['status'])
                 console.log(responseMessage)
 
@@ -59,10 +60,22 @@ export function userRegister(){
                     body: JSON.stringify(formData.email)
                 })
 
-                console.log(emailConfirmationRequest)
-
                 const emailConfirmationResponse = await emailConfirmationRequest.json()
-                console.log(emailConfirmationResponse)
+
+                if (emailConfirmationResponse['status'] !== 'Ok'){
+                    console.log('a')
+                    setError(responseMessage)
+                }
+
+                else{
+                    setSuccess(true)
+                    console.log('b')
+                    console.log(emailConfirmationResponse)
+                    console.log(emailConfirmationResponse['message'])
+                    sessionStorage.setItem('user-email', formData.email)
+
+                    router.push('/auth/validation/')
+                }
             }
 
             return response

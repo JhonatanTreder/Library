@@ -1,0 +1,162 @@
+.validationContainer {
+    font-family: 'Inter', 'Segoe UI', -apple-system, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    min-height: 100vh;
+    background: radial-gradient(circle at center, #3B82F6 0%, #1E3A8A 50%, #0F172A 100%);
+}
+
+.validationBox {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 500px;
+    background: white;
+    border: 2px solid #6B7280;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    padding: 2.5rem;
+    box-sizing: border-box;
+}
+
+.validationSection {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.validationBoxTitle {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1E3A8A;
+    margin: 0;
+    text-align: center;
+}
+
+.validationDescriptionSection {
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+.validationBoxDescription {
+    font-size: 1rem;
+    font-weight: 400;
+    color: #6B7280;
+    margin: 0 0 0.5rem 0;
+    line-height: 1.5;
+}
+
+.codeParts {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    gap: 0.8rem;
+    margin: 1rem 0;
+}
+
+.codePart {
+    font-family: 'Fira Code', 'Courier New', monospace;
+    font-size: 1.4rem;
+    font-weight: 600;
+    text-align: center;
+    flex: 1;
+    aspect-ratio: 1;
+    max-width: 50px;
+    border: 2px solid #E5E7EB;
+    border-radius: 8px;
+    background: #F9FAFB;
+    transition: all 0.2s ease;
+}
+
+.codePart:focus {
+    border-color: #3B82F6;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    outline: none;
+}
+
+.resendCodeSection {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+.resendCodeDescription {
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: #6B7280;
+    margin: 0;
+}
+
+.resendCodeLink {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #3B82F6;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.resendCodeLink:hover {
+    color: #1E3A8A;
+    text-decoration: underline;
+}
+
+.divisionLine {
+    width: 100%;
+    height: 1px;
+    background: #E5E7EB;
+    margin: 1rem 0;
+}
+
+.verifyCodeButton {
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    width: 100%;
+    height: 3rem;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #3B82F6, #1E3A8A);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 1rem 0;
+}
+
+.verifyCodeButton:hover:not(.buttonDisabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+}
+
+.buttonDisabled {
+    background: #9CA3AF;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+@media (max-width: 768px) {
+    .validationBox {
+        padding: 2rem 1.5rem;
+        margin: 1rem;
+    }
+    
+    .codeParts {
+        gap: 0.5rem;
+    }
+    
+    .codePart {
+        max-width: 45px;
+        font-size: 1.2rem;
+    }
+    
+    .validationBoxTitle {
+        font-size: 1.5rem;
+    }
+}

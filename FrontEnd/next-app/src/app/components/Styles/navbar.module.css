@@ -1,0 +1,210 @@
+.navbar{
+    display: flex;
+    justify-content: center;
+    background: #0F172A;
+    /*background: radial-gradient(circle at center, #3B82F6 0%, #1E3A8A 60%, #0F172A 100%);*/
+}
+
+.navBarItems{
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    gap: 2rem;
+}
+
+.navBarTopSection{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.searchContainer{
+    width: 70%;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.searchBar{
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 3rem;
+    background: white;
+    outline: 2px solid transparent;
+    outline-offset: 0;
+    transition: all 0.15s ease;
+}
+
+.searchBar:focus-within{
+    outline: 2px solid #2563EB;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.searchBarInput{
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    margin-left: 1rem;
+    outline: none;
+    border: none;
+    color: #374151;
+    font-size: 0.85rem; 
+}
+
+.searchBarInput::placeholder{
+    color: #9CA3AF;
+}
+
+.schoolAndBookIcon{
+    cursor: pointer;
+    width: 4rem;  
+    height: 3.5rem;
+    transition: all 0.3s ease;
+}
+
+.schoolAndBookIcon:hover{
+    transform: scale(1.05);
+}
+
+.verticalDivisionLine{
+    width: 0.1rem;
+    height: 50%;
+    background: #6B7280;
+    margin-left: 1rem;
+    opacity: 0.5;
+}
+
+.IconWrapper{
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    font-size: 0.90rem; 
+}
+
+.searchBarIcon{
+    color: #6B7280;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    transition: color 0.2s ease;
+}
+
+.searchBarIcon:hover{
+    color: #2563EB;
+}
+
+.navBarBottomSection{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.linkList{
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    width: 70%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+}
+
+.linkList > .IconWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    gap: 0.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: transparent;
+    min-width: 80px;
+    position: relative;
+    overflow: hidden;
+}
+
+.linkList > .IconWrapper:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.linkList > .IconWrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #60A5FA, #3B82F6);
+    transform: translateX(-100%);
+    transition: transform 0.4s ease;
+}
+
+.linkList > .IconWrapper:hover::before {
+    transform: translateX(0);
+}
+
+.linkIcon {
+    margin-right: 0;
+    font-size: 24px !important;
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.linkList > .IconWrapper:hover .linkIcon {
+    transform: scale(1.15);
+    color: #BFDBFE;
+}
+
+.linkList > .IconWrapper > span {
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    transition: color 0.3s ease;
+}
+
+.linkList > .IconWrapper:hover > span {
+    color: #BFDBFE;
+}
+
+.linkList > .IconWrapper::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(96, 165, 250, 0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.linkList > .IconWrapper:hover::after {
+    opacity: 1;
+}
+
+.linkList > .IconWrapper.active {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.linkList > .IconWrapper.active .linkIcon {
+    color: #60A5FA;
+}
+
+.linkList > .IconWrapper.active > span {
+    color: #BFDBFE;
+    font-weight: 600;
+}
+
+.linkReference{
+    color: white;
+    cursor: pointer;
+    font-weight: 500;
+    transition: color 0.15s ease, transform 0.15s ease;
+}

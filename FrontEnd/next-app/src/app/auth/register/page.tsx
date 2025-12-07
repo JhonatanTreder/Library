@@ -19,11 +19,11 @@ import aristotleIcon from '@/app/auth/register/images/aristoteles-icon.webp'
 import formStyles from '@/app/auth/register/styles/registerForm.module.css'
 
 import 'material-icons/iconfont/material-icons.css';
-import { userRegister } from './hooks/userRegister';
+import { useUserRegister } from './hooks/userRegister';
 
 export default function RegisterForm(){
 
-    const { registerUser, loading, error, success } = userRegister()
+    const { registerUser, loading, error, success } = useUserRegister()
 
     useEffect(() =>{
         useAnimateOnScroll(`.toRightAnimation`, `${animationStyles.fadeInRight}`)
@@ -120,7 +120,7 @@ export default function RegisterForm(){
                     <div className={leftContentStyles.citation}>
 
                         <p className={`${leftContentStyles.citationTitle} toRightAnimation`}>
-                            “A leitura é o caminho mais curto para o conhecimento”. Aristóteles — 
+                            “A leitura é o caminho mais curto para o conhecimento.” — Aristóteles
                         </p>
 
                         <div className={`${leftContentStyles.imgWrapper} toLeftAnimation`}>
@@ -138,7 +138,7 @@ export default function RegisterForm(){
                 </div>
             </section>
             
-            <form 
+            <form
                 className={formStyles.registerForm}
                 onSubmit={handleSubmit}>
 

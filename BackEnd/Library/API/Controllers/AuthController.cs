@@ -323,7 +323,7 @@ namespace API.Controllers
                 {
                     Status = "Ok",
                     Data = null,
-                    Message = "Código de telefone verificaco com sucesso"
+                    Message = "Código de telefone verificado com sucesso"
                 }),
 
                 RepositoryStatus.UserNotFound => NotFound(new ApiResponse
