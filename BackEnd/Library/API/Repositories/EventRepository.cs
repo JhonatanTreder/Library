@@ -1,6 +1,7 @@
 ﻿using API.Context;
 using API.DTOs.EventDTOs;
 using API.DTOs.Responses;
+using API.Enum;
 using API.Enum.Responses;
 using API.Models;
 using API.Repositories.Interfaces;
@@ -24,6 +25,36 @@ namespace API.Repositories
                 return new RepositoryResponse<Event>(RepositoryStatus.NullObject);
             }
 
+            var now = DateTime.UtcNow;
+            var today = now.Date;
+
+            EventStatus status;
+
+            if (_event.StartDate >= _event.EndDate)
+            {
+                return new RepositoryResponse<Event>(RepositoryStatus.InvalidStartDate);
+            }
+
+            if (_event.EndDate < now)
+            {
+                return new RepositoryResponse<Event>(RepositoryStatus.InvalidEndDate);
+            }
+
+            if (_event.StartDate <= now && _event.EndDate > now)
+            {
+                status = EventStatus.InProgress;
+            }
+
+            else if (_event.StartDate > now)
+            {
+                status = EventStatus.Upcoming;
+            }
+
+            else
+            {
+                status = EventStatus.InProgress;
+            }
+
             var newEvent = new Event
             {
                 Title = _event.Title,
@@ -31,7 +62,9 @@ namespace API.Repositories
                 TargetAudience = _event.TargetAudience,
                 Location = _event.Location,
                 StartDate = _event.StartDate,
-                EndDate = _event.EndDate
+                EndDate = _event.EndDate,
+                Status = status,
+                IsArchived = false
             };
 
             await _context.AddAsync(newEvent);
@@ -105,6 +138,70 @@ namespace API.Repositories
             }
         }
 
+
+        //-----------------------------------------------------------------------------------------------------------------
+        public async Task<RepositoryResponse<IEnumerable<EventReturnDTO>>> GetActiveEventsAsync(int? activeDays = 7)
+        {
+            try
+            {
+                var today = DateTime.UtcNow.Date;
+                var now = DateTime.UtcNow;
+
+                DateTime maxDate;
+
+                if (activeDays.HasValue)
+                {
+                    maxDate = today.AddDays(activeDays.Value);
+                }
+
+                else
+                {
+                    maxDate = DateTime.MaxValue;
+                }
+
+                var inactiveStatuses = new List<EventStatus>()
+                {
+                    EventStatus.Cancelled,
+                    EventStatus.Finished,
+                    EventStatus.Archived,
+                    EventStatus.Inactive,
+                };
+
+                
+                var activeEvents = await _context.Events
+                    .Where(e => !e.IsArchived
+                        && !inactiveStatuses.Contains(e.Status)
+                        && e.StartDate <= maxDate
+                        && e.EndDate >= now)
+                    .Select(e => new EventReturnDTO
+                    {
+                        Id = e.Id,
+                        Title = e.Title,
+                        Description = e.Description ?? string.Empty,
+                        TargetAudience = e.TargetAudience,
+                        Location = e.Location,
+                        StartDate = e.StartDate,
+                        EndDate = e.EndDate,
+                        Status = e.Status,
+                    })
+                    .OrderBy(e => e.StartDate)
+                    .ToListAsync();
+
+                if (activeEvents.Any())
+                {
+                    return new RepositoryResponse<IEnumerable<EventReturnDTO>>(RepositoryStatus.Success, activeEvents);
+                }
+
+                return new RepositoryResponse<IEnumerable<EventReturnDTO>>(RepositoryStatus.NotFound);
+            }
+
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro em GetActiveEventsAsync: {ex.Message}");
+                return new RepositoryResponse<IEnumerable<EventReturnDTO>>(RepositoryStatus.DatabaseError);
+            }
+        }
+
         public async Task<RepositoryStatus> UpdateEventAsync(int id, EventUpdateDTO updateEventDTO)
         {
             if (updateEventDTO is null)
@@ -127,16 +224,132 @@ namespace API.Repositories
             if (!string.IsNullOrEmpty(updateEventDTO.TargetAudience))
                 _event.TargetAudience = updateEventDTO.TargetAudience!;
 
+            bool datesChanged = false;
+
             if (updateEventDTO.StartDate.HasValue)
+            {
                 _event.StartDate = updateEventDTO.StartDate.Value;
+                datesChanged = true;
+            }
 
             if (updateEventDTO.EndDate.HasValue)
+            {
                 _event.EndDate = updateEventDTO.EndDate.Value;
+            }
+
+            if (datesChanged)
+            {
+                var today = DateTime.UtcNow.Date;
+
+                if (_event.EndDate.Date < today)
+                {
+                    _event.Status = EventStatus.Finished;
+                }
+
+                else if (_event.StartDate.Date <= today && _event.EndDate.Date >= today)
+                {
+                    _event.Status = EventStatus.InProgress;
+                }
+
+                else if (_event.StartDate.Date >= today)
+                {
+                    _event.Status = EventStatus.Upcoming;
+                }
+            }
 
             _context.Update(_event);
             await _context.SaveChangesAsync();
 
             return RepositoryStatus.Success;
+        }
+
+        public async Task<RepositoryStatus> CancelEventAsync(int eventId, string cancellationReason)
+        {
+            var _event = await _context.Events.FindAsync(eventId);
+
+            if (_event is null)
+                return RepositoryStatus.NotFound;
+
+            _event.Status = EventStatus.Cancelled;
+            _event.CancelledAt = DateTime.UtcNow;
+            _event.CancellationReason = cancellationReason;
+
+            try
+            {
+                _context.Update(_event);
+                await _context.SaveChangesAsync();
+            }
+
+            catch (Exception)
+            {
+                return RepositoryStatus.Failed;
+            }
+
+            return RepositoryStatus.Success;
+        }
+
+        public async Task<int> UpdateEventsStatusAsync()
+        {
+            var today = DateTime.UtcNow.Date;
+
+            var events = await _context.Events
+                .Where(e => !e.IsArchived &&
+                           e.Status != EventStatus.Cancelled &&
+                           e.Status != EventStatus.Archived)
+                .ToListAsync();
+
+            foreach (var e in events)
+            {
+                var newStatus = e.Status;
+
+                if (e.EndDate.Date < today)
+                {
+                    newStatus = EventStatus.Finished;
+                }
+
+                else if (e.StartDate.Date <= today && e.EndDate.Date >= today)
+                {
+                    newStatus = EventStatus.InProgress;
+                }
+
+                else if (e.StartDate.Date > today)
+                {
+                    newStatus = EventStatus.Upcoming;
+                }
+
+                if (e.Status != newStatus)
+                {
+                    e.Status = newStatus;
+                }
+            }
+
+            var changes = await _context.SaveChangesAsync();
+            return changes;
+        }
+
+        public async Task<int> ArchiveOldEventsAsync()
+        {
+            var today = DateTime.UtcNow.Date;
+            var archiveThreshold = today.AddDays(-30);
+
+            var eventsToArchive = await _context.Events
+                .Where(e => !e.IsArchived &&
+                           (e.Status == EventStatus.Finished || e.Status == EventStatus.Cancelled) &&
+                           e.EndDate.Date < archiveThreshold)
+                .ToListAsync();
+
+            foreach (var e in eventsToArchive)
+            {
+                e.IsArchived = true;
+                e.Status = EventStatus.Archived;
+            }
+
+            if (eventsToArchive.Any())
+            {
+                await _context.SaveChangesAsync();
+            }
+
+            return eventsToArchive.Count;
         }
     }
 }

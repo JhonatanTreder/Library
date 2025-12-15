@@ -28,5 +28,8 @@ namespace API.DTOs.BookDTOs
 
         [Range(1440, 2999, ErrorMessage = "O ano de publicação deve estar entre 1440 a 2999")]
         public int PublicationYear { get; set; }
+
+        [Required]
+        public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

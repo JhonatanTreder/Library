@@ -33,7 +33,7 @@ namespace API.Services
                                                         out SecurityToken securityToken);
             if (securityToken is not JwtSecurityToken jwtSecurityToken ||
                                 !jwtSecurityToken.Header.Alg.Equals(
-                                SecurityAlgorithms.HmacSha256,
+                                SecurityAlgorithms.HmacSha256Signature,
                                 StringComparison.InvariantCultureIgnoreCase))
             {
                 throw new SecurityTokenException("Invalid token");
@@ -61,7 +61,12 @@ namespace API.Services
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            return (JwtSecurityToken)token;
+            var jwtToken = (JwtSecurityToken)token;
+            Console.WriteLine($"Token gerado - Algoritmo: {jwtToken.Header.Alg}");
+            Console.WriteLine($"Issuer: {jwtToken.Issuer}");
+            Console.WriteLine($"Audience: {jwtToken.Audiences?.FirstOrDefault()}");
+
+            return jwtToken;
         }
 
         public string GenerateRefreshToken()

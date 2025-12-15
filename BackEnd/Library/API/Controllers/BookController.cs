@@ -40,13 +40,6 @@ namespace API.Controllers
                     Message = "Livros encontrados com sucesso"
                 }),
 
-                RepositoryStatus.NullObject => BadRequest(new ApiResponse
-                {
-                    Status = "Bad Request",
-                    Data = null,
-                    Message = "O livro não pode ser nulo"
-                }),
-
                 RepositoryStatus.BookNotFound => NotFound(new ApiResponse
                 {
                     Status = "Not Found",

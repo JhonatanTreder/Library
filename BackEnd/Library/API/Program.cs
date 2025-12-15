@@ -21,6 +21,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+var date1 = DateTime.UtcNow;
+var date2 = DateTime.UtcNow.AddHours(1);
+
+Console.WriteLine(date1 > date2);
 builder.Services.AddControllers();
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
@@ -102,11 +106,17 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ILoanRepository, LoanRepository>();
 builder.Services.AddScoped<IEventRepository, EventRepository>();
 
+builder.Services.AddHostedService<EventStatusChangerService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddTransient<IEmailService, SendGridEmailService>();
 builder.Services.AddTransient<ISmsService, TwilioSmsService>();
 
 var secrectKey = builder.Configuration["JWT:SecretKey"]
     ?? throw new ArgumentException("Invalid secret key!");
+
+Console.WriteLine("Secret Key: " + secrectKey);
+Console.WriteLine("Issuer: " + builder.Configuration["JWT:ValidIssuer"]);
+Console.WriteLine("Audience: " + builder.Configuration["JWT:ValidAudience"]);
 
 //Especificando o serviço de autenticação do Token.
 builder.Services.AddAuthentication(options =>

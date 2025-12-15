@@ -1,9 +1,9 @@
 ﻿using API.Enum;
 using System.ComponentModel.DataAnnotations;
 
-namespace API.Models
+namespace API.DTOs.EventDTOs
 {
-    public class Event
+    public class EventReturnDTO
     {
         public int Id { get; set; }
 
@@ -24,7 +24,7 @@ namespace API.Models
 
         [Required(ErrorMessage = "A data de início do evento é obrigatória")]
         [DataType(DataType.Date, ErrorMessage = "A data de início do evento deve estar em um formato válido de data")]
-        public DateTime StartDate { get; set; } 
+        public DateTime StartDate { get; set; }
 
         [Required(ErrorMessage = "A data de término do evento é obrigatória")]
         [DataType(DataType.Date, ErrorMessage = "A data de término do evento deve estar em um formato válido de data")]
@@ -32,14 +32,5 @@ namespace API.Models
 
         [Required]
         public EventStatus Status { get; set; } = EventStatus.Upcoming;
-
-        public DateTime? CancelledAt { get; set; }
-        public string? CancellationReason { get; set; }
-        public bool IsArchived { get; set; } = false;
-
-        public bool IsValidDateRange()
-        {
-            return EndDate >= DateTime.Today && EndDate >= StartDate;
-        }
     }
 }

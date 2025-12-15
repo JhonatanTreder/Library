@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using API.Enum;
+using System.ComponentModel.DataAnnotations;
 
 namespace API.DTOs.EventDTOs
 {
@@ -26,5 +27,6 @@ namespace API.DTOs.EventDTOs
         [Required(ErrorMessage = "A data de término do evento é obrigatória")]
         [DataType(DataType.Date, ErrorMessage = "A data de término do evento deve estar em um formato válido de data")]
         public DateTime EndDate { get; set; }
+        public EventStatus Status { get; set; }
     }
 }

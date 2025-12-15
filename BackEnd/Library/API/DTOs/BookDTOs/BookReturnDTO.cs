@@ -11,8 +11,8 @@ namespace API.DTOs.BookDTOs
         public string Publisher { get; set; } = string.Empty;
         public string Category { get; set; } = string.Empty;
         public int PublicationYear { get; set; }
-
         public int TotalCopies { get; set; }
         public int AvailableCopies { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

@@ -1,10 +1,10 @@
 import libraryStatsStyles from '@/app/components/Styles/home/libraryStats.module.css'
 
 //Icons
-import UserIcon from '@mui/icons-material/Person'
+import NewBooks from '@mui/icons-material/LibraryAdd'
 import BookIcon from '@mui/icons-material/AutoStories'
+import UnavailableBooks from '@mui/icons-material/LayersClear'
 import BorrowedBooks from '@mui/icons-material/AssignmentReturn'
-import DelayedLoans from '@mui/icons-material/AssignmentLate'
 import EventsIcon from '@mui/icons-material/Event'
 import ArrowIcon from '@mui/icons-material/ArrowForward'
 
@@ -19,9 +19,9 @@ export default function ShowLibraryStats(){
                 
                 <div className={libraryStatsStyles.statsCard}>
 
-                    <UserIcon className={libraryStatsStyles.cardIcon} sx={{fontSize: 40}}/>
-                    <h2 className={libraryStatsStyles.cardTitle}>Usuários Ativos</h2>
-                    <p className={libraryStatsStyles.cardValue}>157</p>
+                    <NewBooks className={libraryStatsStyles.cardIcon} sx={{fontSize: 40}}/>
+                    <h2 className={libraryStatsStyles.cardTitle}>Novos Livros</h2>
+                    <p className={libraryStatsStyles.cardValue}>30</p>
 
                     <div className={`${libraryStatsStyles.IconWrapper}`}>
                         Exibir Detalhes
@@ -55,9 +55,9 @@ export default function ShowLibraryStats(){
 
                 <div className={libraryStatsStyles.statsCard}>
 
-                    <DelayedLoans className={libraryStatsStyles.cardIcon} sx={{fontSize: 40}}/>
-                    <h2 className={libraryStatsStyles.cardTitle}>Empréstimos Atrasados</h2>
-                    <p className={libraryStatsStyles.cardValue}>24</p>
+                    <UnavailableBooks className={libraryStatsStyles.cardIcon} sx={{fontSize: 40}}/>
+                    <h2 className={libraryStatsStyles.cardTitle}>Livros Indisponíveis</h2>
+                    <p className={libraryStatsStyles.cardValue}>5</p>
 
                     <div className={`${libraryStatsStyles.IconWrapper}`}>
                         Exibir Detalhes

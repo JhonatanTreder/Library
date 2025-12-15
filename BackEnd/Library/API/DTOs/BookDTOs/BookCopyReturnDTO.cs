@@ -12,7 +12,23 @@ namespace API.DTOs.BookDTOs
         public string Publisher { get; set; } = string.Empty;
         public string Category { get; set; } = string.Empty;
         public int PublicationYear { get; set; }
+        public DateTime AcquiredAt { get; set; }
 
         public string Status { get; set; } = string.Empty;
+
+        private static string GetStatusDescription(string status)
+        {
+            return status switch
+            {
+                "Available" => "Disponível",
+                "Borrowed" => "Emprestado",
+                "Reserved" => "Reservado",
+                "UnderMaintenance" => "Em Manutenção",
+                "Lost" => "Perdido",
+                "Damaged" => "Danificado",
+                "Archived" => "Arquivado",
+                _ => status
+            };
+        }
     }
 }

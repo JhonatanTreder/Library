@@ -4,6 +4,10 @@
     {
         Available,
         NotAvailable,
-        Borrowed
+        Borrowed,
+        Reserved,
+        Lost,
+        Damaged,
+        UnderMaintenance
     }
 }

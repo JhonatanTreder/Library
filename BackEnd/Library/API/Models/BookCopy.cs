@@ -18,5 +18,7 @@ namespace API.Models
         public Book? Book { get; set; }
 
         public ICollection<Loan>? Loans { get; set; }
+
+        public DateTime AcquiredAt { get; set; } = DateTime.UtcNow;
     }
 }
