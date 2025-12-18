@@ -1,0 +1,111 @@
+/* app/auth/login/styles/leftContent.module.css */
+.citationsContainer {
+    font-family: monospace;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: auto;
+    background: radial-gradient(circle at center, #3B82F6 0%, #1E3A8A 50%, #0F172A 100%);
+}
+
+.citations{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 80%;
+    height: 100%;
+    gap: 4rem;
+}
+
+.citation{
+    display: flex;
+    justify-content: space-evenly;
+    gap: 0rem;
+}
+
+.imgWrapper{
+    width: 40%;
+    height: 100%;
+}
+
+.citationImg{
+    width: 100%;
+    height: 100%;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.citationImg:hover{
+    box-sizing: border-box;
+    transform: translateY(-0.5rem);
+    box-shadow: 0px 0px 50px 0px #468dff;
+}
+
+.citationTitle{
+    color: white;
+    font-size: 1.25rem;
+    font-weight: 600;
+    width: 40%;
+}
+
+@media(max-width: 1048px){
+    .citationTitle{
+        width: 50%;
+    }
+}
+
+@media(max-width: 854px){
+    .citationsContainer{
+        justify-content: center;
+        width: 100%;
+        min-height: 100%;
+        height: auto;
+    }
+
+    .citations{
+        align-items: center;
+        justify-content: space-between;
+        min-height: 50%;
+        height: 80%;
+    }
+
+    .imgWrapper{
+        max-height: 100%;
+        height: 70%;
+        width: 30%;
+    }
+
+    .citation{
+        justify-content: space-between;
+        align-items: center;
+        flex-direction: column;
+        max-height: 100%;
+        gap: 2rem;
+    }
+
+    .citationTitle{
+        width: 70%;
+        font-size: 1rem;
+        margin: 0;
+    }
+}
+
+@media(max-width: 760px){
+    .citationsContainer{
+        min-height: 90%;
+    }
+}
+
+@media (max-width: 468px) {
+    .citationTitle{
+        width: 80%;
+    }
+}
+
+@media (max-width: 334){
+    .citationTitle{
+        width: 100%;
+    }
+}

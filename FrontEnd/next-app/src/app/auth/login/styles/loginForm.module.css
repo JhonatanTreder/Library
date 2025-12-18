@@ -1,3 +1,4 @@
+/* app/auth/login/styles/loginForm.module.css */
 .invalidInput {
     border: 2px solid #ca4040 !important;
 }
@@ -14,7 +15,7 @@
     color: #40ca40  !important;
 }
 
-.registerContainer{
+.loginContainer{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -26,7 +27,7 @@
     height: auto;
 }
 
-.registerForm{
+.loginForm{
     font-size: 1rem;
     font-weight: 400;
     font-family: 'Inter', 'Segoe UI', -apple-system, sans-serif;
@@ -53,7 +54,7 @@
     width: 100%;
 }
 
-.registerTitle{
+.loginTitle{
     font-family: 'Inter', 'Segoe UI', sans-serif;
     font-size: 1.8rem;
     font-weight: 700;
@@ -116,7 +117,7 @@
     line-height: 1.3;
 }
 
-.registerButton{
+.loginButton{
     font-family: 'Inter', 'Segoe UI', sans-serif;
     font-size: 1rem;
     font-weight: 600; 
@@ -133,12 +134,18 @@
     transition: all 0.3s ease;
 }
 
-.registerButton:hover{
+.loginButton:hover{
     background-color: #1E3A8A;
     transform: translateY(-0.35rem);
 }
 
-.loginRef{
+.loginButton:disabled{
+    background-color: #8592B8;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.registerRef{
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -146,14 +153,14 @@
     margin-bottom: 1rem;
 }
 
-.loginRefTitle{
+.registerRefTitle{
     font-family: 'Inter', 'Segoe UI', sans-serif;
     font-size: 0.9rem;
     font-weight: 400;
     margin: 0;
 }
 
-.loginRefLink{
+.registerRefLink{
     font-family: 'Inter', 'Segoe UI', sans-serif;
     font-size: 0.9rem; 
     font-weight: 600; 
@@ -162,33 +169,39 @@
     color: #3B82F6;
 }
 
-.loginRefLink:hover{
+.registerRefLink:hover{
     text-decoration: underline;
 }
 
+.errorText {
+    color: #ca4040;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
 @media(max-width: 1282px){
-    .registerForm{
+    .loginForm{
         min-width: 35%;
     }
 }
 
 @media(max-width: 1048px){
-    .registerForm{
+    .loginForm{
         width: 60%;
     }
 }
 
 @media(max-width: 854px){
-    .registerForm{
+    .loginForm{
         min-width: 37%;
     }
 }
 
 @media(max-width: 760px){
-    .registerContainer{
+    .loginContainer{
         flex-direction: column;
     }
-    .registerForm{
+    .loginForm{
         width: 100%;
     }
 }

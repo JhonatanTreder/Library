@@ -63,15 +63,11 @@ export function useUserRegister(){
                 const emailConfirmationResponse = await emailConfirmationRequest.json()
 
                 if (emailConfirmationResponse['status'] !== 'Ok'){
-                    console.log('a')
                     setError(responseMessage)
                 }
 
                 else{
                     setSuccess(true)
-                    console.log('b')
-                    console.log(emailConfirmationResponse)
-                    console.log(emailConfirmationResponse['message'])
                     sessionStorage.setItem('user-email', formData.email)
 
                     router.push('/auth/validation/')

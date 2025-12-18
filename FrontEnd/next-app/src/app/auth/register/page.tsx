@@ -304,7 +304,7 @@ export default function RegisterForm(){
 
                 <section className={formStyles.loginRef}>
                     <p className={formStyles.loginRefTitle}>Já possui uma conta?</p>
-                    <a className={formStyles.loginRefLink}>Entrar</a>
+                    <a href='/auth/login' className={formStyles.loginRefLink}>Entrar</a>
                 </section>
             </form>
         </section>
