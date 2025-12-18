@@ -1,4 +1,3 @@
-// app/auth/login/hooks/useValidation.ts
 import { useState, useCallback } from 'react';
 
 export function useValidation(validator: (value: string) => boolean) {

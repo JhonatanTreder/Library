@@ -68,7 +68,6 @@ interface LibraryStats {
     delayedBooksCount: number;
     unavailableBooksCount: number;
     activeEventsCount: number;
-    // Opcional: guardar os dados completos se precisar
     rawData?: ApiResponse['data'];
 }
 
@@ -84,7 +83,6 @@ export default function ShowLibraryStats() {
 
     async function fetchDashboardStats() {
         try {
-            // CORREÇÃO: 'token' em vez de 'user-token'
             const userToken = localStorage.getItem('token')
 
             if (!userToken || userToken === undefined) {
@@ -113,7 +111,7 @@ export default function ShowLibraryStats() {
                 delayedBooksCount: dashboardResponse.data.delayedBooks?.length || 0,
                 unavailableBooksCount: dashboardResponse.data.unavailableBooks?.length || 0,
                 activeEventsCount: dashboardResponse.data.activeEvents?.length || 0,
-                rawData: dashboardResponse.data // guarda os dados completos se precisar
+                rawData: dashboardResponse.data
             }
             
             setStats(transformedData)
@@ -127,7 +125,6 @@ export default function ShowLibraryStats() {
         }
     }
 
-    // Se estiver carregando, exiba uma mensagem
     if (loading) {
         return (
             <div className={libraryStatsStyles.libraryContainer}>
@@ -138,18 +135,10 @@ export default function ShowLibraryStats() {
         )
     }
 
-    // Se houver erro, exiba o erro
     if (error) {
-        return (
-            <div className={libraryStatsStyles.libraryContainer}>
-                <div style={{ padding: '20px', textAlign: 'center', color: 'red' }}>
-                    Erro: {error}
-                </div>
-            </div>
-        )
+        console.log(error)
     }
 
-    // Se não houver stats, exiba uma mensagem
     if (!stats) {
         return (
             <div className={libraryStatsStyles.libraryContainer}>
@@ -173,7 +162,6 @@ export default function ShowLibraryStats() {
                 <div className={libraryStatsStyles.statsCard}>
                     <NewBooks className={libraryStatsStyles.cardIcon} sx={{ fontSize: 40 }} />
                     <h2 className={libraryStatsStyles.cardTitle}>Novos Livros</h2>
-                    {/* Mostra a CONTAGEM, não o array! */}
                     <p className={libraryStatsStyles.cardValue}>{stats.recentBooksCount}</p>
                     <div className={`${libraryStatsStyles.IconWrapper}`}>
                         Exibir Detalhes
