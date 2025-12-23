@@ -29,7 +29,6 @@ export default function LoginForm() {
   const passwordField = useValidation(validatePassword);
 
   async function handleSubmit(f: React.FormEvent<HTMLFormElement>) {
-    console.log('teste')
     f.preventDefault();
 
     if (!emailField.isValid || !passwordField.isValid) {
@@ -44,10 +43,7 @@ export default function LoginForm() {
       password: (form.elements.namedItem('password') as HTMLInputElement)?.value,
     };
 
-    console.log(formData)
     const response = await loginUser(formData);
-
-    console.log(response)
   }
 
   return (

@@ -9,7 +9,7 @@ namespace API.Models
         public int Id { get; set; }
 
         [Required(ErrorMessage = "O título do livro é obrigatório")]
-        [StringLength(50, MinimumLength = 1, ErrorMessage = "O título deve conter entre 1 a 50 caracteres")]
+        [StringLength(75, MinimumLength = 1, ErrorMessage = "O título deve conter entre 1 a 75 caracteres")]
         public string Title { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "O nome do autor é obrigatório")]
@@ -17,7 +17,7 @@ namespace API.Models
         public string Author { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "A categoria do livro é obrigatória")]
-        [StringLength(20, MinimumLength = 3, ErrorMessage = "A categoria deve conter entre 3 a 20 caracteres")]
+        [StringLength(45, MinimumLength = 3, ErrorMessage = "A categoria deve conter entre 3 a 45 caracteres")]
         public string Category { get; set; } = string.Empty;
 
         [StringLength(400, MinimumLength = 1, ErrorMessage = "A descrição do livro deve conter entre 1 a 400 caracteres")]

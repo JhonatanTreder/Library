@@ -77,6 +77,26 @@ export default function ShowLibraryStats() {
     const [error, setError] = useState<string | null>(null)
     const router = useRouter()
 
+    const handleViewNewBooks = () => {
+        router.push('/pages/books/new')
+    }
+
+    const handleViewTotalBooks = () => {
+        router.push('/pages/books/')
+    }
+
+    const handleViewDelayedBooks = () => {
+        router.push('/pages/books/delayed')
+    }
+
+    const handleViewUnavailableBooks = () => {
+        router.push('/pages/books/unavailable')
+    }
+
+    const handleViewActiveEvents = () => {
+        router.push('/pages/events/active')
+    }
+
     useEffect(() => {
         fetchDashboardStats()
     }, [])
@@ -99,12 +119,16 @@ export default function ShowLibraryStats() {
             })
 
             if (dashboardRequest.status === 401) {
+                localStorage.removeItem('token')
+                localStorage.removeItem('refresh-token')
+                localStorage.removeItem('toke-expiration-time')
+                
                 router.push('/auth/login')
                 return;
             }
 
             const dashboardResponse: ApiResponse = await dashboardRequest.json()
-            
+
             const transformedData: LibraryStats = {
                 recentBooksCount: dashboardResponse.data.recentBooks?.length || 0,
                 totalBooksCount: dashboardResponse.data.totalBooks?.length || 0,
@@ -113,7 +137,7 @@ export default function ShowLibraryStats() {
                 activeEventsCount: dashboardResponse.data.activeEvents?.length || 0,
                 rawData: dashboardResponse.data
             }
-            
+
             setStats(transformedData)
         }
         catch (error) {
@@ -149,8 +173,6 @@ export default function ShowLibraryStats() {
         )
     }
 
-    console.log(stats.rawData)
-    
     return (
         <div className={libraryStatsStyles.libraryContainer}>
             <h1 className={libraryStatsStyles.containerTitle}>
@@ -163,50 +185,70 @@ export default function ShowLibraryStats() {
                     <NewBooks className={libraryStatsStyles.cardIcon} sx={{ fontSize: 40 }} />
                     <h2 className={libraryStatsStyles.cardTitle}>Novos Livros</h2>
                     <p className={libraryStatsStyles.cardValue}>{stats.recentBooksCount}</p>
-                    <div className={`${libraryStatsStyles.IconWrapper}`}>
+                    <button
+                        className={`
+                            ${libraryStatsStyles.IconWrapper}
+                            ${libraryStatsStyles.refButton}`}
+                        onClick={handleViewNewBooks}>
                         Exibir Detalhes
                         <ArrowIcon className={libraryStatsStyles.linkIcon} sx={{ fontSize: 18 }} />
-                    </div>
+                    </button>
                 </div>
 
                 <div className={libraryStatsStyles.statsCard}>
                     <BookIcon className={libraryStatsStyles.cardIcon} sx={{ fontSize: 40 }} />
                     <h2 className={libraryStatsStyles.cardTitle}>Total de Livros</h2>
                     <p className={libraryStatsStyles.cardValue}>{stats.totalBooksCount}</p>
-                    <div className={`${libraryStatsStyles.IconWrapper}`}>
+                    <button
+                        className={`
+                            ${libraryStatsStyles.IconWrapper}
+                            ${libraryStatsStyles.refButton}`}
+                        onClick={handleViewTotalBooks}>
                         Exibir Detalhes
                         <ArrowIcon className={libraryStatsStyles.linkIcon} sx={{ fontSize: 18 }} />
-                    </div>
+                    </button>
                 </div>
 
                 <div className={libraryStatsStyles.statsCard}>
                     <BorrowedBooks className={libraryStatsStyles.cardIcon} sx={{ fontSize: 40 }} />
                     <h2 className={libraryStatsStyles.cardTitle}>Livros Emprestados</h2>
                     <p className={libraryStatsStyles.cardValue}>{stats.delayedBooksCount}</p>
-                    <div className={`${libraryStatsStyles.IconWrapper}`}>
+                    <button
+                        className={`
+                            ${libraryStatsStyles.IconWrapper}
+                            ${libraryStatsStyles.refButton}`}
+                        onClick={handleViewDelayedBooks}>
                         Exibir Detalhes
                         <ArrowIcon className={libraryStatsStyles.linkIcon} sx={{ fontSize: 18 }} />
-                    </div>
+                    </button>
                 </div>
 
                 <div className={libraryStatsStyles.statsCard}>
                     <UnavailableBooks className={libraryStatsStyles.cardIcon} sx={{ fontSize: 40 }} />
                     <h2 className={libraryStatsStyles.cardTitle}>Livros Indisponíveis</h2>
                     <p className={libraryStatsStyles.cardValue}>{stats.unavailableBooksCount}</p>
-                    <div className={`${libraryStatsStyles.IconWrapper}`}>
+                    <button
+                        className={`
+                            ${libraryStatsStyles.IconWrapper}
+                            ${libraryStatsStyles.refButton}`}
+                        onClick={handleViewUnavailableBooks}>
                         Exibir Detalhes
                         <ArrowIcon className={libraryStatsStyles.linkIcon} sx={{ fontSize: 18 }} />
-                    </div>
+                    </button>
                 </div>
 
                 <div className={libraryStatsStyles.statsCard}>
                     <EventsIcon className={libraryStatsStyles.cardIcon} sx={{ fontSize: 40 }} />
                     <h2 className={libraryStatsStyles.cardTitle}>Eventos Ativos</h2>
                     <p className={libraryStatsStyles.cardValue}>{stats.activeEventsCount}</p>
-                    <div className={`${libraryStatsStyles.IconWrapper}`}>
+                    <button
+                        className={`
+                            ${libraryStatsStyles.IconWrapper}
+                            ${libraryStatsStyles.refButton}`}
+                        onClick={handleViewActiveEvents}>
                         Exibir Detalhes
                         <ArrowIcon className={libraryStatsStyles.linkIcon} sx={{ fontSize: 18 }} />
-                    </div>
+                    </button>
                 </div>
 
             </section>

@@ -30,6 +30,9 @@ export function useLogin() {
 
       if (!response.ok) {
         console.error(response)
+        localStorage.removeItem('token')
+        localStorage.removeItem('refresh-token')
+        localStorage.removeItem('toke-expiration-time')
         return;
       }
 

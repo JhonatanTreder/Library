@@ -189,17 +189,38 @@
     opacity: 1;
 }
 
+
 .linkList > .IconWrapper.active {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.linkList > .IconWrapper.active::before {
+    transform: translateX(0);
 }
 
 .linkList > .IconWrapper.active .linkIcon {
+    transform: scale(1.15);
     color: #60A5FA;
 }
 
 .linkList > .IconWrapper.active > span {
     color: #BFDBFE;
     font-weight: 600;
+}
+
+.linkList > .IconWrapper.active::after {
+    opacity: 1;
+}
+
+.linkList > .IconWrapper.active:hover {
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.linkList > .IconWrapper.active:hover .linkIcon {
+    color: #BFDBFE;
 }
 
 .linkReference{

@@ -1,0 +1,51 @@
+.container{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    align-items: center;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+.bookNavigationBar{
+    gap: 2rem;
+    margin: 1rem 0 1rem 0;
+    min-width: 65%;
+    width: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navigationType{
+    background: white;
+    cursor: pointer;
+    border-radius: 5px;
+    padding: 0.5rem 1.5rem 0.5rem 1.5rem;
+    font-weight: 600;
+    text-align: center;
+    font-size: 0.9rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+
+    transition: all 0.3s ease;
+}
+
+.navigationType:hover{
+    background: #1b2946;
+    color: #BFDBFE;
+    transform: translateY(-0.4rem);
+}
+
+.navigationTypeActive{
+    cursor: pointer;
+    border-radius: 5px;
+    padding: 0.5rem 1.5rem 0.5rem 1.5rem;
+    font-weight: 600;
+    text-align: center;
+    font-size: 0.9rem;
+    background: #0F172A;
+    color: white;
+    transform: translateY(-0.4rem);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}

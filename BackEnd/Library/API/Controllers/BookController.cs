@@ -147,15 +147,15 @@ namespace API.Controllers
             };
         }
 
-        [HttpGet("copies/{bookId}")]
+        [HttpGet("copies/{copyId}")]
         [Authorize(Roles = "user,librarian,admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetBookCopy(int bookId)
+        public async Task<IActionResult> GetBookCopy(int copyId)
         {
-            var response = await _bookRepository.GetBookCopyByIdAsync(bookId);
+            var response = await _bookRepository.GetBookCopyByIdAsync(copyId);
 
             return response.Status switch 
             {
@@ -163,28 +163,28 @@ namespace API.Controllers
                 {
                     Status = "Ok",
                     Data = response.Data,
-                    Message = $"Cópia de id '{bookId}' encontrada com sucesso"
+                    Message = $"Cópia de id '{copyId}' encontrada com sucesso"
                 }),
 
                 RepositoryStatus.InvalidId => BadRequest(new ApiResponse
                 {
                     Status = "Bad Request",
                     Data = null,
-                    Message = $"O id '{bookId}' de uma cópia está inválido"
+                    Message = $"O id '{copyId}' de uma cópia está inválido"
                 }),
 
                 RepositoryStatus.BookCopyNotFound => NotFound(new ApiResponse
                 {
                     Status = "Not Found",
                     Data = null,
-                    Message = $"A cópia do livro de id '{bookId}' não foi encontrada"
+                    Message = $"A cópia do livro de id '{copyId}' não foi encontrada"
                 }),
 
                 _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
                 {
                     Status = "Internal Server Error",
                     Data = null,
-                    Message = $"Erro inesperado ao buscar pela cópia de id '{bookId}'"
+                    Message = $"Erro inesperado ao buscar pela cópia de id '{copyId}'"
                 })
             };
         }
@@ -353,6 +353,32 @@ namespace API.Controllers
             };
         }
 
+        [HttpGet("recents")]
+        [Authorize(Roles = "user,librarian,admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetRecentBooks()
+        {
+            var response = await _bookRepository.GetRecentBooksAsync();
+
+            return response.Status switch 
+            {
+                RepositoryStatus.Success => Ok(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = response.Data,
+                    Message = "Livros recentes encontrados com sucesso"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Erro inesperado ao buscar por livros recentes"
+                })
+            };
+        }
+
         [HttpPost("create-copies")]
         [Authorize(Roles = "librarian")]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -409,6 +435,7 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Post([FromBody] CreateBookDTO bookDTO)
         {
+            Console.WriteLine(bookDTO.Title.Length);
             var book = await _bookRepository.AddBookAsync(bookDTO);
 
             return book.Status switch

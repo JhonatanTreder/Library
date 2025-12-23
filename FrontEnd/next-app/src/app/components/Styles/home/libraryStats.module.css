@@ -10,6 +10,7 @@
 }
 
 .containerTitle{
+    margin-top: 0;
     margin-bottom: 2.5rem;
     font-size: 2rem;
     font-weight: 600;
@@ -93,6 +94,14 @@
 
 .IconWrapper:hover .linkIcon{
     color: #60A5FA;
+}
+
+.refButton{
+    padding: 0;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    background-color: transparent;
 }
 
 .linkIcon{

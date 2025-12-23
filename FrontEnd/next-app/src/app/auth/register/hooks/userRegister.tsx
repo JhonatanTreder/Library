@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 
-export function useUserRegister(){
+export function useUserRegister() {
 
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -11,24 +11,23 @@ export function useUserRegister(){
 
     const router = useRouter()
 
-    async function registerUser(formData:{
+    async function registerUser(formData: {
 
         name: string
         email: string
         password: string
         matriculates: string
-    })
-    {
+    }) {
         setLoading(true)
         setError(null)
         setSuccess(false)
 
-        try{
+        try {
             const registerUrl = `https://localhost:7221/Auth/register`
 
             const registerRequest = await fetch(registerUrl, {
                 method: 'POST',
-                headers:{
+                headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(formData)
@@ -37,14 +36,14 @@ export function useUserRegister(){
             var response = await registerRequest.json();
             var responseMessage = response['message']
 
-            if (response['status'] !== 'Ok'){
+            if (response['status'] !== 'Ok') {
 
                 setError(responseMessage)
                 console.log(response)
                 console.log(responseMessage)
             }
 
-            else{
+            else {
                 console.log(response['status'])
                 console.log(responseMessage)
 
@@ -62,11 +61,15 @@ export function useUserRegister(){
 
                 const emailConfirmationResponse = await emailConfirmationRequest.json()
 
-                if (emailConfirmationResponse['status'] !== 'Ok'){
+                if (emailConfirmationResponse['status'] !== 'Ok') {
+                    localStorage.removeItem('token')
+                    localStorage.removeItem('refresh-token')
+                    localStorage.removeItem('toke-expiration-time')
+                    
                     setError(responseMessage)
                 }
 
-                else{
+                else {
                     setSuccess(true)
                     sessionStorage.setItem('user-email', formData.email)
 
@@ -76,13 +79,13 @@ export function useUserRegister(){
 
             return response
         }
-        catch (error: any){
+        catch (error: any) {
             setError(error.message || 'Erro inesperado')
         }
-        finally{
+        finally {
             setLoading(false)
         }
     }
 
-    return {registerUser, loading, error, success}
+    return { registerUser, loading, error, success }
 }
