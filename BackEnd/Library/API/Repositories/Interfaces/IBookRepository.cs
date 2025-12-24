@@ -1,8 +1,10 @@
 ﻿using API.DTOs.BookDTOs;
+using API.DTOs.Pagination;
 using API.DTOs.Responses;
 using API.Enum;
 using API.Enum.Responses;
 using API.Models;
+using API.Pagination;
 
 namespace API.Repositories.Interfaces
 {
@@ -15,6 +17,8 @@ namespace API.Repositories.Interfaces
         Task<RepositoryResponse<BookReturnDTO>> GetBookByIdAsync(int id);
         Task<RepositoryResponse<BookCopyReturnDTO>> GetBookCopyByIdAsync(int bookId);
         Task<RepositoryResponse<IEnumerable<BookReturnDTO>>> GetBooksAsync(BookFilterDTO? filterBookDTO = null);
+        Task<RepositoryResponse<PaginatedDataDTO<BookReturnDTO>>> GetBooksWithPaginationAsync(
+            PaginationParameters paginationParams, BookFilterDTO? bookFilterDTO = null);
         Task<RepositoryResponse<IEnumerable<BookReturnDTO>>> GetRecentBooksAsync(int days = 7);
         Task<RepositoryResponse<IEnumerable<BookCopyReturnDTO>>> GetBookCopiesAsync(int bookId);
         Task<RepositoryResponse<IEnumerable<BookReturnDTO>>> GetAvailableBooksAsync();

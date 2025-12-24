@@ -2,6 +2,7 @@
 using API.DTOs.Responses;
 using API.Enum;
 using API.Enum.Responses;
+using API.Pagination;
 using API.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -21,11 +22,45 @@ namespace API.Controllers
             _bookRepository = bookRepository;
         }
 
+        [HttpGet("all")]
+        [Authorize(Roles = "user,librarian,admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParams,
+                                             [FromQuery] BookFilterDTO bookFilterDTO)
+        {
+            var response = await _bookRepository.GetBooksWithPaginationAsync(paginationParams, bookFilterDTO);
+
+            return response.Status switch
+            {
+                RepositoryStatus.Success => Ok(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = response.Data,
+                    Message = "Livros encontrados com sucesso"
+                }),
+
+                RepositoryStatus.BookNotFound => NotFound(new ApiResponse
+                {
+                    Status= "Not Found",
+                    Data = null,
+                    Message = "Nenhum livro foi encontrado"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Erro inesperado ao tentar buscar por livros"
+                })
+            };
+        }
+
         [HttpGet]
         [Authorize(Roles = "user,librarian,admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Get([FromQuery] BookFilterDTO bookDTO)
         {
@@ -157,7 +192,7 @@ namespace API.Controllers
         {
             var response = await _bookRepository.GetBookCopyByIdAsync(copyId);
 
-            return response.Status switch 
+            return response.Status switch
             {
                 RepositoryStatus.Success => Ok(new ApiResponse
                 {
@@ -232,7 +267,7 @@ namespace API.Controllers
         {
             var response = await _bookRepository.GetAvailableBookCopiesAsync(bookId);
 
-            return response.Status switch 
+            return response.Status switch
             {
                 RepositoryStatus.Success => Ok(new ApiResponse
                 {
@@ -241,7 +276,7 @@ namespace API.Controllers
                     Message = $"Cópias disponíveis do livro de id '{bookId}' encontradas com sucesso"
                 }),
 
-                RepositoryStatus.InvalidId => BadRequest(new ApiResponse 
+                RepositoryStatus.InvalidId => BadRequest(new ApiResponse
                 {
                     Status = "Bad Request",
                     Data = null,
@@ -361,7 +396,7 @@ namespace API.Controllers
         {
             var response = await _bookRepository.GetRecentBooksAsync();
 
-            return response.Status switch 
+            return response.Status switch
             {
                 RepositoryStatus.Success => Ok(new ApiResponse
                 {
@@ -391,7 +426,7 @@ namespace API.Controllers
 
             return response.Status switch
             {
-                RepositoryStatus.Success => CreatedAtAction(nameof(Get), new { id = response.Data!.First().BookId }, new ApiResponse 
+                RepositoryStatus.Success => CreatedAtAction(nameof(Get), new { id = response.Data!.First().BookId }, new ApiResponse
                 {
                     Status = "Created",
                     Data = response.Data,
@@ -419,7 +454,7 @@ namespace API.Controllers
                     Message = $"O livro referente ao id '{newBookCopiesInfo.BookId}' não foi encontrado"
                 }),
 
-                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse 
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
                 {
                     Status = "Internal Server Error",
                     Data = null,

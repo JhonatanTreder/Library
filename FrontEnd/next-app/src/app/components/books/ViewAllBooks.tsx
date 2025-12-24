@@ -1,14 +1,15 @@
 "use client"
 
-import allBooksStyles from '@/app/components/Styles/books/allBooks.module.css'
+import booksStyles from '@/app/components/Styles/books/books.module.css'
 
 import ShowFilterBar from "./BookFilterBar"
+import ShowPaginationBar from '../PaginationBar'
 
 export default function ViewAllBooks(){
     return(
-        <section className={allBooksStyles.booksContainer}>
+        <section className={booksStyles.booksContainer}>
             <ShowFilterBar></ShowFilterBar>
-
+            <ShowPaginationBar></ShowPaginationBar>
         </section>
     )
 }

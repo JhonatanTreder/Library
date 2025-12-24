@@ -1,11 +1,14 @@
 ﻿using API.Context;
 using API.DTOs.BookDTOs;
+using API.DTOs.Pagination;
 using API.DTOs.Responses;
 using API.Enum;
 using API.Enum.Responses;
 using API.Models;
+using API.Pagination;
 using API.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace API.Repositories
 {
@@ -223,13 +226,56 @@ namespace API.Repositories
             return new RepositoryResponse<BookCopyReturnDTO>(RepositoryStatus.Success, bookInfo);
         }
 
+        public async Task<RepositoryResponse<PaginatedDataDTO<BookReturnDTO>>> GetBooksWithPaginationAsync(
+            PaginationParameters paginationParams,
+            BookFilterDTO? bookFilterDTO = null)
+        {
+            var query = BuildBooksQuery(bookFilterDTO);
+
+            var totalItems = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalItems / (double)paginationParams.PageSize);
+
+            var pagedBooks = await query
+                .Skip((paginationParams.PageNumber - 1) * paginationParams.PageSize)
+                .Take(paginationParams.PageSize)
+                .Select(b => new BookReturnDTO
+                {
+                    BookId = b.Id,
+                    Title = b.Title,
+                    Author = b.Author,
+                    Description = b.Description ?? string.Empty,
+                    Publisher = b.Publisher,
+                    PublicationYear = b.PublicationYear,
+                    Category = b.Category,
+                    TotalCopies = b.Copies.Count,
+                    AvailableCopies = b.Copies.Count(copy => copy.Status == BookStatus.Available),
+                    CreatedAt = b.CreatedAt
+                })
+                .ToListAsync();
+
+            if (!pagedBooks.Any())
+            {
+                return new RepositoryResponse<PaginatedDataDTO<BookReturnDTO>>(RepositoryStatus.BookNotFound);
+            }
+
+            var paginatedData = new PaginatedDataDTO<BookReturnDTO>
+            {
+                CurrentPage = paginationParams.PageNumber,
+                TotalPages = totalPages,
+                TotalItems = totalItems,
+                Data = pagedBooks
+            };
+
+            return new RepositoryResponse<PaginatedDataDTO<BookReturnDTO>>(RepositoryStatus.Success, paginatedData);
+        }
+
         public async Task<RepositoryResponse<IEnumerable<BookReturnDTO>>> GetBooksAsync(BookFilterDTO? bookFilterDTO = null)
         {
             if (bookFilterDTO is null)
             {
                 var allBooks = await _context.Books
                   .Include(b => b.Copies)
-                  .Select(b => new BookReturnDTO 
+                  .Select(b => new BookReturnDTO
                   {
                       BookId = b.Id,
                       Title = b.Title,
@@ -247,24 +293,7 @@ namespace API.Repositories
                 return new RepositoryResponse<IEnumerable<BookReturnDTO>>(RepositoryStatus.Success, allBooks);
             }
 
-            var query = _context.Books
-                .Include(b => b.Copies)
-                .AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(bookFilterDTO.Title))
-                query = query.Where(t => t.Title.ToLower().Contains(bookFilterDTO.Title.ToLower()));
-
-            if (!string.IsNullOrWhiteSpace(bookFilterDTO.Author))
-                query = query.Where(a => a.Author.ToLower().Contains(bookFilterDTO.Author.ToLower()));
-
-            if (!string.IsNullOrWhiteSpace(bookFilterDTO.Category))
-                query = query.Where(c => c.Category.ToLower().Contains(bookFilterDTO.Category.ToLower()));
-
-            if (bookFilterDTO.PublicationYear > 0)
-                query = query.Where(y => y.PublicationYear == bookFilterDTO.PublicationYear);
-
-            if (!string.IsNullOrWhiteSpace(bookFilterDTO.Publisher))
-                query = query.Where(p => p.Publisher.ToLower().Contains(bookFilterDTO.Publisher.ToLower()));
+            var query = BuildBooksQuery(bookFilterDTO);
 
             var filteredBooks = await query.Select(b => new BookReturnDTO
             {
@@ -350,7 +379,7 @@ namespace API.Repositories
 
         public async Task<RepositoryResponse<IEnumerable<BookCopyReturnDTO>>> GetAvailableBookCopiesAsync(int bookId)
         {
-           return await GetBookCopiesByStatusAsync(BookStatus.Available, bookId);
+            return await GetBookCopiesByStatusAsync(BookStatus.Available, bookId);
         }
 
         public async Task<RepositoryResponse<IEnumerable<BookReturnDTO>>> GetBorrowedBooksAsync()
@@ -602,6 +631,33 @@ namespace API.Repositories
 
             else
                 return new RepositoryResponse<IEnumerable<BookReturnDTO>>(RepositoryStatus.BookNotFound);
+        }
+
+        private IQueryable<Book> BuildBooksQuery(BookFilterDTO? bookFilterDTO)
+        {
+            var query = _context.Books
+                .Include(b => b.Copies)
+                .AsQueryable();
+
+            if (bookFilterDTO == null)
+                return query;
+
+            if (!string.IsNullOrWhiteSpace(bookFilterDTO.Title))
+                query = query.Where(t => t.Title.ToLower().Contains(bookFilterDTO.Title.ToLower()));
+
+            if (!string.IsNullOrWhiteSpace(bookFilterDTO.Author))
+                query = query.Where(a => a.Author.ToLower().Contains(bookFilterDTO.Author.ToLower()));
+
+            if (!string.IsNullOrWhiteSpace(bookFilterDTO.Category))
+                query = query.Where(c => c.Category.ToLower().Contains(bookFilterDTO.Category.ToLower()));
+
+            if (bookFilterDTO.PublicationYear > 0)
+                query = query.Where(y => y.PublicationYear == bookFilterDTO.PublicationYear);
+
+            if (!string.IsNullOrWhiteSpace(bookFilterDTO.Publisher))
+                query = query.Where(p => p.Publisher.ToLower().Contains(bookFilterDTO.Publisher.ToLower()));
+
+            return query;
         }
     }
 }

@@ -5,4 +5,5 @@
     flex-direction: column;
 
     background: radial-gradient(circle at center, #3B82F6 0%, #1E3A8A 50%, #0F172A 100%);
+    align-items: center;
 }

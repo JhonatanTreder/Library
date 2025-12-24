@@ -1,0 +1,114 @@
+.paginationBarContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: #ffffff;
+  width: fit-content;
+  min-width: 280px;
+  padding: 0.5rem 0.75rem;
+
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+}
+
+/* Container geral dos botões */
+.navigationButtons {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  color: #0F172A;
+}
+
+/* Botões numéricos */
+.numericalButtons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Botão padrão */
+.pageNumber {
+  min-width: 2.2rem;
+  height: 2.2rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: transparent;
+  border: 1px solid #CBD5E1;
+  border-radius: 6px;
+
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #0F172A;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Hover */
+.pageNumber:hover:not(:disabled) {
+  border-color: #3B82F6;
+  color: #3B82F6;
+  background: rgba(59, 130, 246, 0.08);
+}
+
+/* Página ativa */
+.activedButton {
+  background: #3B82F6;
+  color: #ffffff;
+  border-color: #3B82F6;
+}
+
+/* Botão desabilitado (ellipsis) */
+.disabledButton {
+  cursor: default;
+  pointer-events: none;
+  color: #94A3B8;
+  border-color: #E2E8F0;
+}
+
+.arrowButton {
+  border: 1px solid #0F172A;
+  border-radius: 5px;
+  padding: 0;
+  display: flex;
+  align-self: center;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.arrowButton:hover {
+  color: #3B82F6;
+  border: 1px solid #3B82F6;
+  transform: translateY(-1px);
+}
+
+.arrowButtonDisabled {
+  padding: 0;
+  display: flex;
+  align-self: center;
+  cursor: default;
+  pointer-events: none;
+  color: #CBD5E1;
+  border-radius: 5px;
+  border: 1px solid #CBD5E1;
+}
+
+@media (max-width: 480px) {
+  .paginationBarContainer {
+    padding: 0.4rem 0.5rem;
+  }
+
+  .numericalButtons {
+    gap: 0.25rem;
+  }
+
+  .pageNumber {
+    min-width: 2rem;
+    height: 2rem;
+    font-size: 0.8rem;
+  }
+}

@@ -3,7 +3,6 @@
 import booksStyles from '@/app/pages/styles/books/booksStyles.module.css'
 
 import ShowNavbar from "@/app/components/Navbar";
-import ShowFilterBar from "@/app/components/books/BookFilterBar";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import ViewAllBooks from '@/app/components/books/ViewAllBooks';
