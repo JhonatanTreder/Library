@@ -27,7 +27,7 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Get([FromQuery] PaginationParameters paginationParams,
+        public async Task<IActionResult> GetAllBooks([FromQuery] PaginationParameters paginationParams,
                                              [FromQuery] BookFilterDTO bookFilterDTO)
         {
             var response = await _bookRepository.GetBooksWithPaginationAsync(paginationParams, bookFilterDTO);
@@ -53,6 +53,40 @@ namespace API.Controllers
                     Status = "Internal Server Error",
                     Data = null,
                     Message = "Erro inesperado ao tentar buscar por livros"
+                })
+            };
+        }
+
+        [HttpGet("new")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetNewBooks([FromQuery] PaginationParameters paginationParams,
+                                             [FromQuery] BookFilterDTO bookFilterDTO)
+        {
+            var response = await _bookRepository.GetNewBooksWithPaginationAsync(paginationParams, bookFilterDTO);
+
+            return response.Status switch
+            {
+                RepositoryStatus.Success => Ok(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = response.Data,
+                    Message = "Novos livros encontrados com sucesso"
+                }),
+
+                RepositoryStatus.BookNotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = "Nenhum novo livro foi encontrado"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Erro inesperado ao tentar buscar por novos livros"
                 })
             };
         }

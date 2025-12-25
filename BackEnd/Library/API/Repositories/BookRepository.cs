@@ -269,6 +269,52 @@ namespace API.Repositories
             return new RepositoryResponse<PaginatedDataDTO<BookReturnDTO>>(RepositoryStatus.Success, paginatedData);
         }
 
+        public async Task<RepositoryResponse<PaginatedDataDTO<BookReturnDTO>>> GetNewBooksWithPaginationAsync(
+            PaginationParameters paginationParams,
+            BookFilterDTO? bookFilterDTO = null,
+            int days = 7)
+        {
+            var cutOffDate = DateTime.UtcNow.AddDays(-days);
+
+            var query = BuildBooksQuery(bookFilterDTO)
+                .Where(b => b.CreatedAt >= cutOffDate);
+
+            var totalItems = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalItems / (double)paginationParams.PageSize);
+
+            var pagedBooks = await query
+                .Skip((paginationParams.PageNumber - 1) * paginationParams.PageSize)
+                .Take(paginationParams.PageSize)
+                .Select(b => new BookReturnDTO
+                {
+                    BookId = b.Id,
+                    Title = b.Title,
+                    Author = b.Author,
+                    Category = b.Category,
+                    AvailableCopies = b.Copies.Count(c => c.Status == BookStatus.Available),
+                    TotalCopies = b.Copies.Count,
+                    Description = b.Description ?? string.Empty,
+                    CreatedAt = b.CreatedAt,
+                    PublicationYear = b.PublicationYear,
+                    Publisher = b.Publisher
+                }).ToListAsync();
+
+            if (!pagedBooks.Any())
+            {
+                return new RepositoryResponse<PaginatedDataDTO<BookReturnDTO>>(RepositoryStatus.BookNotFound);
+            }
+
+            var paginatedData = new PaginatedDataDTO<BookReturnDTO>
+            {
+                Data = pagedBooks,
+                CurrentPage = paginationParams.PageNumber,
+                TotalItems = totalItems,
+                TotalPages = totalPages
+            };
+
+            return new RepositoryResponse<PaginatedDataDTO<BookReturnDTO>>(RepositoryStatus.Success, paginatedData);
+        }
+
         public async Task<RepositoryResponse<IEnumerable<BookReturnDTO>>> GetBooksAsync(BookFilterDTO? bookFilterDTO = null)
         {
             if (bookFilterDTO is null)

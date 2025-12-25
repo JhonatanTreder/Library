@@ -7,12 +7,13 @@
   width: fit-content;
   min-width: 280px;
   padding: 0.5rem 0.75rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
 }
 
-/* Container geral dos botões */
 .navigationButtons {
   display: flex;
   align-items: center;
@@ -21,13 +22,11 @@
   color: #0F172A;
 }
 
-/* Botões numéricos */
 .numericalButtons {
   display: flex;
   gap: 0.5rem;
 }
 
-/* Botão padrão */
 .pageNumber {
   min-width: 2.2rem;
   height: 2.2rem;
@@ -48,21 +47,18 @@
   transition: all 0.2s ease;
 }
 
-/* Hover */
 .pageNumber:hover:not(:disabled) {
   border-color: #3B82F6;
   color: #3B82F6;
   background: rgba(59, 130, 246, 0.08);
 }
 
-/* Página ativa */
 .activedButton {
   background: #3B82F6;
   color: #ffffff;
   border-color: #3B82F6;
 }
 
-/* Botão desabilitado (ellipsis) */
 .disabledButton {
   cursor: default;
   pointer-events: none;

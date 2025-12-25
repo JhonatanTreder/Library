@@ -1,9 +1,226 @@
+/* books.module.css */
+
 .booksContainer {
+    font-family: 'Inter', 'Segoe UI', sans-serif;
     min-height: 100vh;
     width: 100%;
     display: flex;
     flex-direction: column;
-
-    background: radial-gradient(circle at center, #3B82F6 0%, #1E3A8A 50%, #0F172A 100%);
     align-items: center;
+    background: linear-gradient(135deg, #667eea 0%, #BFDBFE 100%);
+}
+
+/* Container principal da lista */
+.bookList {
+    width: 80%;
+    max-width: 1400px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    padding: 0;
+}
+
+/* Card individual */
+.bookCard {
+    background: white;
+    padding: 1.75rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.274);
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efeito de hover */
+.bookCard:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Efeito de brilho no hover */
+.bookCard::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: 0.5s;
+}
+
+.bookCard:hover::before {
+    left: 100%;
+}
+
+/* Título do livro */
+.bookTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+    line-height: 1.4;
+    position: relative;
+    padding-bottom: 0.75rem;
+}
+
+.bookTitle::after {
+    align-self: center;
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 20%;
+    height: 2px;
+    background: linear-gradient(90deg, #3b82f6, #20325a);
+    border-radius: 2px;
+}
+
+/* Autor do livro */
+.bookAuthor {
+    font-size: 1.1rem;
+    color: #475569;
+    margin: 0;
+    font-weight: 500;
+}
+
+.bookAuthor::before {
+    margin-right: 0.5rem;
+}
+
+/* Categoria */
+.bookCategory {
+    font-size: 0.95rem;
+    color: #64748b;
+    margin: 0;
+    background: #f8fafc;
+    padding: 0.5rem 1rem;
+    display: inline-block;
+    align-self: flex-start;
+    border: 1px solid #e2e8f0;
+}
+
+.bookCategory::before {
+    margin-right: 0.5rem;
+}
+
+/* Disponibilidade */
+.availableBooks {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #059669;
+    margin: 0;
+    padding: 0.75rem;
+    background: #d1fae5;
+    border: 1px solid #a7f3d0;
+    text-align: center;
+    margin-top: auto;
+}
+
+.availableBooks::before {
+    content: '📖';
+    margin-right: 0.5rem;
+}
+
+/* Informações adicionais (se quiser adicionar mais campos) */
+.bookInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.bookPublisher,
+.bookYear,
+.bookDescription {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.bookPublisher::before {
+    margin-right: 0.5rem;
+}
+
+.bookYear::before {
+    margin-right: 0.5rem;
+}
+
+/* Status de disponibilidade baseado na quantidade */
+.availableBooks.low {
+    color: #dc2626;
+    background: #fee2e2;
+    border-color: #fca5a5;
+}
+
+.availableBooks.medium {
+    color: #d97706;
+    background: #fef3c7;
+    border-color: #fbbf24;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .bookList {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+        padding: 0 0.5rem;
+    }
+
+    .booksContainer {
+        padding: 1rem 0.5rem;
+    }
+
+    .bookCard {
+        padding: 1.5rem;
+    }
+
+    .bookTitle {
+        font-size: 1.3rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .bookList {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
+
+/* Loading state (opcional) */
+.bookCard.loading {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Estilo para quando não há livros */
+.noBooks {
+    text-align: center;
+    color: white;
+    font-size: 1.2rem;
+    margin-top: 3rem;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
 }

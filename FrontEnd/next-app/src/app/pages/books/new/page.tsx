@@ -1,111 +1,136 @@
 "use client"
 
-import ShowNavbar from "@/app/components/Navbar"
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import newBookStyles from '@/app/pages/books/new/styles/newBooks.module.css'
-import ShowFilterBar from "@/app/components/books/BookFilterBar"
+import booksStyles from '@/app/components/Styles/books/books.module.css'
 
-export default function NewBooks() {
+import PaginationBar from "@/app/components/PaginationBar"
+import { useEffect, useState } from 'react'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
+import ShowFilterBar from '@/app/components/books/BookFilterBar'
+import { BookReturnDTO } from '@/app/interfaces/books/BookReturnDTO'
+import ShowNavbar from '@/app/components/Navbar'
+import { RepositoryResponse } from '@/app/interfaces/responses/RepositoryResponse'
+import { PaginatedDataDTO } from '@/app/interfaces/pagination/PaginatedDataDTO'
+
+export default function ShowNewBooks() {
     const router = useRouter()
-    const [books, setBooks] = useState<Book[]>([])
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState<string | null>(null)
+    const pathname = usePathname()
+    const searchParams = useSearchParams()
 
-    interface Book {
-        bookId: number;
-        title: string;
-        author: string;
-        description: string;
-        publisher: string;
-        category: string;
-        publicationYear: number;
-        totalCopies: number;
-        availableCopies: number;
-        createdAt: string;
-    }
+    const initialPageNumber = Number(searchParams.get('pageNumber')) || 1
+    const initialPageSize = Number(searchParams.get('pageSize')) || 10
+
+    const [pageNumber, setPageNumber] = useState(initialPageNumber)
+    const [pageSize, setPageSize] = useState(initialPageSize)
+    const [totalItems, setTotalItems] = useState(0)
+    const [totalPages, setTotalPages] = useState(0)
+    const [currentPage, setCurrentPage] = useState(0)
+    const [hasPrevious, setHasPrevious] = useState<boolean>(false)
+    const [hasNext, setHasNext] = useState<boolean>(false)
+    const [books, setBooks] = useState<BookReturnDTO[]>([])
 
     useEffect(() => {
-        fetchNewBooks()
-    }, [])
+        fetchNewBooksAsync()
+    }, [pageNumber, pageSize])
 
-    async function fetchNewBooks() {
+    async function fetchNewBooksAsync() {
+
         try {
             const token = localStorage.getItem('token')
+
             if (!token) {
+                localStorage.removeItem('token')
+                localStorage.removeItem('refresh-token')
+                localStorage.removeItem('token-expiration-time')
+
                 router.push('/auth/login')
                 return
             }
 
-            const response = await fetch('https://localhost:7221/Book/recents', {
+            const params = new URLSearchParams()
+
+            params.append('pageNumber', pageNumber.toString())
+            params.append('pageSize', pageSize.toString())
+
+            const getNewBooksURL = `https://localhost:7221/Book/new?${params.toString()}`
+
+            const getNewBooksRequest = await fetch(getNewBooksURL, {
                 method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'Content-Type': 'application/josn',
+                    'Authorization': `Bearer${token}`
                 }
             })
 
-            if (response.status === 401) {
-                router.push('/auth/login')
-                return
+            const response: RepositoryResponse<PaginatedDataDTO<BookReturnDTO>> = await getNewBooksRequest.json()
+            const responseData = response.data
+
+            if (responseData) {
+                setBooks(responseData.data)
+                setTotalPages(responseData.totalPages)
+                setTotalItems(responseData.totalItems)
+                setCurrentPage(responseData.currentPage)
+                setHasPrevious(responseData.hasPrevious)
             }
 
-            const data = await response.json()
-            setBooks(data.data || data || [])
-
+            else {
+                setBooks([])
+                setTotalPages(0)
+                setTotalItems(0)
+                setCurrentPage(0)
+                setHasPrevious(false)
+                setHasNext(false)
+            }
         }
 
         catch (error) {
-            setError('Erro ao carregar livros')
-            console.error(error)
-
-        }
-
-        finally {
-            setLoading(false)
+            setBooks([])
+            setTotalPages(0)
+            setTotalItems(0)
+            setCurrentPage(0)
+            setHasPrevious(false)
+            setHasNext(false)
         }
     }
 
-    const formatDate = (dateString: string) => {
+    const handlePageChange = (page: number) => {
+        const params = new URLSearchParams(searchParams.toString())
 
-        return new Date(dateString).toLocaleDateString('pt-BR')
+        params.set('pageNumber', page.toString())
+        params.set('pageSize', pageSize.toString())
+
+        router.replace(`${pathname}?${params.toString()}`, { scroll: false })
     }
-
-    if (loading) return (
-        <div>
-            <ShowNavbar />
-            <div className={newBookStyles.loadingContainer}>Carregando...</div>
-        </div>
-    )
-
-    if (error) return (
-        <div>
-            <ShowNavbar />
-            <div className={newBookStyles.errorContainer}>{error}</div>
-        </div>
-    )
 
     return (
-        <section>
+        <section className={booksStyles.booksSection}>
 
+            {/*Adicionar a classe "booksSection" depois*/}
+            {/*(neste componente e no componente padrão da página de livros: books/all)*/}
             <ShowNavbar></ShowNavbar>
-            <ShowFilterBar></ShowFilterBar>
+            <div className={booksStyles.booksContainer}>
+                <ShowFilterBar />
+                <PaginationBar
+                    currentPage={pageNumber}
+                    totalPages={totalPages}
+                    hasPrevious={hasPrevious}
+                    hasNext={hasNext}
+                    onPageChange={handlePageChange} />
 
-            {books.length === 0 ? (
-                <div className={newBookStyles.emptyContainer}>
-                    <p>Nenhum livro novo encontrado.</p>
-                </div>
-            ) : (
-                <section>
-                    {books.map((book) => (
-                        <div>
-                            <div>
-                                {book.title}
-                            </div>
+                <div className={booksStyles.bookList}>
+                    {books.map(book => (
+                        <div key={book.bookId} className={booksStyles.bookCard}>
+                            <h3 className={booksStyles.bookTitle}> "{book.title}"</h3>
+                            <p className={booksStyles.bookAuthor}>Autor: {book.author}</p>
+                            <p className={booksStyles.bookCategory}>Categoria: {book.category}</p>
+                            <p className={booksStyles.bookPublisher}> Editora: {book.publisher}</p>
+                            <p className={booksStyles.bookYear}> Ano de Publicação: {book.publicationYear}</p>
+                            <p className={booksStyles.availableBooks}>
+                                Disponíveis: {book.availableCopies} de {book.totalCopies}
+                            </p>
                         </div>
                     ))}
-                </section>
-            )}
+                </div>
+            </div>
         </section>
     )
 }

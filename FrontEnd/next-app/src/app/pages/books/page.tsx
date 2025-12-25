@@ -1,6 +1,6 @@
 "use client"
 
-import booksStyles from '@/app/pages/styles/books/booksStyles.module.css'
+import booksStyles from '@/app/components/Styles/books/books.module.css'
 
 import ShowNavbar from "@/app/components/Navbar";
 import { useRouter } from "next/navigation";
@@ -21,8 +21,6 @@ export default function Books() {
             router.push('/auth/login')
         }
     }, [])
-
-    
 
     return (
         <section className={booksStyles.booksSection}>
