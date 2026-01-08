@@ -64,7 +64,7 @@ export default function PaginationBar({
                     className={!hasPrevious ? styles.arrowButtonDisabled : styles.arrowButton}
                     disabled={!hasPrevious}
                     onClick={() => onPageChange(currentPage - 1)}>
-                        
+
                     <KeyboardArrowLeft sx={{ fontSize: 30 }} />
                 </button>
 
@@ -89,8 +89,25 @@ export default function PaginationBar({
                     disabled={!hasNext}
                     onClick={() => onPageChange(currentPage + 1)}>
 
-                    <KeyboardArrowRight sx={{ fontSize: 30 }}/>
+                    <KeyboardArrowRight sx={{ fontSize: 30 }} />
                 </button>
+            </div>
+            <div className={styles.ordernationSection}>
+                <p>Ordernar por:</p>
+                <select name='sortOptions' className={styles.sortOptions}>
+                    <option value='title' className={styles.sortOption}>Título</option>
+                    <option value='author' className={styles.sortOption}>Author</option>
+                    <option value='category' className={styles.sortOption}>Categoria</option>
+                    <option value='publisher' className={styles.sortOption}>Editora</option>
+                    <option value='totalCopies' className={styles.sortOption}>Total de Cópias</option>
+                    <option value='availableCopies' className={styles.sortOption}>Cópias Disponíveis</option>
+                    <option value='publicationYear' className={styles.sortOption}>Ano de Publicação</option>
+                </select>
+
+                <select name='sortDirection' className={styles.sortOptions}>
+                    <option value='asc' className={styles.sortOption}>Ascendente</option>
+                    <option value='desc' className={styles.sortOption}>Decrescente</option>
+                </select>
             </div>
         </section>
     )

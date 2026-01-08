@@ -28,7 +28,7 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllBooks([FromQuery] PaginationParameters paginationParams,
-                                             [FromQuery] BookFilterDTO bookFilterDTO)
+                                                     [FromQuery] BookFilterDTO bookFilterDTO)
         {
             var response = await _bookRepository.GetBooksWithPaginationAsync(paginationParams, bookFilterDTO);
 
@@ -43,7 +43,7 @@ namespace API.Controllers
 
                 RepositoryStatus.BookNotFound => NotFound(new ApiResponse
                 {
-                    Status= "Not Found",
+                    Status = "Not Found",
                     Data = null,
                     Message = "Nenhum livro foi encontrado"
                 }),
@@ -62,7 +62,7 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetNewBooks([FromQuery] PaginationParameters paginationParams,
-                                             [FromQuery] BookFilterDTO bookFilterDTO)
+                                                     [FromQuery] BookFilterDTO bookFilterDTO)
         {
             var response = await _bookRepository.GetNewBooksWithPaginationAsync(paginationParams, bookFilterDTO);
 
@@ -258,7 +258,7 @@ namespace API.Controllers
             };
         }
 
-        [HttpGet("available")]
+        [HttpGet("available/all")]
         [Authorize(Roles = "user,librarian,admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -340,7 +340,7 @@ namespace API.Controllers
             };
         }
 
-        [HttpGet("borrowed")]
+        [HttpGet("borrowed/all")]
         [Authorize(Roles = "user,librarian,admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -370,6 +370,105 @@ namespace API.Controllers
                     Status = "Internal Server Error",
                     Data = null,
                     Message = "Erro inesperado ao buscar por livros emprestados"
+                })
+            };
+        }
+
+        [HttpGet("borrowed")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetBorrowedBooks([FromQuery] PaginationParameters paginationParams,
+                                                          [FromQuery] BookFilterDTO bookFilterDTO)
+        {
+            var response = await _bookRepository.GetBorrowedBooksWithPaginationAsync(paginationParams, bookFilterDTO);
+
+            return response.Status switch
+            {
+                RepositoryStatus.Success => Ok(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = response.Data,
+                    Message = "Livros emprestados encontrados com sucesso"
+                }),
+
+                RepositoryStatus.BookNotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = "Nenhum livro emprestado foi encontrado"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Erro inesperado ao tentar buscar por livros emprestados"
+                })
+            };
+        }
+
+        [HttpGet("available")]
+        public async Task<IActionResult> GetAvailableBooks([FromQuery] PaginationParameters paginationParams,
+                                                           [FromQuery] BookFilterDTO bookFilterDTO)
+        {
+            var response = await _bookRepository.GetAvailableBooksWithPaginationAsync(paginationParams, bookFilterDTO);
+
+            return response.Status switch 
+            {
+                RepositoryStatus.Success => Ok(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = response.Data,
+                    Message = "Livros disponíveis encontrados com sucesso"
+                }),
+
+                RepositoryStatus.BookNotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = "Nenhum livro disponível foi encontrado"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Erro inesperado ao tentar buscar por livros disponíveis"
+                })
+            };
+        }
+
+        [HttpGet("unavailable")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetUnavailableBooks([FromQuery] PaginationParameters paginationParams,
+                                                             [FromQuery] BookFilterDTO bookFilterDTO)
+        {
+            var response = await _bookRepository.GetUnavailableBooksWithPaginationAsync(paginationParams, bookFilterDTO);
+
+            return response.Status switch
+            {
+                RepositoryStatus.Success => Ok(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = response.Data,
+                    Message = "Livros indisponíveis encontrados com sucesso"
+                }),
+
+                RepositoryStatus.BookNotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = "Nenhum livro indisponível foi encontrado"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Erro inesperado ao tentar buscar por livros indisponíveis"
                 })
             };
         }
@@ -428,7 +527,7 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetRecentBooks()
         {
-            var response = await _bookRepository.GetRecentBooksAsync();
+            var response = await _bookRepository.GetNewBooksAsync();
 
             return response.Status switch
             {

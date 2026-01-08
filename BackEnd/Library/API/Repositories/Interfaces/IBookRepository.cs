@@ -21,7 +21,13 @@ namespace API.Repositories.Interfaces
             PaginationParameters paginationParams, BookFilterDTO? bookFilterDTO = null);
         Task<RepositoryResponse<PaginatedDataDTO<BookReturnDTO>>> GetNewBooksWithPaginationAsync(
             PaginationParameters paginationParams, BookFilterDTO? bookFilterDTO = null, int days = 7);
-        Task<RepositoryResponse<IEnumerable<BookReturnDTO>>> GetRecentBooksAsync(int days = 7);
+        Task<RepositoryResponse<PaginatedDataDTO<BookReturnDTO>>> GetBorrowedBooksWithPaginationAsync(
+            PaginationParameters paginationParams, BookFilterDTO bookFilterDTO);
+        Task<RepositoryResponse<PaginatedDataDTO<BookReturnDTO>>> GetAvailableBooksWithPaginationAsync(
+            PaginationParameters paginationParams, BookFilterDTO bookFilterDTO);
+        Task<RepositoryResponse<PaginatedDataDTO<BookReturnDTO>>> GetUnavailableBooksWithPaginationAsync(
+           PaginationParameters paginationParams, BookFilterDTO bookFilterDTO);
+        Task<RepositoryResponse<IEnumerable<BookReturnDTO>>> GetNewBooksAsync(int days = 7);
         Task<RepositoryResponse<IEnumerable<BookCopyReturnDTO>>> GetBookCopiesAsync(int bookId);
         Task<RepositoryResponse<IEnumerable<BookReturnDTO>>> GetAvailableBooksAsync();
         Task<RepositoryResponse<IEnumerable<BookCopyReturnDTO>>> GetAvailableBookCopiesAsync(int bookId);

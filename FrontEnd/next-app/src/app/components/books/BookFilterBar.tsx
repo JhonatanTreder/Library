@@ -23,8 +23,8 @@ export default function ShowFilterBar() {
             setActiveItem('recentType')
         }
 
-        else if (pathname.endsWith('/delayed')) {
-            setActiveItem('delayedType')
+        else if (pathname.endsWith('/borrowed')) {
+            setActiveItem('borrowedType')
         }
 
         else if (pathname.endsWith('/available')) {
@@ -50,7 +50,7 @@ export default function ShowFilterBar() {
     }
 
     const handleViewDelayedBooksPage = () =>{
-        router.push('/pages/books/delayed')
+        router.push('/pages/books/borrowed')
     }
 
     const handleViewAvailableBooksPage = () =>{
@@ -102,7 +102,7 @@ export default function ShowFilterBar() {
                     <div
                         className={`
                             ${bookFilterBarStyles.navigationType}
-                            ${activeItem === 'delayedType' ? bookFilterBarStyles.navigationTypeActive : ''}
+                            ${activeItem === 'borrowedType' ? bookFilterBarStyles.navigationTypeActive : ''}
                         `}
                         onClick={handleViewDelayedBooksPage}>
                         Emprestados

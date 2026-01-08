@@ -1,5 +1,3 @@
-/* books.module.css */
-
 .booksContainer {
     font-family: 'Inter', 'Segoe UI', sans-serif;
     min-height: 100vh;
@@ -10,7 +8,6 @@
     background: linear-gradient(135deg, #667eea 0%, #BFDBFE 100%);
 }
 
-/* Container principal da lista */
 .bookList {
     width: 80%;
     max-width: 1400px;
@@ -22,7 +19,6 @@
     padding: 0;
 }
 
-/* Card individual */
 .bookCard {
     background: white;
     padding: 1.75rem;
@@ -37,13 +33,11 @@
     overflow: hidden;
 }
 
-/* Efeito de hover */
 .bookCard:hover {
     transform: translateY(-8px);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
 }
 
-/* Efeito de brilho no hover */
 .bookCard::before {
     content: '';
     position: absolute;
@@ -59,7 +53,6 @@
     left: 100%;
 }
 
-/* Título do livro */
 .bookTitle {
     font-size: 1.5rem;
     font-weight: 700;
@@ -82,7 +75,6 @@
     border-radius: 2px;
 }
 
-/* Autor do livro */
 .bookAuthor {
     font-size: 1.1rem;
     color: #475569;
@@ -94,7 +86,6 @@
     margin-right: 0.5rem;
 }
 
-/* Categoria */
 .bookCategory {
     font-size: 0.95rem;
     color: #64748b;
@@ -110,7 +101,6 @@
     margin-right: 0.5rem;
 }
 
-/* Disponibilidade */
 .availableBooks {
     font-size: 1rem;
     font-weight: 600;
@@ -128,7 +118,6 @@
     margin-right: 0.5rem;
 }
 
-/* Informações adicionais (se quiser adicionar mais campos) */
 .bookInfo {
     display: flex;
     flex-direction: column;
@@ -143,6 +132,7 @@
     color: #64748b;
     margin: 0;
     line-height: 1.5;
+    font-weight: 500;
 }
 
 .bookPublisher::before {
@@ -153,7 +143,6 @@
     margin-right: 0.5rem;
 }
 
-/* Status de disponibilidade baseado na quantidade */
 .availableBooks.low {
     color: #dc2626;
     background: #fee2e2;
@@ -166,7 +155,76 @@
     border-color: #fbbf24;
 }
 
-/* Responsividade */
+.noBooksContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 60vh;
+    width: 100%;
+    text-align: center;
+}
+
+.noBooksMessage {
+    color: white;
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 1rem 0 0 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    max-width: 600px;
+}
+
+.noBooksSubtitle {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.2rem;
+    max-width: 500px;
+    line-height: 1.6;
+    margin: 2rem 0 2rem 0;
+}
+
+.noBooksAction {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 0.8rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    margin: 0 0 1rem 0;
+}
+
+.noBooksAction:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+.noBooks {
+    display: none;
+}
+
+.bookCard.loading {
+    animation: pulse 1.5s infinite;
+}
+
+@media (max-width: 768px) {
+    .noBooksMessage {
+        font-size: 1.5rem;
+        padding: 0 1rem;
+    }
+    
+    .noBooksIcon {
+        font-size: 3rem;
+    }
+    
+    .noBooksSubtitle {
+        font-size: 1rem;
+        padding: 0 1rem;
+    }
+}
+
 @media (max-width: 768px) {
     .bookList {
         grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -194,11 +252,6 @@
     }
 }
 
-/* Loading state (opcional) */
-.bookCard.loading {
-    animation: pulse 1.5s infinite;
-}
-
 @keyframes pulse {
     0% {
         opacity: 1;
@@ -211,16 +264,4 @@
     100% {
         opacity: 1;
     }
-}
-
-/* Estilo para quando não há livros */
-.noBooks {
-    text-align: center;
-    color: white;
-    font-size: 1.2rem;
-    margin-top: 3rem;
-    padding: 2rem;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-    backdrop-filter: blur(10px);
 }

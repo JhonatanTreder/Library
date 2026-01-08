@@ -1,31 +1,52 @@
 "use client"
 
-import booksStyles from '@/app/components/Styles/books/books.module.css'
+import { BookListTemplate } from '@/app/components/books/BookListTemplate';
+import { BookCard } from '@/app/components/books/BookCard';
+import { useBookPagination } from '@/app/components/books/hooks/useBookPagination';
+import booksStyles from '@/app/components/Styles/books/books.module.css';
 
-import ShowNavbar from "@/app/components/Navbar";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import ViewAllBooks from '@/app/components/books/ViewAllBooks';
-
-export default function Books() {
-    const router = useRouter()
-
-    useEffect(() => {
-        const token = localStorage.getItem('token')
-
-        if (token === null || token === undefined) {
-            localStorage.removeItem('token')
-            localStorage.removeItem('refresh-token')
-            localStorage.removeItem('toke-expiration-time')
-
-            router.push('/auth/login')
-        }
-    }, [])
+export default function BooksPage() {
+    const {
+        books,
+        loading,
+        error,
+        pagination,
+        handlePageChange,
+        handleRedirect
+    } = useBookPagination({
+        endpoint: '/Book/all',
+        defaultPageSize: 10,
+        redirectToPage: '/pages/home'
+    });
 
     return (
-        <section className={booksStyles.booksSection}>
-            <ShowNavbar></ShowNavbar>
-            <ViewAllBooks></ViewAllBooks>
-        </section>
-    )
+        <BookListTemplate
+            books={books}
+            loading={loading}
+            error={error}
+            pagination={{
+                totalItems: pagination.totalItems,
+                currentPage: pagination.pageNumber,
+                totalPages: pagination.totalPages,
+                hasPrevious: pagination.hasPrevious,
+                hasNext: pagination.hasNext,
+                onPageChange: handlePageChange
+            }}
+            renderBookCard={(book) => (
+                <BookCard key={book.bookId} book={book} />
+            )}
+            emptyState={{
+                message: "Nenhum livro foi encontrado",
+                subtitle: "Parece que não existem livros no momento!",
+                actionButton: (
+                    <button
+                        onClick={handleRedirect}
+                        className={booksStyles.noBooksAction}
+                    >
+                        Voltar a página inicial
+                    </button>
+                )
+            }}
+        />
+    );
 }

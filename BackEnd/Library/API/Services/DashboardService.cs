@@ -32,7 +32,7 @@ namespace API.Services
 
         public async Task<RepositoryResponse<LibraryStatsDTO>> GetLibraryStatsAsync()
         {
-            var newBooks = await _bookRepository.GetRecentBooksAsync();
+            var newBooks = await _bookRepository.GetNewBooksAsync();
             var totalBooks = await _bookRepository.GetBooksAsync();
             var delayedBooks = await _bookRepository.GetBorrowedBooksAsync();
             var unavailableBooks = await _bookRepository.GetUnavailableBookCopiesAsync();
