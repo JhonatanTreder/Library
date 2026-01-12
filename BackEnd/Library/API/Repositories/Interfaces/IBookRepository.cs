@@ -18,15 +18,15 @@ namespace API.Repositories.Interfaces
         Task<RepositoryResponse<BookCopyReturnDTO>> GetBookCopyByIdAsync(int bookId);
         Task<RepositoryResponse<IEnumerable<BookReturnDTO>>> GetBooksAsync(BookFilterDTO? filterBookDTO = null);
         Task<RepositoryResponse<PaginatedDataDTO<BookReturnDTO>>> GetBooksWithPaginationAsync(
-            PaginationParameters paginationParams, BookFilterDTO? bookFilterDTO = null);
+            PaginationParameters paginationParams, SortParameters? sortParameters, BookFilterDTO? bookFilterDTO = null);
         Task<RepositoryResponse<PaginatedDataDTO<BookReturnDTO>>> GetNewBooksWithPaginationAsync(
-            PaginationParameters paginationParams, BookFilterDTO? bookFilterDTO = null, int days = 7);
+            PaginationParameters paginationParams, SortParameters? sortParameters, BookFilterDTO? bookFilterDTO = null, int days = 7);
         Task<RepositoryResponse<PaginatedDataDTO<BookReturnDTO>>> GetBorrowedBooksWithPaginationAsync(
-            PaginationParameters paginationParams, BookFilterDTO bookFilterDTO);
+            PaginationParameters paginationParams, SortParameters? sortParameters, BookFilterDTO bookFilterDTO);
         Task<RepositoryResponse<PaginatedDataDTO<BookReturnDTO>>> GetAvailableBooksWithPaginationAsync(
-            PaginationParameters paginationParams, BookFilterDTO bookFilterDTO);
+            PaginationParameters paginationParams, SortParameters? sortParameters, BookFilterDTO bookFilterDTO);
         Task<RepositoryResponse<PaginatedDataDTO<BookReturnDTO>>> GetUnavailableBooksWithPaginationAsync(
-           PaginationParameters paginationParams, BookFilterDTO bookFilterDTO);
+           PaginationParameters paginationParams, SortParameters? sortParameters, BookFilterDTO bookFilterDTO);
         Task<RepositoryResponse<IEnumerable<BookReturnDTO>>> GetNewBooksAsync(int days = 7);
         Task<RepositoryResponse<IEnumerable<BookCopyReturnDTO>>> GetBookCopiesAsync(int bookId);
         Task<RepositoryResponse<IEnumerable<BookReturnDTO>>> GetAvailableBooksAsync();

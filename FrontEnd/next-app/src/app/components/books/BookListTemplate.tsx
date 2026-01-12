@@ -7,11 +7,16 @@ export const BookListTemplate = ({
     books,
     loading,
     error,
+    emptyState,
+    showFilter = true,
+
     pagination,
     renderBookCard,
-    emptyState,
-    showFilter = true
+
+    ordernation,
 }: BookListTemplateProps) => {
+    
+    console.log('BookListTemplate - ordernation:', ordernation);
 
     if (loading && books.length === 0) {
         return (
@@ -66,6 +71,7 @@ export const BookListTemplate = ({
         <BookListLayout
             showFilter={showFilter}
             pagination={pagination}
+            ordernation={ordernation}
         >
             <div className={booksStyles.bookList}>
                 {books.map(renderBookCard)}

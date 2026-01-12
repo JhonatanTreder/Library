@@ -1,3 +1,4 @@
+import { SortDirection, SortField } from "@/app/types/sortTypes";
 import { ReactNode } from "react"
 
 export interface BookListLayoutProps {
@@ -13,4 +14,11 @@ export interface BookListLayoutProps {
         hasNext: boolean;
         onPageChange: (page: number) => void;
     };
+
+    ordernation?: {
+        sortField: SortField;
+        sortDirection: SortDirection;
+        handleSortFieldChange: (element: React.ChangeEvent<HTMLSelectElement>) => void;
+        handleSortDirectionChange: (element: React.ChangeEvent<HTMLSelectElement>) => void;
+    }
 }

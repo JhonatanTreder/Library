@@ -12,8 +12,10 @@ export default function BorrowedBooksPage() {
     redirectToPage: '/pages/books/available'
   });
 
-  console.log(hook.sort.field)
-  console.log(hook.sort.direction)
+  console.log('Página - hook completo:', hook);
+  console.log('Página - hook.ordernation:', hook.ordernation);
+  console.log('Página - hook.ordernation?.sortField:', hook.ordernation?.sortField);
+  console.log('Página - hook.ordernation?.sortDirection:', hook.ordernation?.sortDirection);
 
   return (
     <BookListTemplate
@@ -28,12 +30,18 @@ export default function BorrowedBooksPage() {
         hasNext: hook.pagination.hasNext,
         onPageChange: hook.handlePageChange
       }}
+      ordernation={{
+        sortField: hook.ordernation.sortField,
+        sortDirection: hook.ordernation.sortDirection,
+        handleSortFieldChange: hook.ordernation.handleSortFieldChange,
+        handleSortDirectionChange: hook.ordernation.handleSortDirectionChange
+      }}
       renderBookCard={(book) => (
         <BookCard key={book.bookId} book={book} />
       )}
       emptyState={{
         message: "Nenhum livro emprestado foi encontrado",
-        subtitle: "Parece que todos os livros estão disponíveis no momento!",
+        subtitle: "Parece que todos os livros estão disponíveis no momento",
         actionButton: (
           <button 
             onClick={hook.handleRedirect}

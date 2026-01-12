@@ -1,7 +1,9 @@
 "use client"
 
+import { useState, ChangeEvent } from 'react'
 import styles from '@/app/components/Styles/paginationBar.module.css'
 import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material"
+import { DEFAULT_SORT_DIRECTION, DEFAULT_SORT_FIELD, SortField, SortDirection } from '../types/sortTypes'
 
 type PageItem = number | '...'
 
@@ -11,6 +13,13 @@ interface PaginationBarProps {
     hasPrevious: boolean
     hasNext: boolean
     onPageChange: (page: number) => void
+
+    ordernation?: {
+        sortField: SortField;
+        sortDirection: SortDirection;
+        handleSortFieldChange: (element: React.ChangeEvent<HTMLSelectElement>) => void;
+        handleSortDirectionChange: (element: React.ChangeEvent<HTMLSelectElement>) => void;
+    }
 }
 
 export default function PaginationBar({
@@ -18,7 +27,8 @@ export default function PaginationBar({
     totalPages,
     hasPrevious,
     hasNext,
-    onPageChange
+    onPageChange,
+    ordernation
 }: PaginationBarProps) {
 
     const getPageNumbers = (): PageItem[] => {
@@ -55,6 +65,20 @@ export default function PaginationBar({
         return pages
     }
 
+    const handleSortFieldChange = (e: ChangeEvent<HTMLSelectElement>) => {
+        console.log('Campo selecionado:', e.target.value)
+        if (ordernation?.handleSortFieldChange) {
+            ordernation.handleSortFieldChange(e)
+        }
+    }
+
+    const handleSortDirectionChange = (e: ChangeEvent<HTMLSelectElement>) => {
+        console.log('Direção selecionada:', e.target.value)
+        if (ordernation?.handleSortDirectionChange) {
+            ordernation.handleSortDirectionChange(e)
+        }
+    }
+
     const pages = getPageNumbers()
 
     return (
@@ -64,7 +88,6 @@ export default function PaginationBar({
                     className={!hasPrevious ? styles.arrowButtonDisabled : styles.arrowButton}
                     disabled={!hasPrevious}
                     onClick={() => onPageChange(currentPage - 1)}>
-
                     <KeyboardArrowLeft sx={{ fontSize: 30 }} />
                 </button>
 
@@ -88,25 +111,36 @@ export default function PaginationBar({
                     className={!hasNext ? styles.arrowButtonDisabled : styles.arrowButton}
                     disabled={!hasNext}
                     onClick={() => onPageChange(currentPage + 1)}>
-
                     <KeyboardArrowRight sx={{ fontSize: 30 }} />
                 </button>
             </div>
+
             <div className={styles.ordernationSection}>
-                <p>Ordernar por:</p>
-                <select name='sortOptions' className={styles.sortOptions}>
-                    <option value='title' className={styles.sortOption}>Título</option>
-                    <option value='author' className={styles.sortOption}>Author</option>
-                    <option value='category' className={styles.sortOption}>Categoria</option>
-                    <option value='publisher' className={styles.sortOption}>Editora</option>
-                    <option value='totalCopies' className={styles.sortOption}>Total de Cópias</option>
-                    <option value='availableCopies' className={styles.sortOption}>Cópias Disponíveis</option>
-                    <option value='publicationYear' className={styles.sortOption}>Ano de Publicação</option>
+                <p>Ordenar por:</p>
+
+                <select
+                    name='sortOptions'
+                    className={styles.sortOptions}
+                    value={ordernation?.sortField || DEFAULT_SORT_FIELD}
+                    onChange={handleSortFieldChange}
+                >
+                    <option value='title'>Título</option>
+                    <option value='author'>Autor</option>
+                    <option value='category'>Categoria</option>
+                    <option value='publisher'>Editora</option>
+                    <option value='totalCopies'>Total de Cópias</option>
+                    <option value='availableCopies'>Cópias Disponíveis</option>
+                    <option value='publicationYear'>Ano de Publicação</option>
                 </select>
 
-                <select name='sortDirection' className={styles.sortOptions}>
-                    <option value='asc' className={styles.sortOption}>Ascendente</option>
-                    <option value='desc' className={styles.sortOption}>Decrescente</option>
+                <select
+                    name='sortDirection'
+                    className={styles.sortOptions}
+                    value={ordernation?.sortDirection || DEFAULT_SORT_DIRECTION}
+                    onChange={handleSortDirectionChange}
+                >
+                    <option value='asc'>Ascendente</option>
+                    <option value='desc'>Decrescente</option>
                 </select>
             </div>
         </section>

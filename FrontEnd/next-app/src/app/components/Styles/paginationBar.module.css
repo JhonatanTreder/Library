@@ -96,55 +96,78 @@
   border: 1px solid #CBD5E1;
 }
 
+/* 🔴 ADICIONAR estas regras ao seu CSS existente */
+
 .ordernationSection {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-  align-items: center;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-left: 1.5rem;
+}
+
+.ordernationSection p {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #475569;
+    white-space: nowrap;
 }
 
 .sortOptions {
-  height: 2.2rem;
-  display: flex;
-  cursor: pointer;
-  padding: 0.4rem 0.75rem;
-  border: 1px solid #CBD5E1;
-  border-radius: 5px;
-  background: #ffffff;
-  color: #64748B;
-  font-size: 0.9rem;
-  transition: all 0.2s ease;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background: white;
+    font-size: 0.9rem;
+    color: #334155;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 140px;
 }
 
 .sortOptions:hover {
-  border-color: #3B82F6;
+    border-color: #94a3b8;
 }
 
 .sortOptions:focus {
-  outline: none;
-  border-color: #3B82F6;
-  box-shadow: 0 0 0 2px rgba(59, 131, 246, 0.2);
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* Para o título "Ordernar por:" */
-.ordernationSection p {
-  font-size: 0.9rem;
-  color: #64748B;
-  font-weight: 500;
+.sortOption {
+    padding: 0.5rem;
 }
 
-@media (max-width: 480px) {
-  .paginationBarContainer {
-    padding: 0.4rem 0.5rem;
-  }
+/* Para alinhar visualmente com os botões de paginação */
+.paginationBarContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    width: 100%;
+    max-width: 1000px;
+    padding: 0.75rem 1.25rem;
+    margin: 1rem auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+    border: 1px solid #e2e8f0;
+}
 
-  .numericalButtons {
-    gap: 0.25rem;
-  }
-
-  .pageNumber {
-    min-width: 2rem;
-    height: 2rem;
-    font-size: 0.8rem;
-  }
+/* Responsividade */
+@media (max-width: 768px) {
+    .paginationBarContainer {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .ordernationSection {
+        margin-left: 0;
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .sortOptions {
+        min-width: 120px;
+    }
 }

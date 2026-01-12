@@ -12,8 +12,11 @@ export const BookListLayout = ({
   showFilter = true,
   showPaginationTop = true,
   showPaginationBottom = true,
-  pagination
+  pagination,
+  ordernation
 }: BookListLayoutProps) => {
+  
+  console.log('BookListLayout - ordernation:', ordernation)
   return (
     <section className={booksStyles.booksSection}>
       <ShowNavbar />
@@ -22,11 +25,13 @@ export const BookListLayout = ({
 
         {showPaginationTop && pagination && pagination.totalPages > 1 && (
           <PaginationBar
+            key={`top-${ordernation?.sortField}-${ordernation?.sortDirection}`}
             currentPage={pagination.currentPage}
             totalPages={pagination.totalPages}
             hasPrevious={pagination.hasPrevious}
             hasNext={pagination.hasNext}
             onPageChange={pagination.onPageChange}
+            ordernation={ordernation}
           />
         )}
 
@@ -34,11 +39,13 @@ export const BookListLayout = ({
 
         {showPaginationBottom && pagination && pagination.totalPages > 1 && (
           <PaginationBar
+            key={`bottom-${ordernation?.sortField}-${ordernation?.sortDirection}`}
             currentPage={pagination.currentPage}
             totalPages={pagination.totalPages}
             hasPrevious={pagination.hasPrevious}
             hasNext={pagination.hasNext}
             onPageChange={pagination.onPageChange}
+            ordernation={ordernation}
           />
         )}
       </div>

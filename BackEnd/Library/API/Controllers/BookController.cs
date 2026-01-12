@@ -28,9 +28,10 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllBooks([FromQuery] PaginationParameters paginationParams,
-                                                     [FromQuery] BookFilterDTO bookFilterDTO)
+                                                     [FromQuery] BookFilterDTO bookFilterDTO,
+                                                     [FromQuery] SortParameters sortParameters)
         {
-            var response = await _bookRepository.GetBooksWithPaginationAsync(paginationParams, bookFilterDTO);
+            var response = await _bookRepository.GetBooksWithPaginationAsync(paginationParams, sortParameters, bookFilterDTO);
 
             return response.Status switch
             {

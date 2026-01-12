@@ -8,6 +8,7 @@ using API.Models;
 using API.Pagination;
 using API.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace API.Repositories
@@ -227,9 +228,10 @@ namespace API.Repositories
         }
 
         public async Task<RepositoryResponse<PaginatedDataDTO<BookReturnDTO>>> GetBooksWithPaginationAsync(
-            PaginationParameters paginationParams,BookFilterDTO? bookFilterDTO = null)
+            PaginationParameters paginationParams, SortParameters? sortParameters, BookFilterDTO? bookFilterDTO = null)
         {
             var query = BuildBooksQuery(bookFilterDTO);
+            query = ApplySorting(query, sortParameters);
 
             var totalItems = await query.CountAsync();
             var totalPages = (int)Math.Ceiling(totalItems / (double)paginationParams.PageSize);
@@ -269,12 +271,14 @@ namespace API.Repositories
         }
 
         public async Task<RepositoryResponse<PaginatedDataDTO<BookReturnDTO>>> GetNewBooksWithPaginationAsync(
-            PaginationParameters paginationParams, BookFilterDTO? bookFilterDTO = null, int days = 7)
+            PaginationParameters paginationParams, SortParameters? sortParameters, BookFilterDTO? bookFilterDTO = null, int days = 7)
         {
             var cutOffDate = DateTime.UtcNow.AddDays(-days);
 
             var query = BuildBooksQuery(bookFilterDTO)
                 .Where(b => b.CreatedAt >= cutOffDate);
+
+            query = ApplySorting(query, sortParameters);
 
             var totalItems = await query.CountAsync();
             var totalPages = (int)Math.Ceiling(totalItems / (double)paginationParams.PageSize);
@@ -431,22 +435,23 @@ namespace API.Repositories
         }
 
         public async Task<RepositoryResponse<PaginatedDataDTO<BookReturnDTO>>> GetBorrowedBooksWithPaginationAsync(
-            PaginationParameters paginationParams, BookFilterDTO bookFilterDTO)
+            PaginationParameters paginationParams, SortParameters? sortParameters, BookFilterDTO bookFilterDTO)
         {
-            return await GetBookByCopyStatusWithPaginationAsync(paginationParams, bookFilterDTO, BookStatus.Borrowed);
+            return await GetBookByCopyStatusWithPaginationAsync(paginationParams, sortParameters, bookFilterDTO, BookStatus.Borrowed);
         }
 
         public async Task<RepositoryResponse<PaginatedDataDTO<BookReturnDTO>>> GetAvailableBooksWithPaginationAsync(
-            PaginationParameters paginationParams, BookFilterDTO bookFilterDTO)
+            PaginationParameters paginationParams, SortParameters? sortParameters, BookFilterDTO bookFilterDTO)
         {
-            return await GetBookByCopyStatusWithPaginationAsync(paginationParams, bookFilterDTO, BookStatus.Available);
+            return await GetBookByCopyStatusWithPaginationAsync(paginationParams, sortParameters, bookFilterDTO, BookStatus.Available);
         }
 
         public async Task<RepositoryResponse<PaginatedDataDTO<BookReturnDTO>>> GetUnavailableBooksWithPaginationAsync(
-            PaginationParameters paginationParams, BookFilterDTO bookFilterDTO)
+            PaginationParameters paginationParams, SortParameters? sortParameters, BookFilterDTO bookFilterDTO)
         {
             var query = BuildBooksQuery(bookFilterDTO);
 
+            query = ApplySorting(query, sortParameters);
             query = query.Where(book => !book.Copies.Any(copy => copy.Status == BookStatus.Available));
 
             var totalItems = await query.CountAsync();
@@ -628,8 +633,8 @@ namespace API.Repositories
             return new RepositoryResponse<IEnumerable<BookCopyReturnDTO>>(RepositoryStatus.BookCopyNotFound);
         }
 
-        public async Task<RepositoryResponse<IEnumerable<BookCopyReturnDTO>>> GetBookCopiesByStatusesAsync(IEnumerable<BookStatus> bookStatuses,
-            int? bookId = null)
+        public async Task<RepositoryResponse<IEnumerable<BookCopyReturnDTO>>> GetBookCopiesByStatusesAsync(
+            IEnumerable<BookStatus> bookStatuses, int? bookId = null)
         {
             var query = _context.BookCopies
                 .Include(bc => bc.Book)
@@ -663,10 +668,12 @@ namespace API.Repositories
             else return new RepositoryResponse<IEnumerable<BookCopyReturnDTO>>(RepositoryStatus.BookCopyNotFound);
         }
 
-        public async Task<RepositoryResponse<PaginatedDataDTO<BookReturnDTO>>> GetBookByCopyStatusWithPaginationAsync(
-            PaginationParameters paginationParams, BookFilterDTO bookFilterDTO, BookStatus bookStatus)
+        private async Task<RepositoryResponse<PaginatedDataDTO<BookReturnDTO>>> GetBookByCopyStatusWithPaginationAsync(
+            PaginationParameters paginationParams, SortParameters? sortParameters, BookFilterDTO bookFilterDTO, BookStatus bookStatus)
         {
             var query = BuildBooksQuery(bookFilterDTO);
+
+            query = ApplySorting(query, sortParameters);
             query = query.Where(book => book.Copies.Any(bookCopy => bookCopy.Status == bookStatus));
 
             var totalItems = await query.CountAsync();
@@ -798,6 +805,51 @@ namespace API.Repositories
                 query = query.Where(p => p.Publisher.ToLower().Contains(bookFilterDTO.Publisher.ToLower()));
 
             return query;
+        }
+
+        private IQueryable<Book> ApplySorting(IQueryable<Book> query, SortParameters? sortParameters)
+        {
+            if (sortParameters == null)
+                return query.OrderBy(b => b.Title);
+
+            var sortBy = (sortParameters.SortBy ?? "title").ToLower();
+            var sortDirection = (sortParameters.SortDirection ?? "asc").ToLower();
+
+            Console.WriteLine(sortBy);
+            Console.WriteLine(sortDirection);
+
+            return sortBy switch
+            {
+                "title" => sortDirection == "asc"
+                    ? query.OrderBy(b => b.Title)
+                    : query.OrderByDescending(b => b.Title),
+
+                "author" => sortDirection == "asc"
+                    ? query.OrderBy(b => b.Author)
+                    : query.OrderByDescending(b => b.Author),
+
+                "category" => sortDirection == "asc"
+                    ? query.OrderBy(b => b.Category)
+                    : query.OrderByDescending(b => b.Category),
+
+                "publisher" => sortDirection == "asc"
+                    ? query.OrderBy(b => b.Publisher)
+                    : query.OrderByDescending(b => b.Publisher),
+
+                "totalcopies" => sortDirection == "asc"
+                    ? query.OrderBy(b => b.Copies.Count)
+                    : query.OrderByDescending(b => b.Copies.Count),
+
+                "publicationyear" => sortDirection == "asc"
+                    ? query.OrderBy(b => b.PublicationYear)
+                    : query.OrderByDescending(b => b.PublicationYear),
+
+                "availablecopies" => sortDirection == "asc"
+                    ? query.OrderBy(b => b.Copies.Count(c => c.Status == BookStatus.Available))
+                    : query.OrderByDescending(b => b.Copies.Count(c => c.Status == BookStatus.Available)),
+
+                _ => query.OrderBy(b => b.Title)
+            };
         }
     }
 }

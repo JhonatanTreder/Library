@@ -1,11 +1,11 @@
 import { BookReturnDTO } from '@/app/interfaces/books/BookReturnDTO';
 import { SortDirection, SortField, SortState } from '@/app/types/sortTypes';
 
-export interface UseBookPaginationReturn{
+export interface UseBookPaginationReturn {
     books: BookReturnDTO[];
     loading: boolean;
     error: string | null;
-    pagination:{
+    pagination: {
         pageNumber: number;
         pageSize: number;
         totalItems: number;
@@ -14,7 +14,12 @@ export interface UseBookPaginationReturn{
         hasNext: boolean;
     }
 
-    sort: SortState
+    ordernation: {
+        sortField: SortField;
+        sortDirection: SortDirection;
+        handleSortFieldChange: (element: React.ChangeEvent<HTMLSelectElement>) => void
+        handleSortDirectionChange: (element: React.ChangeEvent<HTMLSelectElement>) => void
+    }
 
     fetchBooks: () => Promise<void>;
     handlePageChange: (page: number) => void

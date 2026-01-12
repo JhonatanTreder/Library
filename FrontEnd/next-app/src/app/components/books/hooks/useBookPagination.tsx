@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, ReactHTMLElement, ChangeEvent } from "react"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
 
 import {
@@ -29,7 +29,6 @@ export const useBookPagination = ({
     defaultSortField = DEFAULT_SORT_FIELD,
     defaultSortDirection = DEFAULT_SORT_DIRECTION
 }: UseBookPaginationExtendedProps): UseBookPaginationReturn & {
-    sort: SortState
     handleSortChange: (field: SortField, direction: SortDirection) => void
     handleReload?: () => void
 } => {
@@ -48,10 +47,8 @@ export const useBookPagination = ({
     const [loading, setLoading] = useState<boolean>(true)
     const [error, setError] = useState<string | null>(null)
 
-    const [sort, setSort] = useState<SortState>({
-        field: defaultSortField,
-        direction: defaultSortDirection
-    })
+    const [sortField, setSortField] = useState(DEFAULT_SORT_FIELD)
+    const [sortDirection, setSortDirection] = useState(DEFAULT_SORT_DIRECTION)
 
     useEffect(() => {
         const currentPageNumber = Number(searchParams.get('pageNumber')) || 1
@@ -61,10 +58,9 @@ export const useBookPagination = ({
 
         setPageNumber(currentPageNumber)
         setPageSize(currentPageSize)
-        setSort({
-            field: sortBy,
-            direction: sortDirection
-        })
+        setSortField(sortBy)
+        setSortDirection(sortDirection)
+
     }, [searchParams, defaultPageSize, defaultSortField, defaultSortDirection])
 
     const updateUrlWithPage = useCallback((
@@ -105,11 +101,12 @@ export const useBookPagination = ({
             params.append('pageNumber', pageNumber.toString())
             params.append('pageSize', pageSize.toString())
 
-            params.append('sortBy', sort.field)
-            params.append('sortDirection', sort.direction)
+            params.append('sortBy', sortField)
+            params.append('sortDirection', sortDirection)
 
             const url = `https://localhost:7221${endpoint}?${params.toString()}`
 
+            console.log(params.toString())
             const request = await fetch(url, {
                 method: 'GET',
                 headers: {
@@ -137,7 +134,7 @@ export const useBookPagination = ({
 
                 if (responseData.currentPage !== pageNumber) {
                     setPageNumber(responseData.currentPage)
-                    updateUrlWithPage(responseData.currentPage, pageSize, sort.field, sort.direction)
+                    updateUrlWithPage(responseData.currentPage, pageSize, sortField, sortDirection)
                 }
 
                 setHasPrevious(responseData.currentPage > 1)
@@ -164,7 +161,7 @@ export const useBookPagination = ({
 
     useEffect(() => {
         fetchBooks()
-    }, [pageNumber, pageSize, sort.field, sort.direction])
+    }, [pageNumber, pageSize, sortField, sortDirection])
 
     const handlePageChange = useCallback((page: number) => {
         updateUrlWithPage(page, pageSize)
@@ -184,10 +181,29 @@ export const useBookPagination = ({
     }, [router, redirectToPage])
 
     const handleSortChange = useCallback((field: SortField, direction: SortDirection) => {
-        setSort({ field, direction })
+        setSortField(field)
+        setSortDirection(direction)
         updateUrlWithPage(1, pageSize, field, direction)
         setPageNumber(1)
     }, [updateUrlWithPage, pageSize])
+
+    const handleSortFieldChange = useCallback((element: React.ChangeEvent<HTMLSelectElement>) => {
+        const newSort = element.target.value as SortField
+
+        setSortField(newSort)
+        updateUrlWithPage(1, pageSize, newSort, sortDirection)
+        setPageNumber(1)
+
+    }, [updateUrlWithPage, pageSize, sortDirection])
+
+    const handleSortDirectionChange = useCallback((element: React.ChangeEvent<HTMLSelectElement>) => {
+        const newSortDirection = element.target.value as SortDirection
+
+        setSortDirection(newSortDirection)
+        updateUrlWithPage(1, pageSize, sortField, newSortDirection)
+        setPageNumber(1)
+
+    }, [updateUrlWithPage, pageSize, sortField])
 
     const handleReload = useCallback(() => {
         fetchBooks()
@@ -205,12 +221,18 @@ export const useBookPagination = ({
             hasPrevious,
             hasNext
         },
-        sort,
         fetchBooks,
         handlePageChange,
         handlePageSizeChange,
         handleRedirect,
         handleSortChange,
-        handleReload
+        handleReload,
+
+        ordernation: {
+            sortField: sortField || DEFAULT_SORT_FIELD,
+            sortDirection: sortDirection || DEFAULT_SORT_DIRECTION,
+            handleSortFieldChange,
+            handleSortDirectionChange
+        }
     }
 }
