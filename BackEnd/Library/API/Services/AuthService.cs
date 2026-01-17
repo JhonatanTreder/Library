@@ -318,7 +318,7 @@ namespace API.Services
             if (sendResult != RepositoryStatus.Success)
                 return RepositoryStatus.Failed;
 
-            var cancelLink = $"{_configuration["FrontEnd:BaseURL"]}/cancel-email-change" +
+            var cancelLink = $"{_configuration["FrontEnd:BaseURL"]}cancel-email-change" +
                              $"?userId={user.Id}&token={cancelToken}";
 
             var emailChangeSubject = "Alerta de Segurança: ";
@@ -345,6 +345,9 @@ namespace API.Services
 
             if (string.IsNullOrEmpty(user.PendingEmail))
                 return RepositoryStatus.PendingEmailNotFound;
+
+            Console.WriteLine("User Token: " + user.EmailChangeCancelToken);
+            Console.WriteLine("DTO Token: " + cancelEmailChangeDTO.Token);
 
             if (user.EmailChangeCancelToken != cancelEmailChangeDTO.Token)
                 return RepositoryStatus.InvalidToken;
