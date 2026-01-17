@@ -22,27 +22,9 @@ namespace API.Services.Email
             _configuration = configuration;
         }
 
-        public async Task<RepositoryStatus> SendAsync(string email)
+        //Refatorar esse método para atender a implementações genéricas de confirmação de código (como senha e email)
+        public async Task<RepositoryStatus> SendAsync(string email, string subject, string message)
         {
-            var user = await _userManager.FindByEmailAsync(email);
-
-            if (user is null)
-                return RepositoryStatus.UserNotFound;
-
-            var tokenGenerator = new Random();
-            var confirmationCode = tokenGenerator.Next(100000, 999999);
-
-            user.EmailConfirmationCode = confirmationCode.ToString();
-            user.EmailConfirmationCodeExpiryTime = DateTime.UtcNow.AddMinutes(5);
-
-            var updateResult = await _userManager.UpdateAsync(user);
-
-            if (!updateResult.Succeeded)
-                return RepositoryStatus.FailedToUpdateUser;
-
-            string subject = "Confirmação de Email";
-            string message = $"Seu código de confirmação: {confirmationCode}";
-
             var sendResult = await SendEmail(email, subject, message);
 
             return sendResult;
@@ -108,7 +90,7 @@ namespace API.Services.Email
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Erro ao enviar email viaSendGrid: {ex.Message}");
+                Console.WriteLine($"Erro ao enviar email via SendGrid: {ex.Message}");
                 return RepositoryStatus.Failed;
             }
         }

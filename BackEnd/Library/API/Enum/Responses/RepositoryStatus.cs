@@ -29,7 +29,8 @@
         InvalidConfirmationCode,
         InvalidRoleAssignment,
         CannotDelete,
-        ConfirmationCodeExpired,
+        ExpiredToken,
+        ExpiredConfirmationCode,
         BookNotAvailable,
         BookNotFound,
         BookCopyNotFound,
@@ -46,6 +47,8 @@
         Unauthorized,
         UserNotFound,
         EmailAlreadyExists,
+        EmailNotFound,
+        PendingEmailNotFound,
         MatriculatesAlreadyExists,
     }
 }

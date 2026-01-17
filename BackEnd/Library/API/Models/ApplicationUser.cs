@@ -1,6 +1,7 @@
 ﻿using API.Enum;
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
+using Twilio.Rest.Video.V1.Room.Participant;
 
 namespace API.Models
 {
@@ -14,8 +15,15 @@ namespace API.Models
         public UserType UserType { get; set; }
         public string? Matriculates { get; set; }
 
+        public string? PendingPassword { get; set; }
+        public string? PasswordChangeCode { get; set; }
+        public DateTime PasswordChangeCodeExpiryTime { get; set; }
+
+        public string? PendingEmail { get; set; }
         public string? EmailConfirmationCode { get; set; }
         public DateTime EmailConfirmationCodeExpiryTime { get; set; }
+        public string? EmailChangeCancelToken { get; set; }
+        public DateTime EmailChangeCancelTokenExpiryTime { get; set; }
 
         public string? PhoneConfirmationCode { get; set; }
         public DateTime PhoneConfirmationCodeExpiryTime { get; set; }

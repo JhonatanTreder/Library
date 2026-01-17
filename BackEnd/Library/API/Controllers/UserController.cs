@@ -265,7 +265,7 @@ namespace API.Controllers
             };
         }
 
-        [HttpPut("{id}")]
+        [HttpPatch("{id}")]
         [Authorize(Roles = "user,librarian,admin")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
@@ -280,7 +280,7 @@ namespace API.Controllers
             {
                 RepositoryStatus.Success => NoContent(),
 
-                RepositoryStatus.NotFound => NotFound(new ApiResponse
+                RepositoryStatus.UserNotFound => NotFound(new ApiResponse
                 {
                     Status = "Not Found",
                     Data = null,

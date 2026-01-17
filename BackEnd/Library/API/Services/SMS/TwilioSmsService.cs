@@ -70,7 +70,7 @@ namespace API.Services.SMS
                 return RepositoryStatus.InvalidPhoneFormat;
 
             if (user.PhoneConfirmationCodeExpiryTime < DateTime.UtcNow)
-                return RepositoryStatus.ConfirmationCodeExpired;
+                return RepositoryStatus.ExpiredConfirmationCode;
 
             if (user.PhoneConfirmationCode != dto.PhoneCode)
                 return RepositoryStatus.InvalidConfirmationCode;

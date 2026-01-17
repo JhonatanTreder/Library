@@ -63,9 +63,10 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetNewBooks([FromQuery] PaginationParameters paginationParams,
+                                                     [FromQuery] SortParameters sortParameters,
                                                      [FromQuery] BookFilterDTO bookFilterDTO)
         {
-            var response = await _bookRepository.GetNewBooksWithPaginationAsync(paginationParams, bookFilterDTO);
+            var response = await _bookRepository.GetNewBooksWithPaginationAsync(paginationParams, sortParameters, bookFilterDTO);
 
             return response.Status switch
             {
@@ -380,9 +381,10 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetBorrowedBooks([FromQuery] PaginationParameters paginationParams,
+                                                          [FromQuery] SortParameters sortParameters,
                                                           [FromQuery] BookFilterDTO bookFilterDTO)
         {
-            var response = await _bookRepository.GetBorrowedBooksWithPaginationAsync(paginationParams, bookFilterDTO);
+            var response = await _bookRepository.GetBorrowedBooksWithPaginationAsync(paginationParams, sortParameters, bookFilterDTO);
 
             return response.Status switch
             {
@@ -411,9 +413,10 @@ namespace API.Controllers
 
         [HttpGet("available")]
         public async Task<IActionResult> GetAvailableBooks([FromQuery] PaginationParameters paginationParams,
-                                                           [FromQuery] BookFilterDTO bookFilterDTO)
+                                                             [FromQuery] SortParameters sortParameters,
+                                                             [FromQuery] BookFilterDTO bookFilterDTO)
         {
-            var response = await _bookRepository.GetAvailableBooksWithPaginationAsync(paginationParams, bookFilterDTO);
+            var response = await _bookRepository.GetAvailableBooksWithPaginationAsync(paginationParams, sortParameters, bookFilterDTO);
 
             return response.Status switch 
             {
@@ -445,9 +448,10 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetUnavailableBooks([FromQuery] PaginationParameters paginationParams,
+                                                             [FromQuery] SortParameters sortParameters,
                                                              [FromQuery] BookFilterDTO bookFilterDTO)
         {
-            var response = await _bookRepository.GetUnavailableBooksWithPaginationAsync(paginationParams, bookFilterDTO);
+            var response = await _bookRepository.GetUnavailableBooksWithPaginationAsync(paginationParams, sortParameters, bookFilterDTO);
 
             return response.Status switch
             {
@@ -604,7 +608,6 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> Post([FromBody] CreateBookDTO bookDTO)
         {
-            Console.WriteLine(bookDTO.Title.Length);
             var book = await _bookRepository.AddBookAsync(bookDTO);
 
             return book.Status switch

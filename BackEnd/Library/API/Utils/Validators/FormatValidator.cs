@@ -1,4 +1,5 @@
 ﻿using DnsClient;
+using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 
 namespace API.Utils.Validators
@@ -22,6 +23,7 @@ namespace API.Utils.Validators
 
             return validationResult;
         }
+
         public static bool ValidateMatriculatesFormat(string matriculates)
         {
             var pattern = @"^[0-9]{15}$";
@@ -31,12 +33,23 @@ namespace API.Utils.Validators
 
             return validationResult;
         }
+
         public static async Task<bool> ValidateDomainFormat(string domain)
         {
             var lookup = new LookupClient();
             var result = await lookup.QueryAsync(domain, QueryType.MX);
 
             return result.Answers.MxRecords().Any();
+        }
+
+        public static bool ValidatePasswordFormat(string password)
+        {
+            var passwordPattern = @"^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_\-+=\[{\]};:'"",<.>/?\\|`~])[A-Za-z\d!@#$%^&*()_\-+=\[{\]};:'"",<.>/?\\|`~]{6,45}$";
+
+            var regex = new Regex(passwordPattern);
+            var validationResult =  regex.IsMatch(password);
+
+            return validationResult;
         }
     }
 }

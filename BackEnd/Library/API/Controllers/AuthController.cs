@@ -1,10 +1,13 @@
 ﻿using API.DTOs.Authentication;
+using API.DTOs.Authentication.Email;
+using API.DTOs.Authentication.Password;
 using API.DTOs.Responses;
 using API.DTOs.Token;
 using API.Enum.Responses;
 using API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Twilio.Rest.Video.V1.Room.Participant;
 
 namespace API.Controllers
 {
@@ -160,6 +163,295 @@ namespace API.Controllers
         }
 
         [HttpPost]
+        [Authorize]
+        [Route("request-email-change")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> RequestEmailChange([FromBody] RequestEmailChangeDTO emailChangeDTO)
+        {
+            var response = await _authService.RequestEmailChangeAsync(emailChangeDTO);
+
+            return response switch
+            {
+                RepositoryStatus.Success => Ok(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = null,
+                    Message = "Pedido de alteração de email enviado com sucesso"
+                }),
+
+                RepositoryStatus.InvalidPassword => BadRequest(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = "A senha do usuário está inválida"
+                }),
+
+                RepositoryStatus.UserNotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = "O usuário não foi encontrado"
+                }),
+
+                RepositoryStatus.EmailNotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = "O email do usuário não foi encontrado"
+                }),
+
+                RepositoryStatus.EmailAlreadyExists => Conflict(new ApiResponse
+                {
+                    Status = "Conflict",
+                    Data = null,
+                    Message = "O email especificado já está sendo utilizado"
+                }),
+
+                RepositoryStatus.FailedToUpdateUser => Conflict(new ApiResponse
+                {
+                    Status = "Conflict",
+                    Data = null,
+                    Message = "Erro inesperado ao tentar atualizar o usuário"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Erro inesperado ao tentar atualizar o email do usuário"
+                })
+            };
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("confirm-email-change")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ConfirmEmailChange(ConfirmEmailChangeDTO emailChangeDTO)
+        {
+            var response = await _authService.ConfirmEmailChangeAsync(emailChangeDTO);
+
+            return response switch 
+            {
+                RepositoryStatus.Success => Ok(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = null,
+                    Message = "O email foi alterado com sucesso"
+                }),
+
+                RepositoryStatus.InvalidConfirmationCode => BadRequest(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = "O código de confirmação do usuário está inválido"
+                }),
+
+                RepositoryStatus.UserNotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = "O usuário não foi encontrado"
+                }),
+
+                RepositoryStatus.EmailNotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = "O email do usuário não foi encontrado"
+                }),
+
+                RepositoryStatus.FailedToUpdateUser => Conflict(new ApiResponse
+                {
+                    Status = "Conflict",
+                    Data = null,
+                    Message = "Erro inesperado ao tentar atualizar o usuário"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Erro inesperado ao tentar confirmar a alteração de email do usuário"
+                })
+            };
+        }
+
+        [HttpGet]
+        [Route("cancel-email-change")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> CancelEmailChange([FromQuery] CancelEmailChangeDTO cancelEmailChangeDTO)
+        {
+            var response = await _authService.CancelEmailChangeAsync(cancelEmailChangeDTO);
+
+            return response switch 
+            {
+                RepositoryStatus.Success => Ok(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = null,
+                    Message = "A alteração de e-mail foi cancelada com sucesso"
+                }),
+
+                RepositoryStatus.UserNotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = $"O usuário de id '{cancelEmailChangeDTO.UserId}' não foi encontrado"
+                }),
+
+                RepositoryStatus.InvalidToken => NotFound(new ApiResponse 
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = "O novo endereço de e-mail para cancelar não foi encontrado"
+                }),
+
+                RepositoryStatus.ExpiredToken => Conflict(new ApiResponse
+                {
+                    Status = "Conflict",
+                    Data = null,
+                    Message = "O código para cancelar a alteração do e-mail foi expirado"
+                }),
+
+                RepositoryStatus.FailedToUpdateUser => Conflict(new ApiResponse
+                {
+                    Status = "Conflict",
+                    Data = null,
+                    Message = "Ocorreu um erro inesperado ao tentar atualizar o usuário"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse 
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Ocorreu um erro inesperado ao tentar cancelar a alteração de e-mail do usuário"
+                })
+            };
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("request-password-change")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> RequestPasswordChange([FromBody] RequestPasswordChangeDTO passwordChangeDTO)
+        {
+            var response = await _authService.RequestPasswordChangeAsync(passwordChangeDTO);
+
+            return response switch
+            {
+                RepositoryStatus.Success => Ok(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = null,
+                    Message = "Pedido de alteração de senha enviado com sucesso"
+                }),
+
+                RepositoryStatus.UserNotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = "O usuário não foi encontrado"
+                }),
+
+                RepositoryStatus.EmailNotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = "O email do usuário não foi encontrado"
+                }),
+
+                RepositoryStatus.InvalidPassword => BadRequest(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = "A nova senha não atende aos requisitos mínimos de segurança"
+                }),
+
+                RepositoryStatus.FailedToUpdateUser => Conflict(new ApiResponse
+                {
+                    Status = "Conflict",
+                    Data = null,
+                    Message = "Erro inesperado ao tentar atualizar o usuário"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Erro inesperado ao tentar alterar a senha do usuário"
+                })
+            };
+
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("confirm-password-change")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ConfirmPasswordChange([FromBody] ConfirmPasswordChangeDTO passwordChangeDTO)
+        {
+            var response = await _authService.ConfirmPasswordChangeAsync(passwordChangeDTO);
+
+            return response switch
+            {
+                RepositoryStatus.Success => Ok(new ApiResponse
+                {
+                    Status = "success",
+                    Data = null,
+                    Message = "A senha foi alterada com sucesso"
+                }),
+
+                RepositoryStatus.InvalidConfirmationCode => BadRequest(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = "O código de confirmação do usuário está inválido"
+                }),
+
+                RepositoryStatus.Failed => BadRequest(new ApiResponse
+                {
+                    Status = "Conflict",
+                    Data = null,
+                    Message = "A nova senha do usuário está inválida"
+                }),
+
+                RepositoryStatus.FailedToUpdateUser => Conflict(new ApiResponse
+                {
+                    Status = "Conflict",
+                    Data = null,
+                    Message = "Erro inesperado ao tentar atualizar o usuário"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Erro inesperado ao tentar confirmar a alteração de senha do usuário"
+                })
+            };
+        }
+
+        [HttpPost]
         [Route("email-confirmation")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -169,7 +461,7 @@ namespace API.Controllers
             var response = await _authService.SendEmailConfirmationAsync(email);
             Console.WriteLine(response);
 
-            return response switch 
+            return response switch
             {
                 RepositoryStatus.Success => Ok(new ApiResponse
                 {
@@ -191,6 +483,16 @@ namespace API.Controllers
                     Data = null,
                     Message = "Erro inesperado ao tentar atualizar o usuário"
                 }),
+
+
+                //Este caso onde o service retorna "Failed" já está sendo coberto pelo StatusCode 500 abaixo
+
+                //RepositoryStatus.Failed => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                //{
+                //    Status = "Internal Server Error",
+                //    Data = null,
+                //    Message = "Erro inesperado ao tentar enviar a confirmação de email para o usuário"
+                //}),
 
                 _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
                 {
@@ -254,7 +556,7 @@ namespace API.Controllers
                     Message = "Erro inesperado ao tentar processar o código de confirmação do telefone"
                 })
             };
-        } 
+        }
 
         [HttpPost]
         [Route("verify-email")]
@@ -266,13 +568,13 @@ namespace API.Controllers
         {
             var response = await _authService.VerifyEmailCodeAsync(verifyEmailDTO);
 
-            return response switch 
+            return response switch
             {
                 RepositoryStatus.Success => Ok(new ApiResponse
                 {
                     Status = "Ok",
                     Data = null,
-                    Message  = "Código verificado com sucesso"
+                    Message = "Código verificado com sucesso"
                 }),
 
                 RepositoryStatus.InvalidConfirmationCode => BadRequest(new ApiResponse
@@ -354,7 +656,7 @@ namespace API.Controllers
                     Message = "O número de telefone do usuário está em um formato inválido"
                 }),
 
-                RepositoryStatus.ConfirmationCodeExpired => StatusCode(StatusCodes.Status410Gone, new ApiResponse
+                RepositoryStatus.ExpiredConfirmationCode => StatusCode(StatusCodes.Status410Gone, new ApiResponse
                 {
                     Status = "Gone",
                     Data = null,

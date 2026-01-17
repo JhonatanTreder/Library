@@ -157,7 +157,7 @@ namespace API.Repositories
             {
                 Name = dbUser.Name,
                 Email = dbUser.Email,
-                PhoneNumber = dbUser.PhoneNumber,
+                PhoneNumber = dbUser.PhoneNumber ?? "Sem número de telefone",
                 UserType = dbUser.UserType.ToString()
             };
 
@@ -211,52 +211,45 @@ namespace API.Repositories
             var user = await _userManager.FindByIdAsync(id);
 
             if (user is null)
-                return RepositoryStatus.NotFound;
+                return RepositoryStatus.UserNotFound;
 
-            if (!string.IsNullOrEmpty(userUpdateDTO.Name))
+            if (userUpdateDTO.Name != null)
             {
                 user.Name = userUpdateDTO.Name;
             }
 
-            if (!string.IsNullOrEmpty(userUpdateDTO.PhoneNumber))
+            if (userUpdateDTO.PhoneNumber != null)
             {
-                if (FormatValidator.ValidateE164Format(userUpdateDTO.PhoneNumber) is false)
-                    return RepositoryStatus.InvalidPhoneFormat;
+                if (!string.IsNullOrEmpty(userUpdateDTO.PhoneNumber))
+                {
+                    if (FormatValidator.ValidateE164Format(userUpdateDTO.PhoneNumber) is false)
+                        return RepositoryStatus.InvalidPhoneFormat;
+                }
 
                 user.PhoneNumber = userUpdateDTO.PhoneNumber;
             }
 
-            if (!string.IsNullOrEmpty(userUpdateDTO.UserMatriculates))
+            if (userUpdateDTO.UserMatriculates != null)
             {
-                if (FormatValidator.ValidateMatriculatesFormat(userUpdateDTO.UserMatriculates))
+                if (FormatValidator.ValidateMatriculatesFormat(userUpdateDTO.UserMatriculates) is false)
                     return RepositoryStatus.InvalidMatriculatesFormat;
+
+                var userWithMatriculates = await _userManager.Users
+                    .FirstOrDefaultAsync(m => m.Matriculates == userUpdateDTO.UserMatriculates && m.Id != id);
+
+                if (userWithMatriculates != null)
+                    return RepositoryStatus.MatriculatesAlreadyExists;
+
+                user.Matriculates = userUpdateDTO.UserMatriculates;
             }
 
-            var userWithMatriculates = await _userManager.Users
-                .FirstOrDefaultAsync(m => m.Matriculates == userUpdateDTO.UserMatriculates);
-
-            if (userWithMatriculates != null)
-            {
-                return RepositoryStatus.MatriculatesAlreadyExists;
-            }
-
-            if (!string.IsNullOrEmpty(userUpdateDTO.Email) && user.Email != userUpdateDTO.Email)
-            {
-                user.Email = userUpdateDTO.Email;
-                user.UserName = userUpdateDTO.Email;
-                user.NormalizedEmail = userUpdateDTO.Email.ToUpper();
-            }
-
-            if (!string.IsNullOrEmpty(userUpdateDTO.Password))
-            {
-                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var resetPassword = await _userManager.ResetPasswordAsync(user, token, userUpdateDTO.Password);
-
-                if (resetPassword.Succeeded is false)
-                {
-                    return RepositoryStatus.FailedToResetPassword;
-                }
-            }
+            //Realizar lógica de verificação de email semelhante a lógica de verificação de senha
+            //if (!string.IsNullOrEmpty(userUpdateDTO.Email) && user.Email != userUpdateDTO.Email)
+            //{
+            //    user.Email = userUpdateDTO.Email;
+            //    user.UserName = userUpdateDTO.Email;
+            //    user.NormalizedEmail = userUpdateDTO.Email.ToUpper();
+            //}
 
             var updatedResult = await _userManager.UpdateAsync(user);
 
