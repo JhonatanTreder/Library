@@ -144,16 +144,6 @@ namespace API.Services
             {
                 if (result.Errors.Any())
                 {
-                    foreach (var error in result.Errors)
-                    {
-                        Console.WriteLine("--------------------------------------------------");
-                        Console.WriteLine(registerDTO.Name);
-                        Console.WriteLine(user.Name);
-                        Console.WriteLine(error.Code);
-                        Console.WriteLine(error.Description);
-                        Console.WriteLine("--------------------------------------------------");
-                    }
-
                     var errorDTO = new UserDTO
                     {
                         UserErrors = result
@@ -497,8 +487,6 @@ namespace API.Services
 
             return RepositoryStatus.Success;
         }
-
-
 
         public async Task<RepositoryStatus> SendEmailConfirmationAsync(string email)
         {

@@ -44,6 +44,7 @@
         FailedToUpdateUser,
         FailedToRevokeToken,
         FailedToResetPassword,
+        FailedToSendEmail,
         Unauthorized,
         UserNotFound,
         EmailAlreadyExists,

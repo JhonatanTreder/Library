@@ -107,8 +107,15 @@ builder.Services.AddScoped<IEventRepository, EventRepository>();
 
 builder.Services.AddHostedService<EventStatusChangerService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
-builder.Services.AddTransient<IEmailService, SendGridEmailService>();
+builder.Services.AddTransient<IEmailService, BrevoEmailService>(); //Serviço de email utilizando o Brevo.
+//---------------------------------------------------------------------------------------------------------------------------
+// O serviço do Sendgrid está funcionando corretamente, mas é um serviço pago e por isso a aplicação está utilizando o Brevo. 
+//builder.Services.AddTransient<IEmailService, SendGridEmailService>();
+//---------------------------------------------------------------------------------------------------------------------------
+
+//Para o serviço de SMS, teremos que encontrar uma outra abordagem de uso
 builder.Services.AddTransient<ISmsService, TwilioSmsService>();
+//---------------------------------------------------------------------------------------------------------------------------
 
 var secrectKey = builder.Configuration["JWT:SecretKey"]
     ?? throw new ArgumentException("Invalid secret key!");

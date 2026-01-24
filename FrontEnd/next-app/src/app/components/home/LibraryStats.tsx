@@ -86,7 +86,7 @@ export default function ShowLibraryStats() {
     }
 
     const handleViewDelayedBooks = () => {
-        router.push('/pages/books/delayed')
+        router.push('/pages/books/borrowed')
     }
 
     const handleViewUnavailableBooks = () => {

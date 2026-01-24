@@ -32,7 +32,7 @@ export function useLogin() {
         console.error(response)
         localStorage.removeItem('token')
         localStorage.removeItem('refresh-token')
-        localStorage.removeItem('toke-expiration-time')
+        localStorage.removeItem('token-expiration-time')
         return;
       }
 

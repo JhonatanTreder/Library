@@ -7,6 +7,7 @@ using API.Repositories.Interfaces;
 using API.Utils.Validators;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 namespace API.Repositories
 {
@@ -105,6 +106,7 @@ namespace API.Repositories
                 return new RepositoryResponse<IEnumerable<UserFilterDTO>>(RepositoryStatus.Success, users);
             }
         }
+
         public async Task<RepositoryResponse<UserDashboardDTO>> GetGeneralUserInfoAsync(string userId)
         {
             if (string.IsNullOrWhiteSpace(userId))
@@ -158,6 +160,7 @@ namespace API.Repositories
                 Name = dbUser.Name,
                 Email = dbUser.Email,
                 PhoneNumber = dbUser.PhoneNumber ?? "Sem número de telefone",
+                Matriculates = dbUser.Matriculates,
                 UserType = dbUser.UserType.ToString()
             };
 

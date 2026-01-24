@@ -4,6 +4,7 @@ using API.Enum.Responses;
 using API.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace API.Controllers
 {
@@ -16,6 +17,20 @@ namespace API.Controllers
         public UserController(IUserRepository userRepository)
         {
             _userRepository = userRepository;
+        }
+
+        [HttpGet]
+        [Route("me")]
+        public IActionResult GetUserId()
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            return Ok(new ApiResponse
+            {
+                Status = "Ok",
+                Data = userId,
+                Message = "ID do usuário obtido com sucesso"
+            });
         }
 
         [HttpGet]
@@ -143,7 +158,7 @@ namespace API.Controllers
             };
         }
 
-        [HttpGet("{userId}/user-dashboard")]
+        [HttpGet("{userId}/dashboard")]
         [Authorize(Roles = "user,librarian,admin")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

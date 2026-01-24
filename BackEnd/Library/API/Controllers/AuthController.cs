@@ -7,6 +7,7 @@ using API.Enum.Responses;
 using API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using Twilio.Rest.Video.V1.Room.Participant;
 
 namespace API.Controllers
@@ -173,6 +174,10 @@ namespace API.Controllers
         public async Task<IActionResult> RequestEmailChange([FromBody] RequestEmailChangeDTO emailChangeDTO)
         {
             var response = await _authService.RequestEmailChangeAsync(emailChangeDTO);
+            Console.WriteLine(response.ToString());
+            Console.WriteLine(emailChangeDTO.UserId);
+            Console.WriteLine(emailChangeDTO.UserPassword);
+            Console.WriteLine(emailChangeDTO.NewEmail);
 
             return response switch
             {
