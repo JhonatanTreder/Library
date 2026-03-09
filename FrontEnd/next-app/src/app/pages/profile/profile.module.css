@@ -57,7 +57,7 @@
     width: 100%;
     height: auto;
     max-width: 600px;
-    padding: 5rem 3rem;
+    padding: 4rem 3rem;
     border-radius: 5px;
     border: 0.14rem solid #3B82F6;
     background: rgba(255, 255, 255, 0.98);
@@ -70,6 +70,11 @@
 .profileCard:hover {
     box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4),
         0 0 0 1px rgba(255, 255, 255, 0.6);
+}
+
+.profileTitle {
+    margin: 0;
+    color: #3B82F6;
 }
 
 .editContainer {
@@ -199,6 +204,257 @@ p.inputBox {
 
 .editButton:active {
     transform: translateY(-0.15rem);
+}
+
+.pendingValidationsSection {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.divisionLine {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    width: 100%;
+    background: #bad9f5;
+    height: 2px;
+}
+
+.pendingValidationsHeader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.pendingValidations {
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.pendingItemContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.pendingItem {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: center;
+    align-items: center;
+    border: 0.15rem solid #3B82F6;
+    border-radius: 5px;
+}
+
+.pendingItemTitle {
+
+    padding: 0.75rem 1rem;
+    border-radius: 5px;
+    font-weight: 600;
+    margin: 0;
+    color: #3B82F6;
+}
+
+.pendingItemValue {
+    padding: 0.75rem 1rem;
+    margin: 0;
+    height: 100%;
+    width: 30%;
+    font-weight: 600;
+    color: #667eea;
+}
+
+.pendingItemMessageWrapper {
+
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.pendingItemMessage {
+    color: #3B82F6;
+    cursor: pointer;
+}
+
+.pendingItemMessage:hover {
+    text-decoration: underline;
+}
+
+.pendingItemButton {
+    padding: 0.5rem 1.25rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: white;
+    background: #3B82F6;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    min-height: 2.5rem;
+}
+
+.pendingItemButton:hover {
+    background-color: #1E3A8A;
+    transform: translateY(-0.35rem);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.pendingItemButton:active {
+    transform: translateY(-0.15rem);
+}
+
+.pendingItemDescription {
+    background: #6b728010;
+    margin-top: 0;
+    width: 50%;
+    border: 2px solid #6b7280;
+    border-top: none;
+    border-radius: 0 0 5px 5px;
+    padding: 0.3rem 1rem;
+    text-align: center;
+    color: #6b7280;
+    font-style: italic;
+}
+
+.pendingValidationsSubtitle {
+    width: 70%;
+    text-align: center;
+    color: #1053b9;
+    margin: 0;
+}
+
+.pendingValidationsTitle {
+    margin: 0;
+    width: 50%;
+    padding: 1rem 1rem;
+    background: #bad9f5;
+    border: 2px solid #1053b9;
+    border-radius: 8px;
+    color: #1053b9;
+    font-weight: 600;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.pendingValidationIconWrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.pendingValidationIcon {
+    background: #bad9f5;
+    border: 2px solid #1053b9;
+    border-radius: 10px;
+    color: #1053b9;
+    padding: 0.25rem;
+
+    transform: translateY(0);
+}
+
+.pendingValidationIcon:hover {
+    animation: moveUp 0.35s ease forwards;
+}
+
+.pendingValidationIcon:not(:hover) {
+    animation: moveDown 0.35s ease forwards;
+}
+
+@keyframes moveUp {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(-0.35rem);
+    }
+}
+
+@keyframes moveDown {
+    from {
+        transform: translateY(-0.35rem);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+/* Modal do tooltip */
+.validationTooltip {
+    text-align: center;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 15px;
+    background: #bad9f5;
+    border: 2px solid #1053b9;
+    border-radius: 8px;
+    color: #1053b9;
+    padding: 1rem 1.25rem;
+    min-width: 220px;
+    max-width: 280px;
+    box-shadow: 0 4px 12px rgba(16, 83, 185, 0.2);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+/* Seta apontando para cima (externa/borda) */
+.validationTooltip::after {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 10px solid transparent;
+    border-bottom-color: #1053b9;
+}
+
+/* Seta apontando para cima (interna/branca) */
+.validationTooltip::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 8px solid transparent;
+    border-bottom-color: #bad9f5;
+    z-index: 1;
+    margin-bottom: -2px;
+}
+
+.pendingValidationIconWrapper:hover .validationTooltip {
+    opacity: 1;
+    visibility: visible;
+}
+
+.tooltipTitle {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1053b9;
+}
+
+.tooltipMessage {
+    text-align: start;
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.4;
 }
 
 .dashboardSection {

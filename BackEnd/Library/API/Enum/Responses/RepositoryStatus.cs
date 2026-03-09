@@ -44,12 +44,16 @@
         FailedToUpdateUser,
         FailedToRevokeToken,
         FailedToResetPassword,
+        FailedToSendSMS,
         FailedToSendEmail,
         Unauthorized,
         UserNotFound,
         EmailAlreadyExists,
-        EmailNotFound,
-        PendingEmailNotFound,
+        PhoneNumberAlreadyExists,
         MatriculatesAlreadyExists,
+        EmailNotFound,
+        PhoneNumberNotFound,
+        PendingEmailNotFound,
+        PendingPhoneNumberNotFound,
     }
 }

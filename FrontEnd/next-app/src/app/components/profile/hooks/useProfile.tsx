@@ -3,7 +3,9 @@
 import { useRouter } from "next/navigation"
 import { useEffect, useState, useRef } from "react"
 import { ProfileData, UseProfileProps } from "@/app/interfaces/profile/UseProfileProps"
-import { UserDashboardData } from "@/app/interfaces/entities/Events"
+import { UserDashboardData } from "@/app/interfaces/endpoints/Dashboard"
+import { PendingValidations } from "@/app/interfaces/endpoints/PendingValidations"
+import { validateEmail, validateMatriculates, validatePhoneNumber, validateUserName } from "@/app/utils/FormatValidator"
 
 // Configuração centralizada da API
 const API_CONFIG = {
@@ -12,6 +14,7 @@ const API_CONFIG = {
         me: '/User/me',
         user: (id: string) => `/User/${id}`,
         requestUserGeneralInfo: (id: string) => `/User/${id}/dashboard`,
+        pendingUserValidations: (id: string) => `/User/${id}/pending-validations`,
         requestEmailChange: '/Auth/request-email-change',
         confirmEmailChange: '/Auth/confirm-email-change',
         cancelEmailChange: '/Auth/cancel-email-change',
@@ -45,6 +48,11 @@ export const useProfile = (): UseProfileProps => {
         totalFines: 0
     })
 
+    const [pendingValidations, setPendingValidations] = useState<PendingValidations>({
+        emailIsPending: null,
+        phoneNumberIsPending: null
+    })
+
     const [editingField, setEditingField] = useState<string | null>(null)
     const [showEmailModal, setShowEmailModal] = useState(false)
     const [showPasswordModal, setShowPasswordModal] = useState(false)
@@ -55,10 +63,10 @@ export const useProfile = (): UseProfileProps => {
     const router = useRouter()
 
     const hasChanges =
-    profileData.nomeCompleto !== originalData.nomeCompleto ||
-    profileData.matricula !== originalData.matricula ||
-    profileData.telefone !== originalData.telefone
-    
+        profileData.nomeCompleto !== originalData.nomeCompleto ||
+        profileData.matricula !== originalData.matricula ||
+        profileData.telefone !== originalData.telefone
+
     const getAuthToken = (): string | null => {
         const token = localStorage.getItem('token')
 
@@ -127,6 +135,7 @@ export const useProfile = (): UseProfileProps => {
         }
         catch (error) {
             console.error('Erro em fetchUserGeneralInfo:', error)
+            return null
         }
     }
 
@@ -165,11 +174,34 @@ export const useProfile = (): UseProfileProps => {
         }
     }
 
+    const fetchPendingUserValidations = async (userId: string, token: string): Promise<any | null> => {
+        try {
+            const pendingUserValidationsURL = `${API_CONFIG.baseURL}${API_CONFIG.endpoints.pendingUserValidations(userId)}`
+
+            const pendingValidationsRequest = await fetch(pendingUserValidationsURL, {
+                method: 'GET',
+                headers: getAuthHeaders(token)
+            }
+            )
+
+            console.log(pendingValidationsRequest)
+
+            const pendingValidationsData = await pendingValidationsRequest.json()
+
+            return pendingValidationsData['data']
+        }
+
+        catch (error) {
+            console.log('Erro em fetchPendingUserValidations:', error)
+            return null
+        }
+    }
+
     const transformApiDataToProfile = (apiData: any): ProfileData => {
         return {
             nomeCompleto: apiData.name || "",
             matricula: apiData.matriculates || "",
-            telefone: apiData.phoneNumber || "Sem número de telefone",
+            telefone: apiData.phoneNumber || "--",
             email: apiData.email || "",
             senha: "••••••••"
         }
@@ -215,19 +247,29 @@ export const useProfile = (): UseProfileProps => {
                 if (!userDashboardData) {
                     throw new Error('Não foi possível carregar o dashboard do perfil')
                 }
+
                 setDashboardData(userDashboardData)
 
-                console.log('Dados do perfil carregados com sucesso:', transformedData)
-                console.log('Dados do dashboard carregados com sucesso:', userDashboardData)
+                const userPendingValidations = await fetchPendingUserValidations(userId, token)
+
+                if (!userPendingValidations) {
+                    throw new Error('Não foi possível buscar pelas validações pendentes do usuário')
+                }
+
+                setPendingValidations(userPendingValidations)
+
+                console.log('Dados do perfil carregados com sucesso: ', transformedData)
+                console.log('Dados do dashboard carregados com sucesso: ', userDashboardData)
+                console.log('Dados de validações pendentes: ', userPendingValidations)
 
             }
-            
+
             catch (error) {
                 console.error('Erro ao carregar dados do perfil:', error)
 
                 setError('Erro ao carregar perfil. Tente novamente.')
-            } 
-            
+            }
+
             finally {
                 setIsLoading(false)
             }
@@ -274,8 +316,71 @@ export const useProfile = (): UseProfileProps => {
         setShowPasswordModal(false)
     }
 
+    const handleValidateProfileValue = (userProfileData: ProfileData) => {
+
+        const profileUpdateStatus = {
+            field: '',
+            message: '',
+            isValid: true
+        }
+
+        if (validateEmail(userProfileData.email) !== true) {
+            profileUpdateStatus.field = 'email'
+            profileUpdateStatus.message = 'O e-mail está em um formato inválido'
+            profileUpdateStatus.isValid = false
+
+            return profileUpdateStatus
+        }
+
+        if (validateUserName(userProfileData.nomeCompleto) !== true) {
+
+            profileUpdateStatus.field = 'userName'
+            profileUpdateStatus.message = 'O nome do usuário está em um formato inválido'
+            profileUpdateStatus.isValid = false
+
+            return profileUpdateStatus
+        }
+
+        if (validateMatriculates(userProfileData.matricula) !== true) {
+
+            profileUpdateStatus.field = 'matriculates'
+            profileUpdateStatus.message = 'A matricula do usuário está em um formato inválido'
+            profileUpdateStatus.isValid = false
+
+            return profileUpdateStatus
+        }
+
+        if (validatePhoneNumber(userProfileData.telefone) !== true) {
+
+            profileUpdateStatus.field = 'phoneNumber'
+            profileUpdateStatus.message = 'O número de telefone do usuário está em um formato inválido'
+            profileUpdateStatus.isValid = false
+
+            return profileUpdateStatus
+        }
+
+
+        profileUpdateStatus.message = 'Usuário atualizado com sucesso'
+        profileUpdateStatus.isValid = true
+
+        return profileUpdateStatus
+    }
+
     const handleSaveAllChanges = async () => {
         setIsLoading(true)
+
+        const profileValueValidation = handleValidateProfileValue(profileData)
+
+        if (profileValueValidation.field === 'phoneNumber' && profileValueValidation.isValid) {
+            pendingValidations.phoneNumberIsPending = false
+        }
+
+        console.log('------------------------------------')
+        console.log('Validação dos novos dados')
+        console.log(profileValueValidation.message)
+        console.log(profileValueValidation.isValid)
+        console.log('------------------------------------')
+        
         setError(null)
 
         try {
@@ -291,8 +396,6 @@ export const useProfile = (): UseProfileProps => {
             }
 
             const updatedData = transformProfileToApiData(profileData)
-
-            console.log('Enviando dados atualizados:', updatedData)
 
             const response = await fetch(
                 `${API_CONFIG.baseURL}${API_CONFIG.endpoints.user(userId)}`,
@@ -326,7 +429,7 @@ export const useProfile = (): UseProfileProps => {
             setError(null)
 
         }
-        
+
         catch (error) {
 
             console.error('Erro ao salvar alterações:', error)
@@ -334,14 +437,14 @@ export const useProfile = (): UseProfileProps => {
             setError('Erro ao salvar alterações. Tente novamente.')
             handleDiscardChanges()
         }
-        
+
         finally {
             setIsLoading(false)
         }
     }
 
     const handleDiscardChanges = () => {
-        
+
         setProfileData(originalData)
         setEditingField(null)
         setError(null)
@@ -372,7 +475,7 @@ export const useProfile = (): UseProfileProps => {
                 return { success: false, message: 'Não foi possível identificar o usuário' }
             }
 
-            const response = await fetch( `${API_CONFIG.baseURL}${API_CONFIG.endpoints.requestEmailChange}`,
+            const response = await fetch(`${API_CONFIG.baseURL}${API_CONFIG.endpoints.requestEmailChange}`,
                 {
                     method: 'POST',
                     headers: getAuthHeaders(token),
@@ -413,9 +516,9 @@ export const useProfile = (): UseProfileProps => {
             }
 
         }
-        
+
         catch (error) {
-            
+
             console.error('Erro ao solicitar mudança de email:', error)
 
             return {
@@ -424,7 +527,7 @@ export const useProfile = (): UseProfileProps => {
                 message: 'Erro ao solicitar mudança de email. Tente novamente.'
             }
         }
-        
+
         finally {
             setIsLoading(false)
         }
@@ -489,7 +592,7 @@ export const useProfile = (): UseProfileProps => {
             const userData = await fetchUserData(userId, token)
 
             if (userData) {
-                
+
                 const transformedData = transformApiDataToProfile(userData)
 
                 setProfileData(transformedData)
@@ -505,7 +608,7 @@ export const useProfile = (): UseProfileProps => {
             }
 
         }
-        
+
         catch (error) {
 
             console.error('Erro ao confirmar mudança de email:', error)
@@ -515,7 +618,7 @@ export const useProfile = (): UseProfileProps => {
                 message: 'Erro ao confirmar mudança de email. Tente novamente.'
             }
         }
-        
+
         finally {
             setIsLoading(false)
         }
@@ -535,7 +638,7 @@ export const useProfile = (): UseProfileProps => {
         try {
 
             const token = getAuthToken()
-            
+
             if (!token) {
                 return { success: false, message: 'Token de autenticação não encontrado' }
             }
@@ -559,7 +662,7 @@ export const useProfile = (): UseProfileProps => {
             )
 
             if (!response.ok) {
-                
+
                 if (response.status === 401 || response.status === 403) {
 
                     clearAuthData()
@@ -572,7 +675,7 @@ export const useProfile = (): UseProfileProps => {
                 if (response.status === 400) {
 
                     const errorMessage = errorData?.message || 'Erro ao solicitar mudança de senha'
-                    
+
                     return { success: false, message: errorMessage }
                 }
 
@@ -588,7 +691,7 @@ export const useProfile = (): UseProfileProps => {
             }
 
         }
-        
+
         catch (error) {
 
             console.error('Erro ao solicitar mudança de senha:', error)
@@ -598,7 +701,7 @@ export const useProfile = (): UseProfileProps => {
                 message: 'Erro ao solicitar mudança de senha. Tente novamente.'
             }
         }
-        
+
         finally {
             setIsLoading(false)
         }
@@ -616,7 +719,7 @@ export const useProfile = (): UseProfileProps => {
         try {
 
             const token = getAuthToken()
-            
+
             if (!token) {
                 return { success: false, message: 'Token de autenticação não encontrado' }
             }
@@ -661,7 +764,7 @@ export const useProfile = (): UseProfileProps => {
             console.log('Senha alterada com sucesso!')
 
             setTimeout(() => {
-                
+
                 clearAuthData()
                 router.push('/auth/login')
             }, 2000)
@@ -672,7 +775,7 @@ export const useProfile = (): UseProfileProps => {
             }
 
         }
-        
+
         catch (error) {
 
             console.error('Erro ao confirmar mudança de senha:', error)
@@ -683,7 +786,7 @@ export const useProfile = (): UseProfileProps => {
             }
 
         }
-        
+
         finally {
             setIsLoading(false)
         }
@@ -692,11 +795,12 @@ export const useProfile = (): UseProfileProps => {
     const handleUpdatePassword = async (newPassword: string): Promise<boolean> => {
 
         console.warn('handleUpdatePassword está deprecated. Use handleRequestPasswordChange')
-        
+
         return false
     }
 
     return {
+        pendingValidations,
         dashboardData,
         profileData,
         originalData,

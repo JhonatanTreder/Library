@@ -1,6 +1,7 @@
 ﻿using API.DTOs.Authentication;
 using API.DTOs.Authentication.Email;
 using API.DTOs.Authentication.Password;
+using API.DTOs.Authentication.PhoneNumber;
 using API.DTOs.Responses;
 using API.DTOs.Token;
 using API.DTOs.User;
@@ -9,13 +10,10 @@ using API.Enum.Responses;
 using API.Models;
 using API.Services.Interfaces;
 using API.Utils.Validators;
-using DnsClient;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Twilio.Rest.Numbers.V2.RegulatoryCompliance;
-using Twilio.TwiML.Voice;
 
 namespace API.Services
 {
@@ -262,6 +260,136 @@ namespace API.Services
             return RepositoryStatus.Success; ;
         }
 
+        public async Task<RepositoryStatus> RequestPhoneNumberConfirmationAsync(RequestPhoneNumberChangeDTO phoneNumberChangeDTO)
+        {
+            var user = await _userManager.FindByIdAsync(phoneNumberChangeDTO.UserId);
+
+            if (user is null)
+                return RepositoryStatus.UserNotFound;
+
+            if (FormatValidator.ValidateE164Format(phoneNumberChangeDTO.NewPhoneNumber) is false)
+                return RepositoryStatus.InvalidPhoneFormat;
+
+            var passwordCheck = await _userManager.CheckPasswordAsync(user, phoneNumberChangeDTO.UserPassword);
+
+            if (passwordCheck is false)
+                return RepositoryStatus.InvalidPassword;
+
+            var phoneNumberExists = await _userManager.Users
+                .FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumberChangeDTO.NewPhoneNumber);
+
+            if (phoneNumberExists != null)
+                return RepositoryStatus.PhoneNumberAlreadyExists;
+
+            var tokenGenerator = new Random();
+            var confirmationCode = tokenGenerator.Next(100000, 999999);
+
+            user.PhoneNumberChangeCode = confirmationCode.ToString();
+            user.PhoneNumberChangeCodeExpiryTime = DateTime.UtcNow.AddMinutes(5);
+            user.PendingPhoneNumber = phoneNumberChangeDTO.NewPhoneNumber;
+
+            var cancelToken = Guid.NewGuid().ToString("N");
+
+            user.PhoneNumberChangeCancelToken = cancelToken;
+            user.PhoneNumberChangeCancelTokenExpiryTime = DateTime.UtcNow.AddMinutes(5);
+
+            var updateResult = await _userManager.UpdateAsync(user);
+
+            if (!updateResult.Succeeded)
+                return RepositoryStatus.FailedToUpdateUser;
+
+            var message = $"Aqui está o seu código para alteração de telefone: {confirmationCode}. " +
+                "Este código é válido por 5 minutos.";
+
+            var sendResult = await _smsServcie.SendAsync(user.PendingPhoneNumber, message);
+
+            if (sendResult != RepositoryStatus.Success)
+                return RepositoryStatus.Failed;
+
+            if (user.Email is null)
+                return RepositoryStatus.EmailNotFound;
+
+            var cancelLink = $"{_configuration["FrontEnd:BaseURL"]}cancel-phone-change" +
+                             $"?userId={user.Id}&token={cancelToken}";
+
+            var emailChangeSubject = "Alerta de Segurança: ";
+            var emailChangeMessage = $@"
+            Recebemos uma solicitação para alterar o número de telefone da sua conta.
+            Novo número de telefone solicitado: {phoneNumberChangeDTO.NewPhoneNumber}
+            Se você NÃO realizou essa solicitação, cancele imediatamente clicando no link abaixo:
+
+            {cancelLink}
+
+            Se foi você, pode ignorar este e-mail.";
+
+            await _emailService.SendAsync(user.Email, emailChangeSubject, emailChangeMessage);
+
+            return RepositoryStatus.Success;
+        }
+
+        public async Task<RepositoryStatus> CancelPhoneNumberConfirmationAsync(CancelPhoneNumberChangeDTO cancelPhoneNumberChangeDTO)
+        {
+            var user = await _userManager.FindByIdAsync(cancelPhoneNumberChangeDTO.UserId);
+
+            if (user is null)
+                return RepositoryStatus.UserNotFound;
+
+            if (string.IsNullOrEmpty(user.PendingPhoneNumber))
+                return RepositoryStatus.PendingPhoneNumberNotFound;
+
+            if (user.PhoneNumberChangeCode != cancelPhoneNumberChangeDTO.Token)
+                return RepositoryStatus.InvalidToken;
+
+            if (user.PhoneNumberChangeCancelTokenExpiryTime < DateTime.UtcNow)
+                return RepositoryStatus.ExpiredToken;
+
+            user.PendingPhoneNumber = null;
+            user.PhoneNumberChangeCancelToken = null;
+            user.PhoneNumberChangeCancelTokenExpiryTime = DateTime.UtcNow;
+
+            user.PhoneConfirmationCode = null;
+            user.PhoneConfirmationCodeExpiryTime = DateTime.UtcNow;
+
+            var updateResult = await _userManager.UpdateAsync(user);
+
+            if (!updateResult.Succeeded)
+                return RepositoryStatus.FailedToUpdateUser;
+
+            return RepositoryStatus.Success;
+        }
+
+        public async Task<RepositoryStatus> ConfirmPhoneNumberChangeAsync(ConfirmPhoneNumberChangeDTO phoneNumberChangeDTO)
+        {
+            var user = await _userManager.FindByIdAsync(phoneNumberChangeDTO.UserId);
+
+            if (user is null)
+                return RepositoryStatus.UserNotFound;
+
+            if (user.PhoneConfirmationCode != phoneNumberChangeDTO.PhoneNumberCode)
+                return RepositoryStatus.InvalidConfirmationCode;
+
+            if (user.PhoneConfirmationCodeExpiryTime < DateTime.UtcNow)
+                return RepositoryStatus.ExpiredConfirmationCode;
+
+            if (user.PendingPhoneNumber is null)
+                return RepositoryStatus.PhoneNumberNotFound;
+
+            var newPhoneNumber = user.PendingPhoneNumber;
+
+            user.PhoneNumber = newPhoneNumber;
+            user.PhoneNumberConfirmed = true;
+            user.PhoneConfirmationCode = null;
+            user.PhoneConfirmationCodeExpiryTime = DateTime.UtcNow;
+            user.PendingPhoneNumber = null;
+
+            var updateResult = await _userManager.UpdateAsync(user);
+
+            if (!updateResult.Succeeded)
+                return RepositoryStatus.FailedToUpdateUser;
+
+            return RepositoryStatus.Success;
+        }
+
         public async Task<RepositoryStatus> RequestEmailChangeAsync(RequestEmailChangeDTO emailChangeDTO)
         {
             var user = await _userManager.FindByIdAsync(emailChangeDTO.UserId);
@@ -335,9 +463,6 @@ namespace API.Services
 
             if (string.IsNullOrEmpty(user.PendingEmail))
                 return RepositoryStatus.PendingEmailNotFound;
-
-            Console.WriteLine("User Token: " + user.EmailChangeCancelToken);
-            Console.WriteLine("DTO Token: " + cancelEmailChangeDTO.Token);
 
             if (user.EmailChangeCancelToken != cancelEmailChangeDTO.Token)
                 return RepositoryStatus.InvalidToken;
@@ -513,9 +638,9 @@ namespace API.Services
             return await _emailService.SendAsync(email, subject, message);
         }
 
-        public async Task<RepositoryStatus> SendPhoneConfirmationAsync(string email)
+        public async Task<RepositoryStatus> SendPhoneConfirmationAsync(string email, string message)
         {
-            return await _smsServcie.SendAsync(email);
+            return await _smsServcie.SendAsync(email, message);
         }
 
         public async Task<RepositoryStatus> VerifyEmailCodeAsync(VerifyEmailCodeDTO verifyEmailDTO)

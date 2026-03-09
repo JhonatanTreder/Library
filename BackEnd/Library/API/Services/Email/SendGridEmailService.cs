@@ -22,7 +22,6 @@ namespace API.Services.Email
             _configuration = configuration;
         }
 
-        //Refatorar esse método para atender a implementações genéricas de confirmação de código (como senha e email)
         public async Task<RepositoryStatus> SendAsync(string email, string subject, string message)
         {
             var sendResult = await SendEmail(email, subject, message);

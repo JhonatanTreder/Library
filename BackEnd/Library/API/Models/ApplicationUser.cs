@@ -15,6 +15,12 @@ namespace API.Models
         public UserType UserType { get; set; }
         public string? Matriculates { get; set; }
 
+        public string? PendingPhoneNumber { get; set; }
+        public string? PhoneNumberChangeCode { get; set; }
+        public string? PhoneNumberChangeCancelToken { get; set; }
+        public DateTime? PhoneNumberChangeCancelTokenExpiryTime { get; set; }
+        public DateTime PhoneNumberChangeCodeExpiryTime { get; set; }
+
         public string? PendingPassword { get; set; }
         public string? PasswordChangeCode { get; set; }
         public DateTime PasswordChangeCodeExpiryTime { get; set; }

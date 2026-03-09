@@ -1,5 +1,6 @@
 import { RefObject } from "react"
-import { UserDashboardData } from '@/app/interfaces/entities/Events'
+import { UserDashboardData } from '@/app/interfaces/endpoints/Dashboard'
+import { PendingValidations } from "../endpoints/PendingValidations"
 
 export interface ProfileData {
     nomeCompleto: string
@@ -13,6 +14,7 @@ export interface UseProfileProps {
     profileData: ProfileData
     originalData: ProfileData
     dashboardData: UserDashboardData
+    pendingValidations: PendingValidations
     editingField: string | null
     showEmailModal: boolean
     showPasswordModal: boolean

@@ -3,8 +3,10 @@
 import profileStyles from '@/app/pages/profile/profile.module.css'
 
 import ShowNavbar from "@/app/components/Navbar"
+
+import { validatePhoneNumber } from '@/app/utils/FormatValidator'
 import { useRouter } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useProfile } from '@/app/components/profile/hooks/useProfile'
 
 import PasswordIcon from '@mui/icons-material/Password'
@@ -12,10 +14,12 @@ import EmailIcon from '@mui/icons-material/Email'
 import UsernameIcon from '@mui/icons-material/Assignment'
 import MatriculatesIcon from '@mui/icons-material/Badge'
 import PhoneIcon from '@mui/icons-material/Phone'
+import ErrorIcon from '@mui/icons-material/ErrorOutline';
 
 export default function Profile() {
     const router = useRouter()
     const {
+        pendingValidations,
         dashboardData,
         profileData,
         editingField,
@@ -41,6 +45,9 @@ export default function Profile() {
     } = useProfile()
 
     const [tempValue, setTempValue] = useState("")
+
+    // Ref para o campo de telefone
+    const phoneFieldRef = useRef<HTMLDivElement>(null)
 
     // Estados do modal de email
     const [emailCurrentPassword, setEmailCurrentPassword] = useState("")
@@ -93,6 +100,32 @@ export default function Profile() {
         }
     }
 
+    // Função para focar no campo de telefone
+    const handleFocusPhoneField = () => {
+        if (phoneFieldRef.current) {
+            phoneFieldRef.current.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            })
+
+            // Adiciona um destaque visual temporário
+            phoneFieldRef.current.style.transition = 'all 0.3s ease'
+            phoneFieldRef.current.style.backgroundColor = '#FEF3C7' // Cor de destaque suave
+            phoneFieldRef.current.style.transform = 'scale(1.02)'
+
+            // Remove o destaque após 2 segundos
+            setTimeout(() => {
+                if (phoneFieldRef.current) {
+                    phoneFieldRef.current.style.backgroundColor = ''
+                    phoneFieldRef.current.style.transform = ''
+                }
+            }, 2000)
+
+            // Inicia a edição do campo automaticamente
+            handleEditClick('telefone')
+        }
+    }
+
     const handleCloseEmailModalAndReset = () => {
         handleCloseEmailModal()
         setEmailCurrentPassword("")
@@ -133,7 +166,9 @@ export default function Profile() {
             setEmailModalSuccess(result.message)
             setShowEmailConfirmationStep(true)
             setEmailCurrentPassword("")
-        } else {
+        }
+
+        else {
             setEmailModalError(result.message)
         }
     }
@@ -240,7 +275,7 @@ export default function Profile() {
             setPasswordModalSuccess(result.message)
 
         }
-        
+
         else {
             setPasswordModalError(result.message)
         }
@@ -249,6 +284,11 @@ export default function Profile() {
     const renderField = (fieldName: keyof typeof profileData) => {
         const isEditing = editingField === fieldName
         const value = profileData[fieldName]
+
+        const hasPendingValidations = (
+            pendingValidations.emailIsPending && fieldName === 'email' ||
+            pendingValidations.phoneNumberIsPending && fieldName === 'telefone'
+        )
 
         return (
             <div className={profileStyles.editBox}>
@@ -264,6 +304,21 @@ export default function Profile() {
                     />
                 ) : (
                     <p className={profileStyles.inputBox}>{value}</p>
+                )}
+                {hasPendingValidations && (
+                    <div className={profileStyles.pendingValidationIconWrapper}>
+                        <ErrorIcon className={profileStyles.pendingValidationIcon}></ErrorIcon>
+                        <div className={profileStyles.validationTooltip}>
+                            <p className={profileStyles.tooltipTitle}>
+                                Validação Pendente
+                            </p>
+                            <p className={profileStyles.tooltipMessage}>
+                                {fieldName === 'email'
+                                    ? 'Este email precisa estar verificado. Verifique o seu email para confirmar.'
+                                    : 'Este número de telefone precisa estar validado. Por favor, verifique o seu telefone.'}
+                            </p>
+                        </div>
+                    </div>
                 )}
                 {isEditing ? (
                     <div style={{ display: 'flex', gap: '0.5rem' }}>
@@ -314,6 +369,9 @@ export default function Profile() {
                         </div>
                     )}
 
+                    <h1 className={profileStyles.profileTitle}> Suas Informações</h1>
+                    <div className={profileStyles.divisionLine}></div>
+
                     <div className={profileStyles.editContainer}>
                         <div className={profileStyles.editItem}>
                             <div className={profileStyles.editHeader}>
@@ -335,7 +393,7 @@ export default function Profile() {
                             {renderField('matricula')}
                         </div>
 
-                        <div className={profileStyles.editItem}>
+                        <div className={profileStyles.editItem} ref={phoneFieldRef}>
                             <div className={profileStyles.editHeader}>
                                 <p className={profileStyles.editTitle}>
                                     Numero de Telefone
@@ -354,6 +412,13 @@ export default function Profile() {
                             </div>
                             <div className={profileStyles.editBox}>
                                 <p className={profileStyles.inputBox}>{profileData.email}</p>
+
+                                {pendingValidations.emailIsPending && (
+                                    <div className={profileStyles.pendingValidationIconWrapper}>
+                                        <ErrorIcon className={profileStyles.pendingValidationIcon}></ErrorIcon>
+                                    </div>
+                                )}
+
                                 <button
                                     className={profileStyles.editButton}
                                     onClick={handleOpenEmailModal}
@@ -383,6 +448,74 @@ export default function Profile() {
                             </div>
                         </div>
                     </div>
+
+                    {pendingValidations.emailIsPending || pendingValidations.phoneNumberIsPending && (
+                        <div className={profileStyles.pendingValidationsSection}>
+                            <div className={profileStyles.divisionLine}></div>
+                            <div className={profileStyles.pendingValidationsHeader}>
+
+                                <h2 className={profileStyles.pendingValidationsTitle}>
+                                    Você possui validações pendentes
+                                </h2>
+
+                                <p className={profileStyles.pendingValidationsSubtitle}>
+                                    Para manter a sua conta mais segura,
+                                    recomendamos que confirme os seus dados logo abaixo.
+                                </p>
+                            </div>
+
+                            <div className={profileStyles.pendingValidations}>
+                                {pendingValidations.emailIsPending && (
+                                    <div className={profileStyles.pendingItem}>
+
+                                        <p className={profileStyles.pendingItemTitle}>
+                                            Email:
+                                        </p>
+                                        <p className={profileStyles.pendingItemValue}>
+                                            {profileData.email}
+                                        </p>
+
+                                    </div>
+                                )}
+
+                                {pendingValidations.phoneNumberIsPending && (
+                                    <div className={profileStyles.pendingItemContainer}>
+
+                                        <div className={profileStyles.pendingItem}>
+                                            <p className={profileStyles.pendingItemTitle}>
+                                                Número de telefone:
+                                            </p>
+                                            <p className={profileStyles.pendingItemValue}>
+                                                {profileData.telefone}
+                                            </p>
+
+                                            {validatePhoneNumber(profileData.telefone) === false ? (
+                                                <div className={profileStyles.pendingItemMessageWrapper}>
+                                                    <a
+                                                        className={profileStyles.pendingItemMessage}
+                                                        onClick={handleFocusPhoneField}
+                                                        style={{ cursor: 'pointer' }}
+                                                    >
+                                                        Adicionar Número
+                                                    </a>
+                                                </div>
+                                            ) : (
+
+                                                <button className={profileStyles.pendingItemButton}>
+                                                    Verificar
+                                                </button>
+                                            )}
+                                        </div>
+
+                                        <p className={profileStyles.pendingItemDescription}>
+                                            É recomendável adicionar um número de telefone.
+                                        </p>
+                                    </div>
+                                )}
+
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 <div className={profileStyles.dashboardSection}>

@@ -2,7 +2,7 @@
 {
     public class UserPendingValidationsDTO
     {
-        public string? Email { get; set; }
-        public string? PhoneNumber { get; set; }
+        public bool EmailIsPending { get; set; }
+        public bool PhoneNumberIsPending { get; set; }
     }
 }

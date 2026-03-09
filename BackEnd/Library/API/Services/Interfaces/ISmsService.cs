@@ -5,7 +5,7 @@ namespace API.Services.Interfaces
 {
     public interface ISmsService
     {
-        Task<RepositoryStatus> SendAsync(string email);
+        Task<RepositoryStatus> SendAsync(string phoneNumber, string message);
         Task<RepositoryStatus> VerifyAsync(VerifyPhoneCodeDTO verifyPhoneDTO);
     }
 }

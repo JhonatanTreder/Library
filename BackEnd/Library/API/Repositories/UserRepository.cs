@@ -198,10 +198,14 @@ namespace API.Repositories
             var pendingValidations = new UserPendingValidationsDTO();
 
             if (user.EmailConfirmed is false)
-                pendingValidations.Email = user.Email;
+                pendingValidations.EmailIsPending = true;
+
+            else pendingValidations.EmailIsPending = false;
 
             if (user.PhoneNumberConfirmed is false)
-                pendingValidations.PhoneNumber = user.PhoneNumber;
+                pendingValidations.PhoneNumberIsPending = true;
+
+            else pendingValidations.PhoneNumberIsPending = false;
 
             return new RepositoryResponse<UserPendingValidationsDTO>(RepositoryStatus.Success, pendingValidations);
         }

@@ -25,6 +25,7 @@
     <PackageReference Include="sib_api_v3_sdk" Version="4.0.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
     <PackageReference Include="Twilio" Version="7.11.5" />
+    <PackageReference Include="Vonage" Version="8.22.0" />
   </ItemGroup>
 
 </Project>

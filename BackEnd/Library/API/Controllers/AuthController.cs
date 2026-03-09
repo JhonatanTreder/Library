@@ -1,6 +1,7 @@
 ﻿using API.DTOs.Authentication;
 using API.DTOs.Authentication.Email;
 using API.DTOs.Authentication.Password;
+using API.DTOs.Authentication.PhoneNumber;
 using API.DTOs.Responses;
 using API.DTOs.Token;
 using API.Enum.Responses;
@@ -244,7 +245,7 @@ namespace API.Controllers
         {
             var response = await _authService.ConfirmEmailChangeAsync(emailChangeDTO);
 
-            return response switch 
+            return response switch
             {
                 RepositoryStatus.Success => Ok(new ApiResponse
                 {
@@ -301,7 +302,7 @@ namespace API.Controllers
         {
             var response = await _authService.CancelEmailChangeAsync(cancelEmailChangeDTO);
 
-            return response switch 
+            return response switch
             {
                 RepositoryStatus.Success => Ok(new ApiResponse
                 {
@@ -317,7 +318,7 @@ namespace API.Controllers
                     Message = $"O usuário de id '{cancelEmailChangeDTO.UserId}' não foi encontrado"
                 }),
 
-                RepositoryStatus.InvalidToken => NotFound(new ApiResponse 
+                RepositoryStatus.InvalidToken => NotFound(new ApiResponse
                 {
                     Status = "Not Found",
                     Data = null,
@@ -338,7 +339,7 @@ namespace API.Controllers
                     Message = "Ocorreu um erro inesperado ao tentar atualizar o usuário"
                 }),
 
-                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse 
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
                 {
                     Status = "Internal Server Error",
                     Data = null,
@@ -457,6 +458,209 @@ namespace API.Controllers
         }
 
         [HttpPost]
+        [Route("request-phone-change")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> RequestPhoneNumberChange([FromBody] RequestPhoneNumberChangeDTO phoneNumberChangeDTO)
+        {
+            var response = await _authService.RequestPhoneNumberConfirmationAsync(phoneNumberChangeDTO);
+
+            Console.WriteLine(response);
+
+            return response switch
+            {
+                RepositoryStatus.Success => Ok(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = null,
+                    Message = "Pedido de alteração de número de telefone enviado com sucesso"
+                }),
+
+                RepositoryStatus.UserNotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = "O usuário não foi encontrado"
+                }),
+
+                RepositoryStatus.InvalidPhoneFormat => BadRequest(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = "O número de telefone está em um formato inválido"
+                }),
+
+                RepositoryStatus.InvalidPassword => BadRequest(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = "A senha do usuário está inválida"
+                }),
+
+                RepositoryStatus.PhoneNumberAlreadyExists => Conflict(new ApiResponse
+                {
+                    Status = "Conflict",
+                    Data = null,
+                    Message = "O número de telefone especificado já está sendo utilizado"
+                }),
+
+                RepositoryStatus.FailedToUpdateUser => Conflict(new ApiResponse
+                {
+                    Status = "Conflict",
+                    Data = null,
+                    Message = "Erro inesperado ao tentar atualizar o usuário"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Erro inesperado ao tentar processar o pedido de alteração do número de telefone do usuário"
+                })
+            };
+        }
+
+        [HttpPost]
+        [Route("confirm-phone-change")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ConfirmPhoneNumberChange([FromBody] ConfirmPhoneNumberChangeDTO phoneNumberChangeDTO)
+        {
+            var response = await _authService.ConfirmPhoneNumberChangeAsync(phoneNumberChangeDTO);
+
+            return response switch
+            {
+                RepositoryStatus.Success => Ok(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = null,
+                    Message = "Código para alteração de telefone enviado com sucesso"
+                }),
+
+                RepositoryStatus.UserNotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = "O usuário não foi encontrado"
+                }),
+
+                RepositoryStatus.EmailNotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = "O e-mail do usuário não foi encontrado"
+                }),
+
+                RepositoryStatus.InvalidPassword => BadRequest(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = "A senha do usuário está inválida"
+                }), 
+
+                RepositoryStatus.InvalidPhoneFormat => BadRequest(new ApiResponse
+                {
+                    Status = "Bad Request",
+                    Data = null,
+                    Message = "O telefone está com um formato inválido"
+                }),
+
+                RepositoryStatus.PhoneNumberAlreadyExists => Conflict(new ApiResponse
+                {
+                    Status = "Conflict",
+                    Data = null,
+                    Message = "O novo número de telefone já está sendo utilizado por outro usuário"
+                }),
+
+                RepositoryStatus.FailedToUpdateUser => Conflict(new ApiResponse
+                {
+                    Status = "Conflict",
+                    Data = null,
+                    Message = "Erro inesperado ao tentar atualizar o usuário"
+                }),
+
+                RepositoryStatus.Failed => Conflict(new ApiResponse
+                {
+                    Status = "Conflict",
+                    Data = null,
+                    Message = "Erro inesperado ao enviar o código de confirmação de telefone para o usuário"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Erro inesperado ao tentar confirmar o telefone do usuário"
+                })
+            };
+        }
+
+        [HttpPost]
+        [Route("cancel-phone-change")]
+        public async Task<IActionResult> CancelPhoneNumberChange([FromQuery] CancelPhoneNumberChangeDTO cancelPhoneNumberChangeDTO)
+        {
+            var response = await _authService.CancelPhoneNumberConfirmationAsync(cancelPhoneNumberChangeDTO);
+
+            return response switch
+            {
+                RepositoryStatus.Success => Ok(new ApiResponse
+                {
+                    Status = "Ok",
+                    Data = null,
+                    Message = "A alteração de número de telefone foi cancelada com sucesso"
+                }),
+
+                RepositoryStatus.UserNotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = $"O usuário de id '{cancelPhoneNumberChangeDTO.UserId}' não foi encontrado"
+                }),
+
+                RepositoryStatus.PendingPhoneNumberNotFound => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = $"O número de telefone do usuário não foi encontrado"
+                }),
+
+                RepositoryStatus.InvalidToken => NotFound(new ApiResponse
+                {
+                    Status = "Not Found",
+                    Data = null,
+                    Message = "O token para cancelar a confirmação de telefone do usuário está inválido"
+                }),
+
+                RepositoryStatus.ExpiredToken => Conflict(new ApiResponse
+                {
+                    Status = "Conflict",
+                    Data = null,
+                    Message = "O código para cancelar a alteração do número de telefone foi expirado"
+                }),
+
+                RepositoryStatus.FailedToUpdateUser => Conflict(new ApiResponse
+                {
+                    Status = "Conflict",
+                    Data = null,
+                    Message = "Ocorreu um erro inesperado ao tentar atualizar o usuário"
+                }),
+
+                _ => StatusCode(StatusCodes.Status500InternalServerError, new ApiResponse
+                {
+                    Status = "Internal Server Error",
+                    Data = null,
+                    Message = "Ocorreu um erro inesperado ao tentar cancelar a alteração do número de telefone do usuário"
+                })
+            };
+        }
+
+        [HttpPost]
         [Route("email-confirmation")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -513,9 +717,9 @@ namespace API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> ConfirmPhone([FromBody] string email)
+        public async Task<IActionResult> ConfirmPhone([FromQuery] string email, [FromBody] string message)
         {
-            var response = await _authService.SendPhoneConfirmationAsync(email);
+            var response = await _authService.SendPhoneConfirmationAsync(email, message);
 
             return response switch
             {

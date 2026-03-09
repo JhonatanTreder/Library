@@ -19,7 +19,7 @@ namespace API.Services.SMS
             _userManager = userManager;
         }
 
-        public async Task<RepositoryStatus> SendAsync(string email)
+        public async Task<RepositoryStatus> SendAsync(string email, string message)
         {
             var user = await _userManager.FindByEmailAsync(email);
 
@@ -48,13 +48,7 @@ namespace API.Services.SMS
             var result = await MessageResource.CreateAsync(
                 to: user.PhoneNumber,
                 from: from,
-                body: $"O seu código de verificação é: {code}");
-
-            Console.WriteLine(result);
-            Console.WriteLine(result.Status);
-            Console.WriteLine(result.ErrorCode);
-            Console.WriteLine(result.ErrorMessage);
-            Console.WriteLine(result.Body);
+                body: message);
 
             return RepositoryStatus.Success;
         }
