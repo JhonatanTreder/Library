@@ -116,7 +116,7 @@ builder.Services.AddTransient<IEmailService, BrevoEmailService>(); //Serviço de 
 
 //---------------------------------------------------------------------------------------------------------------------------
 
-builder.Services.AddTransient<ISmsService, VonageSmsService>();
+builder.Services.AddTransient<ISmsService, AmazonSmsService>();
 
 var secrectKey = builder.Configuration["JWT:SecretKey"]
     ?? throw new ArgumentException("Invalid secret key!");
