@@ -1,0 +1,87 @@
+<app-navbar></app-navbar>
+<app-header-section></app-header-section>
+<app-library-stats></app-library-stats>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    .form-container {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        width: 300px;
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    input,
+    select,
+    textarea {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    button {
+        width: 100%;
+        padding: 10px;
+        background-color: #007BFF;
+        border: none;
+        color: white;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+</style>
+<div class="form-container">
+    <h2>Cadastro</h2>
+    <form (ngSubmit)="onSubmit('A')">
+  <label for="nome">Nome</label>
+  <input type="text" id="nome" name="nome" [(ngModel)]="form.nome">
+
+  <label for="email">Email</label>
+  <input type="email" id="email" name="email" (change)="verifyOnExit(form.email)" [(ngModel)]="form.email">
+
+  <label for="senha">Senha</label>
+  <input type="password" id="senha" name="senha" [(ngModel)]="form.senha">
+
+  <label for="idade">Idade</label>
+  <input type="number" id="idade" name="idade" [(ngModel)]="form.idade">
+
+  <label for="genero">Gênero</label>
+  <select id="genero" name="genero" [(ngModel)]="form.genero">
+    <option value="">Selecione</option>
+    <option value="masculino">Masculino</option>
+    <option value="feminino">Feminino</option>
+    <option value="outro">Outro</option>
+  </select>
+
+  <label for="bio">Bio</label>
+  <textarea id="bio" name="bio" rows="3" [(ngModel)]="form.bio"></textarea>
+
+  <button type="submit">Enviar</button>
+</form>
+</div>
