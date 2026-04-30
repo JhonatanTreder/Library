@@ -1,12 +1,12 @@
 import { Component, OnInit, OnChanges, inject, SimpleChange, AfterViewInit, AfterViewChecked, ChangeDetectionStrategy } from '@angular/core';
-import { Navbar } from "../../components/navbar/navbar";
+import { NavbarComponent } from "../../components/navbar/navbar";
 import { HeaderSection } from "../../components/home/header-section/header-section";
 import { LibraryStats } from "../../components/home/library-stats/library-stats";
 import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-home',
-  imports: [Navbar, HeaderSection, LibraryStats, FormsModule],
+  imports: [NavbarComponent, HeaderSection, LibraryStats, FormsModule],
   templateUrl: './home.html',
   styleUrl: './home.scss',
 })

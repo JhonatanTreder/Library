@@ -1,1 +1,136 @@
-<p>navbar works!</p>
+<div class="navbar">
+    <div class="nav-bar-items">
+
+        <div class="nav-bar-top-section">
+            <div class="search-container">
+
+                <img 
+                    class="school-and-book-icon"
+                    src="./images/white-library-logo.png" 
+                    alt="school-and-book-icon" 
+                />
+
+                <div class="search-bar">
+                    <input 
+                        class="search-bar-input"
+                        placeholder="Pesquisar por livros, eventos, empréstimos realizados, etc..." 
+                    />
+
+                    <div class="vertical-division-line"></div>
+
+                    <div class="icon-wrapper">
+                        <mat-icon class="search-bar-icon">
+                            search
+                        </mat-icon>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-bar-bottom-section">
+            <div class="link-list">
+
+                <div 
+                    class="icon-wrapper"
+                    (click)="viewHomePage()"
+                    [class.active]="activeItem === 'home'">
+
+                    <mat-icon 
+                        class="link-icon"
+                        [style.fontSize.px]="18">
+                        home
+                    </mat-icon>
+
+                    Início
+                </div>
+
+                <div 
+                    class="icon-wrapper"
+                    (click)="viewBooksPage()"
+                    [class.active]="activeItem === 'books'">
+
+                    <mat-icon 
+                        class="link-icon" 
+                        [style.fontSize.px]="18">
+                        
+                        auto_stories
+                    </mat-icon>
+
+                    Livros
+                </div>
+
+                <div 
+                    class="icon-wrapper"
+                    (click)="viewEventsPage()"
+                    [class.active]="activeItem === 'events'">
+
+                    <mat-icon 
+                        class="link-icon" 
+                        [style.fontSize.px]="18">
+                        event
+                    </mat-icon>
+
+                    Eventos
+                </div>
+
+                <div 
+                    class="icon-wrapper"
+                    (click)="viewLoansPage()"
+                    [class.active]="activeItem === 'loans'">
+
+                    <mat-icon
+                        class="link-icon"
+                        [style.fontSize.px]="18">
+                        assignment_return
+                    </mat-icon>
+                    
+                    Empréstimos
+                </div>
+
+                <div 
+                    class="icon-wrapper"
+                    (click)="viewFavoritesPage()"
+                    [class.active]="activeItem === 'favorites'">
+
+                    <mat-icon 
+                        class="link-icon"
+                        [style.fontSize.px]="18">
+                        bookmark
+                    </mat-icon>
+                    
+                    Favoritos
+                </div>
+
+                <div 
+                    class="icon-wrapper"
+                    (click)="viewNotificationsPage()"
+                    [class.active]="activeItem === 'notifications'">
+
+                    <mat-icon 
+                        class="link-icon"
+                        [style.fontSize.px]="18">
+                        notifications
+                    </mat-icon>
+
+                    Notificações
+                </div>
+
+                <div 
+                    class="icon-wrapper"
+                    (click)="viewProfilePage()"
+                    [class.active]="activeItem === 'profile'">
+
+                    <mat-icon 
+                        class="link-icon"
+                        [style.fontSize.px]="18">
+                        person
+                    </mat-icon>
+                    
+                    Perfil
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
