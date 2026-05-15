@@ -1,0 +1,68 @@
+/* Tailwind handles navbar styling via utility classes. */
+
+
+.link-list>.icon-wrapper>span {
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    transition: color 0.3s ease;
+}
+
+.link-list>.icon-wrapper:hover>span {
+    color: #BFDBFE;
+}
+
+.link-list>.icon-wrapper::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(96, 165, 250, 0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.link-list>.icon-wrapper:hover::after {
+    opacity: 1;
+}
+
+
+.link-list>.icon-wrapper.active {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.link-list>.icon-wrapper.active::before {
+    transform: translateX(0);
+}
+
+.link-list>.icon-wrapper.active .link-icon {
+    transform: scale(1.15);
+    color: #60A5FA;
+}
+
+.link-list>.icon-wrapper.active>span {
+    color: #BFDBFE;
+    font-weight: 600;
+}
+
+.link-list>.icon-wrapper.active::after {
+    opacity: 1;
+}
+
+.link-list>.icon-wrapper.active:hover {
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.link-list>.icon-wrapper.active:hover .link-icon {
+    color: #BFDBFE;
+}
+
+.link-reference {
+    color: white;
+    cursor: pointer;
+    font-weight: 500;
+    transition: color 0.15s ease, transform 0.15s ease;
+}
