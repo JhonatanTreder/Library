@@ -1,1 +1,268 @@
 <app-navbar></app-navbar>
+<main class="pt-[116px] bg-surface dark:bg-dark-surface">
+    <!-- Hero Section -->
+    <section
+        class="relative min-h-[716px] flex flex-col items-center justify-center px-6 text-center overflow-hidden bg-surface dark:bg-dark-surface">
+        <div
+            class="absolute inset-0 -z-10 bg-gradient-to-b from-primary-fixed/30 dark:from-dark-primary/20 to-surface dark:to-dark-surface">
+        </div>
+        <div class="max-w-4xl w-full space-y-12">
+            <h1
+                class="font-headline text-5xl md:text-7xl font-bold text-on-surface dark:text-dark-on-surface tracking-tight leading-tight">
+                Descubra seu próximo capítulo.
+            </h1>
+            <div class="relative max-w-2xl mx-auto w-full group">
+                <div class="absolute inset-y-0 left-6 flex items-center pointer-events-none">
+                    <span class="material-symbols-outlined text-primary dark:text-dark-primary text-2xl">search</span>
+                </div>
+                <input
+                    class="w-full pl-16 pr-6 py-6 bg-surface-container-high dark:bg-dark-surface-container-lowest rounded-full shadow-lg border-none dark:border dark:border-white/10 focus:ring-2 focus:ring-primary dark:focus:ring-dark-primary text-lg font-body placeholder:text-on-surface-variant/50 dark:placeholder:text-dark-on-surface-variant/50 text-on-surface dark:text-dark-on-surface transition-all outline-none"
+                    placeholder="Search our Catalog" type="text" />
+            </div>
+            <div class="flex flex-wrap justify-center gap-6 pt-4">
+                <span
+                    class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant dark:text-dark-on-surface-variant font-bold">Populares
+                    agora:</span>
+                <a class="font-label text-[10px] uppercase tracking-[0.2em] text-primary dark:text-dark-primary font-bold hover:underline"
+                    href="#">Ficção Científica</a>
+                <a class="font-label text-[10px] uppercase tracking-[0.2em] text-primary dark:text-dark-primary font-bold hover:underline"
+                    href="#">História Local</a>
+                <a class="font-label text-[10px] uppercase tracking-[0.2em] text-primary dark:text-dark-primary font-bold hover:underline"
+                    href="#">Artes Visuais</a>
+            </div>
+        </div>
+    </section>
+    <!-- Featured Section (Bento Grid) -->
+    <section class="max-w-7xl mx-auto px-12 py-24 bg-surface dark:bg-dark-surface">
+        <div class="flex justify-between items-end mb-12">
+            <div>
+                <h2
+                    class="font-label text-xs uppercase tracking-[0.2em] text-tertiary dark:text-dark-tertiary mb-2 font-bold">
+                    Curadoria
+                    Semanal</h2>
+                <h3 class="font-headline text-4xl font-bold text-on-surface dark:text-dark-on-surface">Em Destaque</h3>
+            </div>
+            <a class="font-label text-sm uppercase font-bold text-primary dark:text-dark-primary group flex items-center gap-2 transition-colors hover:text-primary-container dark:hover:text-dark-primary-container"
+                href="#">
+                Ver catálogo completo
+                <span
+                    class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            </a>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-8 h-auto md:h-[800px]">
+            <!-- Main Highlight -->
+            <div
+                class="md:col-span-2 md:row-span-2 bg-surface-container-low dark:bg-dark-surface-container-low rounded-xl overflow-hidden flex flex-col group cursor-pointer shadow-sm hover:shadow-xl transition-shadow duration-500">
+                <div class="relative h-2/3 overflow-hidden">
+                    <img alt="Minimalist book cover"
+                        class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyMBokThp5oyxw0EG33qZCGIjRunuskbGjztkaFo3LdJtJpses0rp9jbCcNfpTnuf1CRLa56ennTeqWNJcoCoBYv39P0iC-jzFzf_wXRddcmFOu4ErkQJRucgmeUykbjW7mS4Ujotn6Kb-klp06-Mq4LX1G16o8xCjarsXXrt3-LWhFy4MGwXQpOCbkn2lp0VNx0kKUGy7SLKgZi8rsKvVHdyRJvBp3vmFmTa4X7D9uCp3DK5LptBZNtWGOrZ4YwCw2q0CiUWAZhs" />
+                </div>
+                <div class="p-10 flex-1 flex flex-col justify-between">
+                    <div>
+                        <span
+                            class="bg-tertiary-container/20 dark:bg-dark-tertiary-container/20 text-tertiary dark:text-dark-tertiary px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest">Especial
+                            do Curador</span>
+                        <h4 class="font-headline text-3xl mt-6 font-bold text-on-surface dark:text-dark-on-surface">O
+                            Labirinto das Memórias
+                        </h4>
+                        <p
+                            class="font-body text-on-surface-variant dark:text-dark-on-surface-variant mt-4 leading-relaxed line-clamp-3">
+                            Uma
+                            exploração profunda sobre como a arquitetura das bibliotecas molda o pensamento humano
+                            através dos séculos.</p>
+                    </div>
+                    <div class="flex items-center gap-3 mt-8">
+                        <div
+                            class="w-10 h-10 rounded-full bg-primary-container/40 dark:bg-dark-primary-container/40 flex items-center justify-center">
+                            <span
+                                class="material-symbols-outlined text-primary dark:text-dark-primary text-xl">person</span>
+                        </div>
+                        <span
+                            class="font-label text-xs font-bold text-on-surface dark:text-dark-on-surface tracking-wide">Elena
+                            Vaskov</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Secondary Books -->
+            <div
+                class="bg-surface-container-low dark:bg-dark-surface-container-low rounded-xl p-8 flex flex-col group cursor-pointer hover:bg-surface-container-high dark:hover:bg-dark-surface-container-high transition-colors shadow-sm">
+                <div class="overflow-hidden rounded shadow-md">
+                    <img alt="Atlas cover"
+                        class="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDw-kPXIG6digYs-NtuoiZMhxV2AsLyPx80Gsn8BAOPseTZf6qgvWaFaqrjmPyyPTxR00HnD8a_RAdTawd_irakSzE_KWy6SxqIIl09rpy8d7CdmkDFMSrmgESXpgbMLV4sLDWdNWj66goewQSU_Vh8gMi8kKWfx75ihd6tP1mgQt5b03uZveenGaKMhSP3qFgoS6VSnhNJky6pAA6EMHRfIsfLXobszHdiAbMl31087Dfsj2p_RajZd9IRy-0idDmYnB10nrZZxL4" />
+                </div>
+                <h4 class="font-headline text-xl mt-8 font-bold text-on-surface dark:text-dark-on-surface">Atlas de
+                    Cartografia Antiga</h4>
+                <span
+                    class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant dark:text-dark-on-surface-variant mt-3 font-bold">Geografia
+                    &amp; História</span>
+            </div>
+            <div
+                class="bg-surface-container-low dark:bg-dark-surface-container-low rounded-xl p-8 flex flex-col group cursor-pointer hover:bg-surface-container-high dark:hover:bg-dark-surface-container-high transition-colors shadow-sm">
+                <div class="overflow-hidden rounded shadow-md">
+                    <img alt="Philosophy book"
+                        class="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIRCjkUpukQpD2ld-sii9ieokvYfK-rXjqNYDI0FCeUiBEZjz3PIKIAazXaXx7CxGOEaWNCRndwaTz9K8hxgWVkO_d9EHLNpLJeDEFxmwYFIXHcZ4lBp0eAHskaD-XzLbKpJNb5rx6LupXbQDALSQ93kVjCF1ae4aX-iTJRgQAxYCaEqo6wz6X8ZSNuYi6n1Er-ncZG-DzRiZy2_wd1G2pRRqW8J2Ja9858p4lFIHizsHEhIEWH8PyS3EtooWLnYq8hPIDq1EpbO4" />
+                </div>
+                <h4 class="font-headline text-xl mt-8 font-bold text-on-surface dark:text-dark-on-surface">Filosofia do
+                    Cotidiano</h4>
+                <span
+                    class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant dark:text-dark-on-surface-variant mt-3 font-bold">Humanidades</span>
+            </div>
+            <!-- Featured Event -->
+            <div
+                class="md:col-span-2 bg-surface-dim dark:bg-dark-surface-dim rounded-xl p-10 flex items-center gap-8 group cursor-pointer hover:bg-surface-container-highest dark:hover:bg-dark-surface-container-highest transition-colors shadow-sm">
+                <div class="flex-1">
+                    <span
+                        class="text-primary dark:text-dark-primary material-symbols-outlined text-4xl mb-6 block">auto_stories</span>
+                    <h4 class="font-headline text-2xl font-bold text-on-surface dark:text-dark-on-surface">Clube do
+                        Livro: Janeiro</h4>
+                    <p
+                        class="font-body text-sm mt-4 text-on-surface-variant dark:text-dark-on-surface-variant leading-relaxed">
+                        Junte-se a nós para
+                        discutir as obras de Machado de Assis em um ambiente digital imersivo.</p>
+                    <button
+                        class="mt-8 font-label text-xs uppercase font-bold text-primary dark:text-dark-primary flex items-center gap-2 group-hover:gap-3 transition-all">
+                        Inscrever-se <span class="material-symbols-outlined text-sm">chevron_right</span>
+                    </button>
+                </div>
+                <div
+                    class="hidden lg:flex w-44 h-44 bg-surface-container-lowest dark:bg-dark-surface-container-lowest rounded-full items-center justify-center shadow-inner group-hover:scale-105 transition-transform duration-500">
+                    <span
+                        class="material-symbols-outlined text-6xl text-primary-fixed-dim dark:text-dark-primary-fixed-dim">groups</span>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Information Grid -->
+    <section
+        class="bg-surface-container-lowest dark:bg-dark-surface-container-low py-32 border-y dark:border-white/5 border-outline-variant/15">
+        <div class="max-w-7xl mx-auto px-12">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-16">
+                <!-- Quick Link 1 -->
+                <div class="group cursor-pointer">
+                    <div
+                        class="w-16 h-16 bg-secondary-fixed/30 dark:bg-dark-secondary-fixed/30 rounded-xl flex items-center justify-center mb-8 group-hover:bg-primary dark:group-hover:bg-dark-primary transition-colors">
+                        <span
+                            class="material-symbols-outlined text-primary dark:text-dark-primary text-3xl group-hover:text-white transition-colors">schedule</span>
+                    </div>
+                    <h3 class="font-headline text-2xl font-bold mb-4 text-on-surface dark:text-dark-on-surface">Horários
+                        e Locais</h3>
+                    <p class="font-body text-on-surface-variant dark:text-dark-on-surface-variant leading-relaxed mb-6">
+                        Explore nossa rede de 12 bibliotecas distribuídas pela cidade. Encontre a unidade mais
+                        próxima de você e confira os horários de funcionamento.
+                    </p>
+                    <a class="inline-block font-label text-[10px] uppercase font-bold tracking-[0.2em] text-primary dark:text-dark-primary hover:underline underline-offset-8"
+                        href="#">Ver endereços</a>
+                </div>
+                <!-- Quick Link 2 -->
+                <div class="group cursor-pointer">
+                    <div
+                        class="w-16 h-16 bg-secondary-fixed/30 dark:bg-dark-secondary-fixed/30 rounded-xl flex items-center justify-center mb-8 group-hover:bg-primary dark:group-hover:bg-dark-primary transition-colors">
+                        <span
+                            class="material-symbols-outlined text-primary dark:text-dark-primary text-3xl group-hover:text-white transition-colors">devices_other</span>
+                    </div>
+                    <h3 class="font-headline text-2xl font-bold mb-4 text-on-surface dark:text-dark-on-surface">Serviços
+                        Digitais</h3>
+                    <p class="font-body text-on-surface-variant dark:text-dark-on-surface-variant leading-relaxed mb-6">
+                        Acesse nossa coleção de e-books, audiobooks e jornais internacionais de qualquer lugar, 24
+                        horas por dia, com seu cartão da biblioteca.
+                    </p>
+                    <a class="inline-block font-label text-[10px] uppercase font-bold tracking-[0.2em] text-primary dark:text-dark-primary hover:underline underline-offset-8"
+                        href="#">Acessar portal</a>
+                </div>
+                <!-- Quick Link 3 -->
+                <div class="group cursor-pointer">
+                    <div
+                        class="w-16 h-16 bg-secondary-fixed/30 dark:bg-dark-secondary-fixed/30 rounded-xl flex items-center justify-center mb-8 group-hover:bg-primary dark:group-hover:bg-dark-primary transition-colors">
+                        <span
+                            class="material-symbols-outlined text-primary dark:text-dark-primary text-3xl group-hover:text-white transition-colors">event</span>
+                    </div>
+                    <h3 class="font-headline text-2xl font-bold mb-4 text-on-surface dark:text-dark-on-surface">Eventos
+                        da Semana</h3>
+                    <p class="font-body text-on-surface-variant dark:text-dark-on-surface-variant leading-relaxed mb-6">
+                        De workshops de tecnologia a contação de histórias para crianças, descubra o que está
+                        acontecendo na sua biblioteca local.
+                    </p>
+                    <a class="inline-block font-label text-[10px] uppercase font-bold tracking-[0.2em] text-primary dark:text-dark-primary hover:underline underline-offset-8"
+                        href="#">Calendário completo</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Newsletter / CTA -->
+    <section class="max-w-7xl mx-auto px-12 py-32 bg-surface dark:bg-dark-surface">
+        <div
+            class="bg-primary dark:bg-dark-primary rounded-3xl p-12 md:p-24 text-on-primary relative overflow-hidden flex flex-col lg:flex-row items-center justify-between gap-16 shadow-2xl">
+            <div
+                class="absolute top-0 right-0 w-[500px] h-[500px] bg-primary-container/20 dark:bg-dark-primary-container/20 rounded-full -mr-64 -mt-64 blur-[100px]">
+            </div>
+            <div class="relative z-10 max-w-xl">
+                <h2
+                    class="font-headline text-4xl md:text-6xl font-bold leading-tight text-on-primary dark:text-dark-on-primary">
+                    Mantenha-se conectado com o
+                    conhecimento.</h2>
+                <p class="mt-8 font-body text-on-primary dark:text-dark-on-primary opacity-80 text-xl leading-relaxed">
+                    Receba recomendações
+                    personalizadas e convites para eventos exclusivos diretamente no seu e-mail.</p>
+            </div>
+            <div class="relative z-10 w-full lg:w-auto flex flex-col gap-6">
+                <div
+                    class="flex flex-col sm:flex-row bg-white/10 backdrop-blur-md rounded-xl p-2 border border-white/20">
+                    <input
+                        class="bg-transparent border-none text-white placeholder:text-on-primary/50 focus:ring-0 px-8 py-5 w-full lg:w-72 text-lg"
+                        placeholder="Seu e-mail" type="email" />
+                    <button
+                        class="bg-white text-primary dark:text-dark-primary px-10 py-5 rounded-lg font-label text-sm font-bold uppercase tracking-[0.15em] hover:bg-primary-fixed dark:hover:bg-dark-primary-fixed transition-all shadow-lg active:scale-95">Assinar</button>
+                </div>
+                <p
+                    class="font-label text-[10px] uppercase tracking-[0.2em] text-on-primary dark:text-dark-on-primary opacity-60 text-center lg:text-left">
+                    Prometemos não enviar spam. Cancele a qualquer momento.</p>
+            </div>
+        </div>
+    </section>
+</main>
+<!-- Footer -->
+<footer
+    class="w-full py-20 bg-surface-container-high dark:bg-dark-surface-container-low border-t dark:border-white/5 border-outline-variant/20">
+    <div
+        class="flex flex-col md:flex-row justify-between items-start px-12 max-w-screen-2xl mx-auto w-full space-y-12 md:space-y-0">
+        <div class="space-y-6">
+            <div class="font-headline text-2xl font-bold text-on-surface dark:text-dark-on-surface">Alexandria Library
+            </div>
+            <p
+                class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant dark:text-dark-on-surface-variant font-medium">
+                © 2024
+                Library System.<br />All rights reserved.</p>
+        </div>
+        <nav class="flex flex-wrap gap-x-16 gap-y-6">
+            <div class="flex flex-col space-y-4">
+                <a class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant dark:text-dark-on-surface-variant hover:text-primary dark:hover:text-dark-primary transition-colors font-bold"
+                    href="#">Hours &amp; Locations</a>
+                <a class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant dark:text-dark-on-surface-variant hover:text-primary dark:hover:text-dark-primary transition-colors font-bold"
+                    href="#">My Account</a>
+            </div>
+            <div class="flex flex-col space-y-4">
+                <a class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant dark:text-dark-on-surface-variant hover:text-primary dark:hover:text-dark-primary transition-colors font-bold"
+                    href="#">Support Us</a>
+                <a class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant dark:text-dark-on-surface-variant hover:text-primary dark:hover:text-dark-primary transition-colors font-bold"
+                    href="#">Accessibility</a>
+            </div>
+            <div class="flex flex-col space-y-4">
+                <a class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant dark:text-dark-on-surface-variant hover:text-primary dark:hover:text-dark-primary transition-colors font-bold"
+                    href="#">Privacy Policy</a>
+            </div>
+        </nav>
+        <div class="flex gap-8 items-center">
+            <button class="hover:text-primary dark:hover:text-dark-primary transition-colors">
+                <span
+                    class="material-symbols-outlined text-2xl text-on-surface-variant dark:text-dark-on-surface-variant">language</span>
+            </button>
+            <button class="hover:text-primary dark:hover:text-dark-primary transition-colors">
+                <span
+                    class="material-symbols-outlined text-2xl text-on-surface-variant dark:text-dark-on-surface-variant">share</span>
+            </button>
+        </div>
+    </div>
+</footer>

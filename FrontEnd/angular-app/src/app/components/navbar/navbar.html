@@ -1,136 +1,185 @@
-<div class="navbar">
-    <div class="nav-bar-items">
+<header class="fixed top-0 w-full z-50 shadow-md">
+    <div class="bg-[#0F172A] dark:bg-dark-surface-container px-6 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-3 shrink-0 cursor-pointer">
+            <span class="material-symbols-outlined text-white text-3xl">auto_stories</span>
+            <div class="font-headline text-xl font-bold text-white tracking-tight">Library</div>
+        </div>
 
-        <div class="nav-bar-top-section">
-            <div class="search-container">
-
-                <img 
-                    class="school-and-book-icon"
-                    src="./images/white-library-logo.png" 
-                    alt="school-and-book-icon" 
-                />
-
-                <div class="search-bar">
-                    <input 
-                        class="search-bar-input"
-                        placeholder="Pesquisar por livros, eventos, empréstimos realizados, etc..." 
-                    />
-
-                    <div class="vertical-division-line"></div>
-
-                    <div class="icon-wrapper">
-                        <mat-icon class="search-bar-icon">
-                            search
-                        </mat-icon>
-                    </div>
-
+        <div class="flex-1 max-w-2xl mx-12 hidden md:block">
+            <div
+                class="relative flex items-center bg-white dark:bg-dark-surface-container-lowest rounded-md overflow-hidden h-10 shadow-sm focus-within:shadow-md transition-shadow">
+                <div class="pl-3 pr-2 flex items-center text-gray-400 dark:text-dark-on-surface-variant">
+                    <span class="material-symbols-outlined text-[20px]">search</span>
                 </div>
+                <div class="h-5 w-[1px] bg-gray-200 dark:bg-dark-outline-variant"></div>
+                <input
+                    class="outline-none w-full border-none focus:ring-0 text-sm font-body px-3 text-gray-700 dark:text-dark-on-surface placeholder-gray-400 dark:placeholder-dark-on-surface-variant bg-transparent"
+                    placeholder="Buscar por livros, eventos, empréstimos realizados, etc..." type="text" />
             </div>
         </div>
 
-        <div class="nav-bar-bottom-section">
-            <div class="link-list">
-
-                <div 
-                    class="icon-wrapper"
-                    (click)="viewHomePage()"
-                    [class.active]="activeItem === 'home'">
-
-                    <mat-icon 
-                        class="link-icon"
-                        [style.fontSize.px]="18">
-                        home
-                    </mat-icon>
-
-                    Início
-                </div>
-
-                <div 
-                    class="icon-wrapper"
-                    (click)="viewBooksPage()"
-                    [class.active]="activeItem === 'books'">
-
-                    <mat-icon 
-                        class="link-icon" 
-                        [style.fontSize.px]="18">
-                        
-                        auto_stories
-                    </mat-icon>
-
-                    Livros
-                </div>
-
-                <div 
-                    class="icon-wrapper"
-                    (click)="viewEventsPage()"
-                    [class.active]="activeItem === 'events'">
-
-                    <mat-icon 
-                        class="link-icon" 
-                        [style.fontSize.px]="18">
-                        event
-                    </mat-icon>
-
-                    Eventos
-                </div>
-
-                <div 
-                    class="icon-wrapper"
-                    (click)="viewLoansPage()"
-                    [class.active]="activeItem === 'loans'">
-
-                    <mat-icon
-                        class="link-icon"
-                        [style.fontSize.px]="18">
-                        assignment_return
-                    </mat-icon>
-                    
-                    Empréstimos
-                </div>
-
-                <div 
-                    class="icon-wrapper"
-                    (click)="viewFavoritesPage()"
-                    [class.active]="activeItem === 'favorites'">
-
-                    <mat-icon 
-                        class="link-icon"
-                        [style.fontSize.px]="18">
-                        bookmark
-                    </mat-icon>
-                    
-                    Favoritos
-                </div>
-
-                <div 
-                    class="icon-wrapper"
-                    (click)="viewNotificationsPage()"
-                    [class.active]="activeItem === 'notifications'">
-
-                    <mat-icon 
-                        class="link-icon"
-                        [style.fontSize.px]="18">
-                        notifications
-                    </mat-icon>
-
-                    Notificações
-                </div>
-
-                <div 
-                    class="icon-wrapper"
-                    (click)="viewProfilePage()"
-                    [class.active]="activeItem === 'profile'">
-
-                    <mat-icon 
-                        class="link-icon"
-                        [style.fontSize.px]="18">
-                        person
-                    </mat-icon>
-                    
-                    Perfil
-                </div>
-            </div>
+        <div class="flex items-center space-x-6 shrink-0 text-white/80">
+            <button class="hover:text-white transition-colors duration-200" type="button"
+                (click)="themeService.toggleTheme()">
+                <span class="material-symbols-outlined text-[22px]">{{themeService.currentTheme() === 'light' ? 'mode_night' : 'light_mode'}}</span>
+            </button>
+            <button class="hover:text-white transition-colors duration-200" type="button">
+                <span class="material-symbols-outlined text-[22px]">help</span>
+            </button>
         </div>
-
     </div>
-</div>
+
+    <nav class="bg-white dark:bg-dark-surface border-b border-outline-variant/30 dark:border-dark-outline-variant px-6 overflow-x-auto no-scrollbar">
+        <ul class="flex items-center justify-center space-x-2 md:space-x-8">
+            <li class="relative">
+                <a class="flex flex-col items-center py-2 px-4 transition-all duration-300 group" href="#"
+                    (click)="viewHomePage(); $event.preventDefault()" [ngClass]="{
+                        'text-primary dark:text-dark-primary': activeItem === 'home',
+                        'text-on-surface-variant dark:text-dark-on-surface-variant': activeItem !== 'home'
+                    }">
+                    <div class="absolute top-0 left-0 w-full h-[3px] rounded-b-full transition-colors"
+                        [ngClass]="{
+                            'bg-primary dark:bg-dark-primary': activeItem === 'home',
+                            'bg-transparent': activeItem !== 'home'
+                        }"></div>
+                    <span
+                        class="material-symbols-outlined fill-[1] [font-variation-settings:'FILL'_1] group-hover:scale-110 transition-transform"
+                        [ngClass]="{
+                            'text-primary dark:text-dark-primary': activeItem === 'home',
+                            'text-on-surface-variant dark:text-dark-on-surface-variant': activeItem !== 'home'
+                        }">home</span>
+                    <span class="font-label text-[11px] font-bold uppercase tracking-wider mt-1" [ngClass]="{
+                        'text-primary dark:text-dark-primary': activeItem === 'home',
+                        'text-on-surface-variant dark:text-dark-on-surface-variant': activeItem !== 'home'
+                    }">Início</span>
+                </a>
+            </li>
+            <li class="relative">
+                <a class="flex flex-col items-center py-2 px-4 hover:bg-surface-container-low dark:hover:bg-dark-surface-container-low transition-all duration-200 rounded-sm group"
+                    href="#" (click)="viewBooksPage(); $event.preventDefault()" [ngClass]="{
+                        'text-primary dark:text-dark-primary': activeItem === 'books',
+                        'text-on-surface-variant dark:text-dark-on-surface-variant': activeItem !== 'books'
+                    }">
+                    <div class="absolute top-0 left-0 w-full h-[3px] rounded-b-full transition-colors"
+                        [ngClass]="{
+                            'bg-primary dark:bg-dark-primary': activeItem === 'books',
+                            'bg-transparent': activeItem !== 'books'
+                        }"></div>
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-all" [ngClass]="{
+                        'text-primary dark:text-dark-primary': activeItem === 'books',
+                        'text-on-surface-variant dark:text-dark-on-surface-variant': activeItem !== 'books'
+                    }">menu_book</span>
+                    <span class="font-label text-[11px] font-bold uppercase tracking-wider mt-1" [ngClass]="{
+                        'text-primary dark:text-dark-primary': activeItem === 'books',
+                        'text-on-surface-variant dark:text-dark-on-surface-variant': activeItem !== 'books'
+                    }">Livros</span>
+                </a>
+            </li>
+            <li class="relative">
+                <a class="flex flex-col items-center py-2 px-4 hover:bg-surface-container-low dark:hover:bg-dark-surface-container-low transition-all duration-200 rounded-sm group"
+                    href="#" (click)="viewEventsPage(); $event.preventDefault()" [ngClass]="{
+                        'text-primary dark:text-dark-primary': activeItem === 'events',
+                        'text-on-surface-variant dark:text-dark-on-surface-variant': activeItem !== 'events'
+                    }">
+                    <div class="absolute top-0 left-0 w-full h-[3px] rounded-b-full transition-colors"
+                        [ngClass]="{
+                            'bg-primary dark:bg-dark-primary': activeItem === 'events',
+                            'bg-transparent': activeItem !== 'events'
+                        }"></div>
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-all" [ngClass]="{
+                        'text-primary dark:text-dark-primary': activeItem === 'events',
+                        'text-on-surface-variant dark:text-dark-on-surface-variant': activeItem !== 'events'
+                    }">event</span>
+                    <span class="font-label text-[11px] font-bold uppercase tracking-wider mt-1" [ngClass]="{
+                        'text-primary dark:text-dark-primary': activeItem === 'events',
+                        'text-on-surface-variant dark:text-dark-on-surface-variant': activeItem !== 'events'
+                    }">Eventos</span>
+                </a>
+            </li>
+            <li class="relative">
+                <a class="flex flex-col items-center py-2 px-4 hover:bg-surface-container-low dark:hover:bg-dark-surface-container-low transition-all duration-200 rounded-sm group"
+                    href="#" (click)="viewLoansPage(); $event.preventDefault()" [ngClass]="{
+                        'text-primary dark:text-dark-primary': activeItem === 'loans',
+                        'text-on-surface-variant dark:text-dark-on-surface-variant': activeItem !== 'loans'
+                    }">
+                    <div class="absolute top-0 left-0 w-full h-[3px] rounded-b-full transition-colors"
+                        [ngClass]="{
+                            'bg-primary dark:bg-dark-primary': activeItem === 'loans',
+                            'bg-transparent': activeItem !== 'loans'
+                        }"></div>
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-all" [ngClass]="{
+                        'text-primary dark:text-dark-primary': activeItem === 'loans',
+                        'text-on-surface-variant dark:text-dark-on-surface-variant': activeItem !== 'loans'
+                    }">assignment_return</span>
+                    <span class="font-label text-[11px] font-bold uppercase tracking-wider mt-1" [ngClass]="{
+                        'text-primary dark:text-dark-primary': activeItem === 'loans',
+                        'text-on-surface-variant dark:text-dark-on-surface-variant': activeItem !== 'loans'
+                    }">Empréstimos</span>
+                </a>
+            </li>
+            <li class="relative">
+                <a class="flex flex-col items-center py-2 px-4 hover:bg-surface-container-low dark:hover:bg-dark-surface-container-low transition-all duration-200 rounded-sm group"
+                    href="#" (click)="viewFavoritesPage(); $event.preventDefault()" [ngClass]="{
+                        'text-primary dark:text-dark-primary': activeItem === 'favorites',
+                        'text-on-surface-variant dark:text-dark-on-surface-variant': activeItem !== 'favorites'
+                    }">
+                    <div class="absolute top-0 left-0 w-full h-[3px] rounded-b-full transition-colors"
+                        [ngClass]="{
+                            'bg-primary dark:bg-dark-primary': activeItem === 'favorites',
+                            'bg-transparent': activeItem !== 'favorites'
+                        }"></div>
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-all" [ngClass]="{
+                        'text-primary dark:text-dark-primary': activeItem === 'favorites',
+                        'text-on-surface-variant dark:text-dark-on-surface-variant': activeItem !== 'favorites'
+                    }">bookmark</span>
+                    <span class="font-label text-[11px] font-bold uppercase tracking-wider mt-1" [ngClass]="{
+                        'text-primary dark:text-dark-primary': activeItem === 'favorites',
+                        'text-on-surface-variant dark:text-dark-on-surface-variant': activeItem !== 'favorites'
+                    }">Favoritos</span>
+                </a>
+            </li>
+            <li class="relative">
+                <a class="flex flex-col items-center py-2 px-4 hover:bg-surface-container-low dark:hover:bg-dark-surface-container-low transition-all duration-200 rounded-sm group"
+                    href="#" (click)="viewNotificationsPage(); $event.preventDefault()" [ngClass]="{
+                        'text-primary dark:text-dark-primary': activeItem === 'notifications',
+                        'text-on-surface-variant dark:text-dark-on-surface-variant': activeItem !== 'notifications'
+                    }">
+                    <div class="absolute top-0 left-0 w-full h-[3px] rounded-b-full transition-colors"
+                        [ngClass]="{
+                            'bg-primary dark:bg-dark-primary': activeItem === 'notifications',
+                            'bg-transparent': activeItem !== 'notifications'
+                        }"></div>
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-all" [ngClass]="{
+                        'text-primary dark:text-dark-primary': activeItem === 'notifications',
+                        'text-on-surface-variant dark:text-dark-on-surface-variant': activeItem !== 'notifications'
+                    }">notifications</span>
+                    <span class="font-label text-[11px] font-bold uppercase tracking-wider mt-1" [ngClass]="{
+                        'text-primary dark:text-dark-primary': activeItem === 'notifications',
+                        'text-on-surface-variant dark:text-dark-on-surface-variant': activeItem !== 'notifications'
+                    }">Notificações</span>
+                </a>
+            </li>
+            <li class="relative">
+                <a class="flex flex-col items-center py-2 px-4 hover:bg-surface-container-low dark:hover:bg-dark-surface-container-low transition-all duration-200 rounded-sm group"
+                    href="#" (click)="viewProfilePage(); $event.preventDefault()" [ngClass]="{
+                        'text-primary dark:text-dark-primary': activeItem === 'profile',
+                        'text-on-surface-variant dark:text-dark-on-surface-variant': activeItem !== 'profile'
+                    }">
+                    <div class="absolute top-0 left-0 w-full h-[3px] rounded-b-full transition-colors"
+                        [ngClass]="{
+                            'bg-primary dark:bg-dark-primary': activeItem === 'profile',
+                            'bg-transparent': activeItem !== 'profile'
+                        }"></div>
+                    <span class="material-symbols-outlined group-hover:scale-110 transition-all" [ngClass]="{
+                        'text-primary dark:text-dark-primary': activeItem === 'profile',
+                        'text-on-surface-variant dark:text-dark-on-surface-variant': activeItem !== 'profile'
+                    }">person</span>
+                    <span class="font-label text-[11px] font-bold uppercase tracking-wider mt-1" [ngClass]="{
+                        'text-primary dark:text-dark-primary': activeItem === 'profile',
+                        'text-on-surface-variant dark:text-dark-on-surface-variant': activeItem !== 'profile'
+                    }">Perfil</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>

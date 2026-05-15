@@ -2,18 +2,22 @@ import { filter } from 'rxjs/operators';
 import { Router, NavigationEnd } from '@angular/router';
 import { Component, OnInit, inject } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
+import { CommonModule } from '@angular/common';
+import { ThemeService } from '../../core/services/theme.service';
 
 @Component({
   selector: 'app-navbar',
-  imports: [MatIconModule],
+  imports: [MatIconModule, CommonModule],
   standalone: true,
   templateUrl: './navbar.html',
-  styleUrl: './navbar.scss',
+  styleUrls: ['./navbar.scss'],
 })
 
 export class NavbarComponent implements OnInit {
   private router = inject(Router);
   private currentPage: string = '';
+  
+  themeService = inject(ThemeService);
 
   ngOnInit(): void {
   this.router.events

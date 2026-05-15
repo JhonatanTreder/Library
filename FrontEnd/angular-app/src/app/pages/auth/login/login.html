@@ -1,0 +1,103 @@
+<section class="loginContainer">
+  <section class="citationsContainer">
+    <div class="citations">
+      <div class="citation">
+        <div
+          class="imgWrapper hidden"
+          appAnimateOnScroll
+          animationClass="toRightAnimation">
+          <img
+            src="../../../../assets/images/platao-icon.webp"
+            class="citationImg"
+            priority
+            alt="Platão"
+            width="250"
+            height="138"
+          />
+        </div>
+        <p class="citationTitle"
+          appAnimateOnScroll
+          animationClass="toLeftAnimation">
+          "A educação é a arma mais poderosa que você pode usar para mudar o mundo." — Platão
+        </p>
+      </div>
+
+      <div class="citation">
+        <p 
+          class="citationTitle hidden"
+          appAnimateOnScroll
+          animationClass="toRightAnimation">
+          "A esperança é o sonho do homem acordado." — Aristóteles
+        </p>
+        <div 
+          class="imgWrapper hidden"
+          appAnimateOnScroll
+          animationClass="toLeftAnimation">
+          <img 
+            src="../../../../assets/images/aristoteles-icon.webp"
+            class="citationImg"
+            priority 
+            alt="Aristotle" 
+            width="250" 
+            height="167" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <form class="loginForm" (submit)="loginUser()">
+    <h1 class="loginTitle">Seja Bem-vindo</h1>
+
+    <p class="divisionLine"></p>
+
+    <section class="inputsSection">
+      <section class="inputArea">
+        <p class="inputText">Email</p>
+
+        <input required name="email" class="inputBox" placeholder="Email" [ngClass]="{
+            'validInput': isValidEmail === true,
+            'invalidInput': isValidEmail === false,
+            '': isValidEmail === undefined
+          }" (change)="validateEmail($event.target.value)" />
+        <p class="inputDescription" [ngClass]="{
+            'validText': isValidEmail === true,
+            'invalidText': isValidEmail === false,
+            '': isValidEmail === undefined
+          }">
+          Digite o seu email cadastrado.
+        </p>
+      </section>
+
+      <section class="inputArea">
+        <p class="inputText">Senha</p>
+
+        <input required class="inputBox" name="password" type="password" placeholder="Senha" [ngClass]="{
+            'validInput': isValidPassword === true,
+            'invalidInput': isValidPassword === false
+          }" (change)="validatePassword($event.target.value)" />
+
+        <p class="inputDescription" [ngClass]="{
+            'validText': isValidPassword === true,
+            'invalidText': isValidPassword === false,
+            '': isValidPassword === undefined
+          }">
+          Digite a sua senha.
+        </p>
+      </section>
+    </section>
+
+
+    <button class="loginButton" type="submit" [disabled]="formLoading">
+      {{formLoading ? 'Entrando...' : 'Entrar'}}
+    </button>
+
+    <section class="registerRef">
+      <p class="registerRefTitle">
+        Não possui uma conta?
+      </p>
+      <a href="/auth/register" class="registerRefLink">
+        Registrar-se
+      </a>
+    </section>
+  </form>
+</section>
